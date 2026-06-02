@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Doces Di | Sobremesas Artesanais</title>
+    <style>
+        /* Reset básico e Fontes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fcf8f5;
+            color: #4a3b32;
+            padding-bottom: 60px;
+        }
+
+        /* Cabeçalho */
+        header {
+            background-color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        header h1 {
+            color: #d4a373;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-style: italic;
+            color: #8b7d77;
+        }
+
+        /* Banner Principal */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* Layout Principal com Lateral */
+        .main-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            gap: 30px;
+        }
+
+        .vitrine {
+            flex: 2;
+        }
+
+        .section-title {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            color: #654321;
+        }
+
+        .grid-produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card de Produto */
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-nome {
+            font-size: 1.15rem;
+            color: #4a3b32;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .card-descricao {
+            font-size: 0.85rem;
+            color: #8b7d77;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .card-preco {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #d4a373;
+        }
+
+        .btn-comprar {
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn-comprar:hover {
+            background-color: #bfa07a;
+        }
+
+        /* Lateral do Carrinho */
+        .carrinho-sidebar {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .carrinho-sidebar h3 {
+            border-bottom: 2px solid #fcf8f5;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #654321;
+        }
+
+        .item-carrinho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .carrinho-vazio {
+            color: #8b7d77;
+            font-style: italic;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .total-container {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #fcf8f5;
+        }
+
+        /* ========= ESTILOS DE PAGAMENTO - APENAS PIX E MERCADO PAGO ========= */
+        .pagamento-area {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #fcf8f5;
+        }
+
+        .pagamento-area h4 {
+            font-size: 1rem;
+            color: #654321;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metodos-pagamento {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metodo-opcao {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fef9f5;
+            padding: 10px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            border: 1px solid #f0e4da;
+            transition: all 0.2s;
+        }
+
+        .metodo-opcao:hover {
+            background: #fdf2ea;
+            border-color: #d4a373;
+        }
+
+        .metodo-opcao input {
+            accent-color: #d4a373;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .metodo-opcao label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #4a3b32;
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metodo-icon {
+            font-size: 1.2rem;
+        }
+
+        .detalhe-pagamento {
+            background: #fef9f5;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            border-left: 3px solid #d4a373;
+            display: none;
+        }
+
+        .detalhe-pagamento.ativo {
+            display: block;
+        }
+
+        .pix-chave {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            border: 1px dashed #d4a373;
+            flex-wrap: wrap;
+        }
+
+        .btn-copiar {
+            background: #d4a373;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 30px;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-copiar:hover {
+            background: #bfa07a;
+        }
+
+        .mercado-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-mercado-pago {
+            display: inline-block;
+            background: linear-gradient(135deg, #009EE3 0%, #0072BC 100%);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: transform 0.1s, box-shadow 0.2s;
+            margin-top: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-mercado-pago:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .link-criar-conta {
+            color: #0072BC;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 1px dashed #0072BC;
+        }
+
+        .link-criar-conta:hover {
+            color: #009EE3;
+        }
+
+        .cartoes-aceitos {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 0.75rem;
+        }
+
+        .cartoes-aceitos span {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid #e0d6cf;
+        }
+
+        .btn-finalizar {
+            display: block;
+            width: 100%;
+            background-color: #25d366;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-finalizar:hover {
+            background-color: #1ebd57;
+        }
+
+        .btn-finalizar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .resumo-pagamento {
+            font-size: 0.8rem;
+            background: #f4ede8;
+            padding: 8px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Rodapé */
+        footer {
+            background-color: #4a3b32;
+            color: #fcf8f5;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade Básica */
+        @media (max-width: 900px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            .carrinho-sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Doces Di</h1>
+        <p>A vida é mais doce quando compartilhada</p>
+    </header>
+
+    <section class="hero">
+        <h2>Sobremesas Irresistíveis</h2>
+    </section>
+
+    <div class="main-layout">
+        
+        <main class="vitrine">
+            <h3 class="section-title">Nosso Cardápio</h3>
+            <div class="grid-produtos">
+                
+                <!-- MOUSSE DE MARACUJÁ - IMAGEM CORRETA FORNECIDA PELO USUÁRIO (sem legendas, apenas a foto pura) -->
+                <div class="card">
+                    <img src="https://images.pexels.com/photos/13640505/pexels-photo-13640505.jpeg" class="card-img" alt="Mousse de Maracujá">
+                    <div class="card-info">
+                        <h4 class="card-nome">Mousse de Maracujá</h4>
+                        <p class="card-descricao">Uma combinação perfeita entre o doce e o azedinho, esta mousse de maracujá é leve, extremamente cremosa e derrete na boca a cada colherada.</p>
+                        <div class="card-footer">
+                            <span class="card-preco">R$ 18.90</span>
+                            <button class="btn-comprar" onclick="adicionarAoCarrinho('Mousse de Maracujá', 18.90)">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcMFMI-QlCt1rgKLGIZUGbjl2oqDxhA0Iy_5bjYe856vtAwFlZALxZUx92kTsquVjuRKCzbuBxtwmniG1H7wn9t1XPvST-7KZcRQOtABoQ&s=10" class="card-img" alt="Cheesecake New York">
+                    <div class="card-info">
+                        <h4 class="card-nome">Malabie</h4>
+                        <p class="card-descricao">O malabi (também chamado de mhalabie, malabie ou manjar árabe) é uma sobremesa tradicional do Oriente Médio.</p>
+                        <div class="card-footer">
+                            <span class="card-preco">R$ 16.50</span>
+                            <button class="btn-comprar" onclick="adicionarAoCarrinho('Cheesecake New York', 16.50)">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=500&q=80" class="card-img" alt="Petit Gâteau Doce de Leite">
+                    <div class="card-info">
+                        <h4 class="card-nome">Petit Gâteau Doce de Leite</h4>
+                        <p class="card-descricao">Bolinho quente fluido com doce de leite caseiro. Acompanha sorvete.</p>
+                        <div class="card-footer">
+                            <span class="card-preco">R$ 22.00</span>
+                            <button class="btn-comprar" onclick="adicionarAoCarrinho('Petit Gâteau Doce de Leite', 22.00)">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <aside class="carrinho-sidebar">
+            <h3>Seu Pedido</h3>
+            <div id="itens-carrinho">
+                <p class="carrinho-vazio">Seu carrinho está vazio.</p>
+            </div>
+            
+            <div class="total-container">
+                <span>Total:</span>
+                <span id="valor-total">R$ 0,00</span>
+            </div>
+
+            <!-- SEÇÃO DE PAGAMENTO - APENAS PIX E MERCADO PAGO -->
+            <div class="pagamento-area" id="pagamento-area" style="display: none;">
+                <h4>💰 Forma de Pagamento</h4>
+                <div class="metodos-pagamento">
+                    <!-- PIX (principal) -->
+                    <div class="metodo-opcao" onclick="selecionarMetodo('pix')">
+                        <input type="radio" name="metodoPagamento" id="pix-radio" value="pix">
+                        <label for="pix-radio">
+                            <span class="metodo-icon">📱</span> PIX (Instantâneo)
+                        </label>
+                    </div>
+                    <!-- Mercado Pago (PIX + Cartões na plataforma) -->
+                    <div class="metodo-opcao" onclick="selecionarMetodo('mercadopago')">
+                        <input type="radio" name="metodoPagamento" id="mp-radio" value="mercadopago">
+                        <label for="mp-radio">
+                            <span class="metodo-icon">🟦</span> Mercado Pago
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Detalhe do PIX tradicional -->
+                <div id="detalhe-pix" class="detalhe-pagamento">
+                    <strong>✨ Pagamento via PIX (Chave Aleatória)</strong>
+                    <div class="pix-chave">
+                        <span>docesdi@pix.com.br</span>
+                        <button class="btn-copiar" onclick="copiarChavePix()">Copiar chave</button>
+                    </div>
+                    <small style="display: block; margin-top: 8px;">Após finalizar o pedido, enviaremos o QR Code e comprovante via WhatsApp. Pague agora ou na retirada.</small>
+                </div>
+
+                <!-- Detalhe do Mercado Pago -->
+                <div id="detalhe-mercadopago" class="detalhe-pagamento">
+                    <strong>🟦 Pagamento com Mercado Pago</strong>
+                    <div class="mercado-info">
+                        <small>🔹 Através do Mercado Pago você pode pagar de duas formas:</small>
+                        <ul style="margin-left: 20px; margin-top: 4px; color: #5e4b3e;">
+                            <li><strong>✅ PIX</strong> – pagamento instantâneo pela sua chave Mercado Pago.</li>
+                            <li><strong>💳 Cartões de crédito</strong> – use os cartões salvos na sua conta Mercado Pago ou adicione novos.</li>
+                        </ul>
+                        <small>🔸 Se você já tem conta no Mercado Pago, basta acessar o link e escolher a melhor forma.  
+                        🔸 Caso <strong>não tenha uma conta</strong>, é muito simples criar uma gratuitamente clicando no botão abaixo.</small>
+                        
+                        <div style="margin: 12px 0 8px 0;">
+                            <a href="https://mpago.li/1A2keHY" target="_blank" class="btn-mercado-pago" id="linkMercadoPago">
+                                🟦 Pagar com Mercado Pago (PIX ou Cartão)
+                            </a>
+                        </div>
+                        
+                        <div class="cartoes-aceitos">
+                            <span>Visa</span> <span>Mastercard</span> <span>Elo</span> <span>Hipercard</span> <span>American Express</span>
+                        </div>
+                        
+                        <div style="margin-top: 10px; background: #fff5ea; padding: 8px; border-radius: 12px;">
+                            <span>🔗 <strong>Não tem conta no Mercado Pago?</strong> </span>
+                            <a href="https://mpago.li/1A2keHY" target="_blank" class="link-criar-conta">Clique aqui e crie sua conta grátis ››</a>
+                            <small style="display: block; margin-top: 5px;">Após criar, você pode pagar com PIX ou adicionar seus cartões de crédito/débito.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-finalizar" class="btn-finalizar" onclick="enviarWhatsAppComPagamento()" disabled>
+                Finalizar Pedido
+            </button>
+            <div id="resumo-pagamento-msg" class="resumo-pagamento" style="display: none;"></div>
+        </aside>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Doces Di - Todos os direitos reservados.</p>
+        <p style="font-size:0.75rem;">Pagamento via PIX tradicional ou Mercado Pago (PIX e cartões de crédito na plataforma)</p>
+    </footer>
+
+    <script>
+        // Configuração do WhatsApp (número para onde será enviado o pedido)
+        const SEU_WHATSAPP = "5521965783597"; 
+        let carrinho = [];
+
+        // Método selecionado: 'pix' ou 'mercadopago'
+        let metodoSelecionado = null; 
+
+        function adicionarAoCarrinho(nome, preco) {
+            const itemExistente = carrinho.find(item => item.nome === nome);
+            if (itemExistente) {
+                itemExistente.quantidade += 1;
+            } else {
+                carrinho.push({ nome: nome, preco: preco, quantidade: 1 });
+            }
+            atualizarInterfaceCarrinho();
+        }
+
+        function atualizarInterfaceCarrinho() {
+            const containerItens = document.getElementById('itens-carrinho');
+            const elementoTotal = document.getElementById('valor-total');
+            const btnFinalizar = document.getElementById('btn-finalizar');
+            const pagamentoArea = document.getElementById('pagamento-area');
+            const resumoDiv = document.getElementById('resumo-pagamento-msg');
+
+            if (carrinho.length === 0) {
+                containerItens.innerHTML = '<p class="carrinho-vazio">Seu carrinho está vazio.</p>';
+                elementoTotal.innerText = 'R$ 0,00';
+                btnFinalizar.disabled = true;
+                pagamentoArea.style.display = 'none';
+                resumoDiv.style.display = 'none';
+                metodoSelecionado = null;
+                // Resetar os radios
+                document.querySelectorAll('input[name="metodoPagamento"]').forEach(radio => radio.checked = false);
+                // Esconder detalhes
+                document.querySelectorAll('.detalhe-pagamento').forEach(d => d.classList.remove('ativo'));
+                return;
+            }
+
+            containerItens.innerHTML = '';
+            let totalGeral = 0;
+
+            carrinho.forEach(item => {
+                const subtotal = item.preco * item.quantidade;
+                totalGeral += subtotal;
+                const itemHTML = `
+                    <div class="item-carrinho">
+                        <div>
+                            <strong>${item.nome}</strong><br>
+                            <small>${item.quantidade}x R$ ${item.preco.toFixed(2).replace('.', ',')}</small>
+                        </div>
+                        <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+                containerItens.innerHTML += itemHTML;
+            });
+
+            elementoTotal.innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+            btnFinalizar.disabled = false;
+            pagamentoArea.style.display = 'block';
+            
+            // Atualizar resumo se já tiver método selecionado
+            if (metodoSelecionado) {
+                atualizarResumoPagamento(totalGeral);
+            } else {
+                resumoDiv.style.display = 'none';
+            }
+        }
+
+        function selecionarMetodo(metodo) {
+            // Aceitamos apenas 'pix' ou 'mercadopago'
+            if (metodo !== 'pix' && metodo !== 'mercadopago') return;
+            
+            metodoSelecionado = metodo;
+            
+            // Marcar radio correspondente
+            document.querySelectorAll('input[name="metodoPagamento"]').forEach(radio => {
+                radio.checked = (radio.value === metodo);
+            });
+            
+            // Esconder todos os detalhes e mostrar apenas o escolhido
+            document.querySelectorAll('.detalhe-pagamento').forEach(d => d.classList.remove('ativo'));
+            if (metodo === 'pix') document.getElementById('detalhe-pix').classList.add('ativo');
+            if (metodo === 'mercadopago') document.getElementById('detalhe-mercadopago').classList.add('ativo');
+            
+            const total = calcularTotalCarrinho();
+            atualizarResumoPagamento(total);
+        }
+        
+        function calcularTotalCarrinho() {
+            return carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+        }
+        
+        function atualizarResumoPagamento(total) {
+            const resumoDiv = document.getElementById('resumo-pagamento-msg');
+            if (!metodoSelecionado || carrinho.length === 0) {
+                resumoDiv.style.display = 'none';
+                return;
+            }
+            
+            let metodoNome = '';
+            if (metodoSelecionado === 'pix') metodoNome = 'PIX (chave tradicional)';
+            else if (metodoSelecionado === 'mercadopago') metodoNome = 'Mercado Pago (PIX ou cartões)';
+            
+            resumoDiv.innerHTML = `✅ Pagamento com ${metodoNome} selecionado. Total: R$ ${total.toFixed(2).replace('.', ',')}. Finalize o pedido.`;
+            resumoDiv.style.display = 'block';
+        }
+        
+        function copiarChavePix() {
+            const chave = "docesdi@pix.com.br";
+            navigator.clipboard.writeText(chave).then(() => {
+                alert("Chave PIX copiada! ✅ Chave: docesdi@pix.com.br . Use no seu banco para pagamento.");
+            }).catch(() => {
+                alert("Não foi possível copiar, mas a chave PIX é: docesdi@pix.com.br");
+            });
+        }
+        
+        // Função que envia o pedido via WhatsApp
+        function enviarWhatsAppComPagamento() {
+            if (carrinho.length === 0) {
+                alert("Seu carrinho está vazio. Adicione sobremesas antes de finalizar!");
+                return;
+            }
+            
+            if (!metodoSelecionado) {
+                alert("Por favor, selecione uma forma de pagamento: PIX ou Mercado Pago.");
+                return;
+            }
+            
+            const totalGeral = calcularTotalCarrinho();
+            let metodoTexto = "";
+            let instrucoesAdicionais = "";
+            
+            if (metodoSelecionado === 'pix') {
+                metodoTexto = "💚 PIX (Chave: docesdi@pix.com.br)";
+                instrucoesAdicionais = "\n🔹 Pagamento via PIX tradicional. Enviaremos o QR Code assim que confirmarmos o pedido. Você pode pagar com qualquer banco.";
+            } 
+            else if (metodoSelecionado === 'mercadopago') {
+                metodoTexto = "🟦 Mercado Pago (PIX ou Cartões de Crédito/Débito na plataforma)";
+                instrucoesAdicionais = "\n🔹 Você pode pagar através do Mercado Pago, usando PIX ou cartões cadastrados. Caso não tenha conta, crie gratuitamente: https://mpago.li/1A2keHY . O link de pagamento será enviado na conversa.";
+            }
+            
+            // Monta mensagem para o WhatsApp
+            let mensagem = "🧁 *NOVO PEDIDO - DOCES DI* 🧁\n\n";
+            mensagem += "📋 *Itens do pedido:*\n";
+            
+            carrinho.forEach(item => {
+                const subtotal = item.preco * item.quantidade;
+                mensagem += `• ${item.quantidade}x *${item.nome}* - R$ ${subtotal.toFixed(2).replace('.', ',')} (${item.preco.toFixed(2).replace('.', ',')} cada)\n`;
+            });
+            
+            mensagem += `\n💵 *Total:* R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+            mensagem += `\n💳 *Forma de pagamento escolhida:* ${metodoTexto}`;
+            mensagem += instrucoesAdicionais;
+            
+            if (metodoSelecionado === 'mercadopago') {
+                mensagem += "\n\n📌 *Link Mercado Pago para pagamento:* https://mpago.li/1A2keHY (caso prefira pagar diretamente por lá agora, ou aguarde nosso contato com link personalizado).";
+            } else {
+                mensagem += "\n\n🔑 *Chave PIX:* docesdi@pix.com.br (caso queira adiantar o pagamento, avise-nos).";
+            }
+            
+            mensagem += "\n\n📦 *Gostaria de retirar na loja ou solicitar entrega?* (Informar endereço se for delivery)";
+            mensagem += "\n✨ Aguardo confirmação e orientações para finalizar o pedido. Obrigado!";
+            
+            const textoFormatado = encodeURIComponent(mensagem);
+            const urlWhatsApp = `https://api.whatsapp.com/send?phone=${SEU_WHATSAPP}&text=${textoFormatado}`;
+            
+            if (metodoSelecionado === 'mercadopago') {
+                alert("🟦 Você escolheu Mercado Pago. Lembre-se: você pode pagar com PIX ou com cartões de crédito/débito através da plataforma.");
+            } else if (metodoSelecionado === 'pix') {
+                alert("💚 PIX selecionado. Você pode copiar a chave (docesdi@pix.com.br) ou aguardar o QR Code que enviaremos no WhatsApp.");
+            }
+            
+            window.open(urlWhatsApp, '_blank');
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            carrinho = [];
+            atualizarInterfaceCarrinho();
+            
+            document.querySelectorAll('input[name="metodoPagamento"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        selecionarMetodo(e.target.value);
+                    }
+                });
+            });
+            
+            const mpLink = document.getElementById('linkMercadoPago');
+            if (mpLink) {
+                mpLink.setAttribute('target', '_blank');
+                mpLink.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    </script>
+</body>
+</html>
