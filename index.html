@@ -264,4 +264,394 @@
                         <div class="upload-mini-label" style="font-size:0.7rem; padding:6px;">📁 Imagem</div>
                         <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
                     </div>
-                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12
+                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12px; border-radius:20px;">💾</button>
+                    <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:20px;">🗑️</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        
+        document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const id = parseInt(input.getAttribute('data-id'));
+                const file = e.target.files[0];
+                if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+                    const imagemBase64 = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
+                    const prod = produtos.find(p => p.id === id);
+                    if (prod) {
+                        prod.imagem = imagemBase64;
+                        alert("Imagem carregada! Clique em SALVAR para confirmar.");
+                        renderizarAdminLista();
+                        renderizarProdutos();
+                    }
+                } else { alert("Formato inválido! Use JPEG ou PNG."); }
+            });
+        });
+    }
+    
+    window.editarProdutoLocal = function(id) {
+        const p = produtos.find(p => p.id == id);
+        if (p) {
+            p.nome = document.querySelector(`.edit-nome[data-id="${id}"]`).value;
+            p.descricao = document.querySelector(`.edit-desc[data-id="${id}"]`).value;
+            p.preco = parseFloat(document.querySelector(`.edit-preco[data-id="${id}"]`).value);
+            p.estoque = parseInt(document.querySelector(`.edit-estoque[data-id="${id}"]`).value);
+            const imagemUrl = document.querySelector(`.edit-imagem[data-id="${id}"]`).value;
+            if (imagemUrl) p.imagem = imagemUrl;
+            alert("Produto atualizado! Clique em SALVAR para salvar no banco.");
+            renderizarAdminLista();
+            renderizarProdutos();
+        }
+    };
+    
+    window.excluirProdutoLocal = function(id) {
+        if (confirm("Excluir este produto?")) {
+            produtos = produtos.filter(p => p.id !== id);
+            renderizarAdminLista();
+            renderizarProdutos();
+        }
+    };
+    
+    async function adicionarProdutoAdmin() {
+        const nome = document.getElementById('prodNome').value.trim();
+        const desc = document.getElementById('prodDesc').value.trim();
+        const preco = parseFloat(document.getElementById('prodPreco').value);
+        const estoque = parseInt(document.getElementById('prodEstoque').value);
+        let imagem = document.getElementById('prodImagem').value.trim();
+        const file = document.getElementById('uploadImagem').files[0];
+        if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+            imagem = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
+        }
+        if (!imagem) imagem = "https://placehold.co/600x400/f0e4da/d4a373?text=" + encodeURIComponent(nome);
+        if (!nome || isNaN(preco)) { alert("Preencha nome e preço!"); return; }
+        const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
+        produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
+        renderizarAdminLista();
+        renderizarProdutos();
+        alert("Produto adicionado! Clique em SALVAR para salvar no banco.");
+        document.getElementById('prodNome').value = '';
+        document.getElementById('prodDesc').value = '';
+        document.getElementById('prodPreco').value = '';
+        document.getElementById('prodEstoque').value = '';
+        document.getElementById('prodImagem').value = '';
+        document.getElementById('uploadImagem').value = '';
+    }
+    
+    function adicionarAoCarrinho(id) {
+        const prod = produtos.find(p => p.id === id);
+        if (!prod || prod.estoque <= 0) return;
+        const item = carrinho.find(i => i.id === id);
+        if (item) item.quantidade++;
+        else carrinho.push({ id, nome: prod.nome, preco: prod.preco, quantidade: 1 });
+        salvarCarrinho();
+        atualizarCarrinho();
+    }
+    
+    function atualizarCarrinho() {
+        const container = document.getElementById('itens-carrinho');
+        const totalSpan = document.getElementById('valor-total');
+        if (carrinho.length === 0) {
+            container.innerHTML = '<p>Carrinho vazio</p>';
+            totalSpan.innerText = 'R$ 0,00';
+            document.getElementById('btn-finalizar').disabled = true;
+            document.getElementById('pagamento-area').style.display = 'none';
+            return;
+        }
+        container.innerHTML = '';
+        let total = 0;
+        carrinho.forEach(i => {
+            total += i.preco * i.quantidade;
+            container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><strong>${i.nome}</strong><br><small>${i.quantidade}x R$ ${i.preco.toFixed(2).replace('.', ',')}</small></div><span>R$ ${(i.preco * i.quantidade).toFixed(2).replace('.', ',')}</span></div>`;
+        });
+        totalSpan.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        document.getElementById('btn-finalizar').disabled = false;
+        document.getElementById('pagamento-area').style.display = 'block';
+    }
+    
+    function selecionarMetodo(metodo) {
+        metodoSelecionado = metodo;
+        document.getElementById('detalhe-pix').style.display = metodo === 'pix' ? 'block' : 'none';
+        document.getElementById('detalhe-mercadopago').style.display = metodo === 'mercadopago' ? 'block' : 'none';
+    }
+    
+    function copiarChavePix() { navigator.clipboard.writeText("21965783597"); alert("Chave PIX copiada!"); }
+    
+    function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
+    function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); if (data) carrinho = JSON.parse(data); else carrinho = []; }
+    
+    function carregarUsuarios() { const data = localStorage.getItem("docesdi_usuarios"); if (data) usuarios = JSON.parse(data); else usuarios = []; }
+    function salvarUsuarios() { localStorage.setItem("docesdi_usuarios", JSON.stringify(usuarios)); }
+    function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+    
+    function iniciarFinalizacaoPedido() {
+        if (carrinho.length === 0) { alert("Carrinho vazio!"); return; }
+        if (!metodoSelecionado) { alert("Selecione um método de pagamento!"); return; }
+        if (usuarioLogado) {
+            if (configs.delivery_ativo === "true") abrirModalEntrega();
+            else finalizarPedidoComDados(usuarioLogado, 'retirada');
+        } else {
+            document.getElementById('modalEnderecoPedido').style.display = 'flex';
+        }
+    }
+    
+    function abrirModalEntrega() {
+        let modal = document.getElementById('modalEntrega');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modalEntrega';
+            modal.className = 'modal';
+            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro, São Paulo - SP</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
+            document.body.appendChild(modal);
+        }
+        let opcaoSelecionada = null;
+        modal.querySelectorAll('.opcao-entrega').forEach(el => {
+            el.onclick = () => {
+                modal.querySelectorAll('.opcao-entrega').forEach(e => e.classList.remove('selecionado'));
+                el.classList.add('selecionado');
+                opcaoSelecionada = el.getAttribute('data-opcao');
+            };
+        });
+        modal.querySelector('#btnConfirmarEntrega').onclick = () => {
+            if (!opcaoSelecionada) { alert("Selecione uma opção!"); return; }
+            modal.style.display = 'none';
+            finalizarPedidoComDados(usuarioLogado, opcaoSelecionada);
+        };
+        modal.querySelector('#btnCancelarEntrega').onclick = () => modal.style.display = 'none';
+        modal.style.display = 'flex';
+    }
+    
+    function finalizarPedidoComDados(cliente, opcaoEntrega = 'retirada') {
+        const total = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
+        let mensagem = `🧁 *NOVO PEDIDO - ${configs.logo_nome}* 🧁\n\n👤 *Cliente:* ${cliente.nome || cliente.pedidoNome || 'Cliente'}\n📞 *Telefone:* ${cliente.telefone || cliente.pedidoTelefone || 'Não informado'}\n\n📋 *Itens:*\n`;
+        carrinho.forEach(i => mensagem += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco * i.quantidade).toFixed(2).replace('.', ',')}\n`);
+        mensagem += `\n💰 *Total:* R$ ${total.toFixed(2).replace('.', ',')}\n💳 *Pagamento:* ${metodoSelecionado === 'pix' ? 'PIX (21965783597)' : 'Mercado Pago'}\n\n`;
+        if (configs.delivery_ativo !== "true" || opcaoEntrega === 'retirada') {
+            mensagem += `🏪 *RETIRADA NO LOCAL*\n📍 Rua das Delícias, 123 - Centro, São Paulo - SP\n`;
+        } else {
+            const endCompleto = `${cliente.endereco || ''}, ${cliente.numero || ''}${cliente.complemento ? ' - ' + cliente.complemento : ''}`;
+            mensagem += `🚚 *DELIVERY*\n📍 ${endCompleto}\n${cliente.referencia ? `📍 Referência: ${cliente.referencia}\n` : ''}`;
+        }
+        mensagem += `\n✨ Aguardo confirmação!`;
+        for (let item of carrinho) {
+            const prod = produtos.find(p => p.id === item.id);
+            if (prod) prod.estoque -= item.quantidade;
+        }
+        carrinho = [];
+        salvarCarrinho();
+        renderizarProdutos();
+        atualizarCarrinho();
+        window.open(`https://api.whatsapp.com/send?phone=5521965783597&text=${encodeURIComponent(mensagem)}`, '_blank');
+        alert("Pedido enviado! Obrigado!");
+        metodoSelecionado = null;
+        document.getElementById('detalhe-pix').style.display = 'none';
+        document.getElementById('detalhe-mercadopago').style.display = 'none';
+    }
+    
+    // Eventos
+    document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); location.reload(true); });
+    document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
+    document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
+        if (hashSenha(document.getElementById('adminSenha').value) === CryptoJS.SHA256("admin123").toString()) {
+            document.getElementById('modalAdminSenha').style.display = 'none';
+            document.getElementById('modalAdmin').style.display = 'flex';
+            document.getElementById('editLogoNome').value = configs.logo_nome;
+            document.getElementById('editLogoSlogan').value = configs.logo_slogan;
+            document.getElementById('editHeroTitle').value = configs.hero_title;
+            document.getElementById('editHeroImage').value = configs.hero_imagem;
+            document.getElementById('previewHeroImg').src = configs.hero_imagem;
+            document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true";
+            renderizarAdminLista();
+        } else alert("Senha incorreta!");
+    });
+    
+    document.getElementById('btnSalvarAdmin')?.addEventListener('click', () => {
+        configs.logo_nome = document.getElementById('editLogoNome').value;
+        configs.logo_slogan = document.getElementById('editLogoSlogan').value;
+        configs.hero_title = document.getElementById('editHeroTitle').value;
+        configs.hero_imagem = document.getElementById('editHeroImage').value;
+        configs.delivery_ativo = document.getElementById('toggleDeliveryAtivo').checked ? "true" : "false";
+        renderizarProdutos();
+        document.getElementById('logoNome').innerText = configs.logo_nome;
+        document.getElementById('logoSlogan').innerText = configs.logo_slogan;
+        document.getElementById('heroTitle').innerText = configs.hero_title;
+        document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+        alert("Alterações salvas localmente! Clique em SALVAR NO SUPABASE para salvar permanentemente.");
+    });
+    
+    document.getElementById('btnSalvarNoSupabase')?.addEventListener('click', async () => {
+        await salvarTodosOsDados();
+    });
+    
+    document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
+    document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
+    
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('ativo'));
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('ativo'));
+            btn.classList.add('ativo');
+            document.getElementById(`tab${btn.getAttribute('data-tab').charAt(0).toUpperCase() + btn.getAttribute('data-tab').slice(1)}`).classList.add('ativo');
+        });
+    });
+    
+    // Cliente Login
+    document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display = 'block';
+        document.getElementById('cadastroPanel').style.display = 'none';
+        document.getElementById('perfilPanel').style.display = 'none';
+        document.getElementById('recuperarPanel').style.display = 'none';
+    });
+    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('cadastroPanel').style.display = 'block';
+        document.getElementById('perfilPanel').style.display = 'none';
+        document.getElementById('recuperarPanel').style.display = 'none';
+    });
+    
+    document.getElementById('btnCadastrar')?.addEventListener('click', () => {
+        const nome = document.getElementById('cadNome').value;
+        const email = document.getElementById('cadEmail').value;
+        const senha = document.getElementById('cadSenha').value;
+        const conf = document.getElementById('cadConfirmarSenha').value;
+        if (!nome || !email || !senha) { alert("Preencha nome, email e senha!"); return; }
+        if (senha !== conf) { alert("Senhas não conferem!"); return; }
+        if (usuarios.find(u => u.email === email)) { alert("Email já cadastrado!"); return; }
+        usuarios.push({ email, senha: hashSenha(senha), nome, nomeSocial: document.getElementById('cadNomeSocial').value, dataNasc: document.getElementById('cadDataNasc').value, cep: document.getElementById('cadCep').value, endereco: document.getElementById('cadEndereco').value, numero: document.getElementById('cadNumero').value, complemento: document.getElementById('cadComplemento').value, referencia: document.getElementById('cadReferencia').value, telefone: document.getElementById('cadTelefone').value });
+        salvarUsuarios();
+        alert("Cadastro realizado!");
+        document.getElementById('modalCliente').style.display = 'none';
+    });
+    
+    document.getElementById('btnLogin')?.addEventListener('click', () => {
+        const email = document.getElementById('loginEmail').value;
+        const senha = hashSenha(document.getElementById('loginSenha').value);
+        const user = usuarios.find(u => u.email === email && u.senha === senha);
+        if (user) {
+            usuarioLogado = user;
+            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
+            atualizarBotaoCliente();
+            document.getElementById('modalCliente').style.display = 'none';
+            alert(`Bem-vindo, ${user.nome}!`);
+        } else alert("Email ou senha incorretos!");
+    });
+    
+    document.getElementById('btnSair')?.addEventListener('click', () => {
+        usuarioLogado = null;
+        localStorage.removeItem("docesdi_usuario_logado");
+        atualizarBotaoCliente();
+        document.getElementById('modalCliente').style.display = 'none';
+        alert("Saiu da conta!");
+    });
+    
+    document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
+    document.getElementById('buscarCepPedido')?.addEventListener('click', () => buscarCepClick('pedido'));
+    
+    function atualizarBotaoCliente() {
+        const area = document.getElementById('clienteButtonArea');
+        if (usuarioLogado) {
+            area.innerHTML = `<div class="usuario-info"><span>👤 ${usuarioLogado.nome.split(' ')[0]}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
+            document.getElementById('btnSairRapido')?.addEventListener('click', () => {
+                usuarioLogado = null;
+                localStorage.removeItem("docesdi_usuario_logado");
+                atualizarBotaoCliente();
+                alert("Saiu!");
+            });
+        } else {
+            area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
+            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => {
+                document.getElementById('modalCliente').style.display = 'flex';
+            });
+        }
+    }
+    
+    async function buscarCep(cep, tipo) {
+        cep = cep.replace(/\D/g, '');
+        if (cep.length !== 8) { alert("CEP inválido!"); return; }
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+            if (data.erro) { alert("CEP não encontrado!"); return; }
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+            if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco;
+            else if (tipo === 'perfil') document.getElementById('perfilEndereco').value = endereco;
+            else if (tipo === 'pedido') document.getElementById('pedidoEndereco').value = endereco;
+        } catch (e) { alert("Erro ao buscar CEP!"); }
+    }
+    function buscarCepClick(tipo) {
+        const cep = document.getElementById(tipo === 'cadastro' ? 'cadCep' : (tipo === 'perfil' ? 'perfilCep' : 'pedidoCep')).value;
+        buscarCep(cep, tipo);
+    }
+    
+    document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
+    document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
+    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', () => {
+        if (!usuarioLogado) return;
+        usuarioLogado.nome = document.getElementById('perfilNome').value;
+        usuarioLogado.nomeSocial = document.getElementById('perfilNomeSocial').value;
+        usuarioLogado.dataNasc = document.getElementById('perfilDataNasc').value;
+        usuarioLogado.cep = document.getElementById('perfilCep').value;
+        usuarioLogado.endereco = document.getElementById('perfilEndereco').value;
+        usuarioLogado.numero = document.getElementById('perfilNumero').value;
+        usuarioLogado.complemento = document.getElementById('perfilComplemento').value;
+        usuarioLogado.referencia = document.getElementById('perfilReferencia').value;
+        usuarioLogado.telefone = document.getElementById('perfilTelefone').value;
+        const novaSenha = document.getElementById('perfilNovaSenha').value;
+        if (novaSenha) usuarioLogado.senha = hashSenha(novaSenha);
+        const idx = usuarios.findIndex(u => u.email === usuarioLogado.email);
+        if (idx !== -1) usuarios[idx] = usuarioLogado;
+        salvarUsuarios();
+        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
+        alert("Perfil atualizado!");
+    });
+    
+    document.getElementById('btnConfirmarDadosPedido')?.addEventListener('click', () => {
+        const dados = {
+            nome: document.getElementById('pedidoNome').value,
+            telefone: document.getElementById('pedidoTelefone').value,
+            endereco: document.getElementById('pedidoEndereco').value,
+            numero: document.getElementById('pedidoNumero').value,
+            complemento: document.getElementById('pedidoComplemento').value,
+            referencia: document.getElementById('pedidoReferencia').value
+        };
+        if (!dados.nome || !dados.telefone) { alert("Preencha nome e telefone!"); return; }
+        document.getElementById('modalEnderecoPedido').style.display = 'none';
+        if (configs.delivery_ativo === "true") {
+            let modal = document.getElementById('modalEntrega');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'modalEntrega';
+                modal.className = 'modal';
+                modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
+                document.body.appendChild(modal);
+            }
+            let opcao = null;
+            modal.querySelectorAll('.opcao-entrega').forEach(el => {
+                el.onclick = () => {
+                    modal.querySelectorAll('.opcao-entrega').forEach(e => e.classList.remove('selecionado'));
+                    el.classList.add('selecionado');
+                    opcao = el.getAttribute('data-opcao');
+                };
+            });
+            modal.querySelector('#btnConfirmarEntrega').onclick = () => {
+                if (!opcao) { alert("Selecione uma opção!"); return; }
+                modal.style.display = 'none';
+                finalizarPedidoComDados(dados, opcao);
+            };
+            modal.style.display = 'flex';
+        } else {
+            finalizarPedidoComDados(dados, 'retirada');
+        }
+    });
+    document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
+    
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    
+    carregarUsuarios();
+    const savedUser = localStorage.getItem("docesdi_usuario_logado");
+    if (savedUser) usuarioLogado = JSON.parse(savedUser);
+    carregarCarrinho();
+    carregarDados();
+    atualizarBotaoCliente();
+</script>
+</body>
+</html>
