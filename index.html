@@ -12,11 +12,13 @@
         header h1 { color: #d4a373; font-size: 2.2rem; margin-bottom: 5px; }
         header p { font-style: italic; color: #8b7d77; }
         .cliente-btn-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-        .btn-cliente { background: linear-gradient(135deg, #d4a373, #c49a6c); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-        .usuario-info { background: white; padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; }
+        .btn-cliente { background: linear-gradient(135deg, #d4a373, #c49a6c); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-cliente:hover { transform: scale(1.05); }
+        .usuario-info { background: white; padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .btn-sair { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
         .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
-        .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-admin-float:hover { transform: scale(1.05); }
         .hero { background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), var(--hero-bg, url('https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200')) no-repeat center center/cover; height: 250px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
         .hero h2 { font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); }
         .main-layout { display: flex; max-width: 1200px; margin: 40px auto; padding: 0 20px; gap: 30px; }
@@ -90,8 +92,6 @@
         .toggle-switch input:checked { background: #25d366; }
         .toggle-switch input::before { content: ''; width: 21px; height: 21px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: all 0.3s; }
         .toggle-switch input:checked::before { left: 26px; }
-        .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
-        .senha-requisitos { font-size: 0.7rem; color: #8b7d77; margin-top: 5px; }
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; font-size: 0.85rem; }
         footer a { color: #d4a373; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
@@ -103,6 +103,7 @@
         .contato-editor { background: #fef9f5; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
         .contato-editor input { width: 100%; padding: 10px; border-radius: 25px; border: 1px solid #ddd; margin-top: 5px; }
         .admin-footer-buttons { display: flex; gap: 15px; margin-top: 20px; justify-content: flex-end; border-top: 1px solid #f0e4da; padding-top: 20px; }
+        /* CARRINHO COM CONTROLES */
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed #f0e4da; flex-wrap: wrap; gap: 10px; }
         .item-info { flex: 2; min-width: 120px; }
         .item-info strong { display: block; font-size: 0.9rem; }
@@ -115,6 +116,16 @@
         .item-subtotal { min-width: 70px; text-align: right; font-weight: bold; color: #d4a373; }
         .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.1rem; opacity: 0.6; transition: opacity 0.2s; }
         .btn-remover:hover { opacity: 1; }
+        /* CHECKBOX PERSONALIZADO */
+        .lembrar-checkbox { margin: 15px 0; }
+        .checkbox-container { display: flex; align-items: center; gap: 12px; position: relative; padding-left: 30px; cursor: pointer; font-size: 0.9rem; color: #4a3b32; user-select: none; }
+        .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { position: absolute; left: 0; height: 20px; width: 20px; background-color: white; border: 2px solid #d4a373; border-radius: 5px; transition: all 0.2s; }
+        .checkbox-container:hover input ~ .checkmark { background-color: #fef9f5; }
+        .checkbox-container input:checked ~ .checkmark { background-color: #d4a373; border-color: #d4a373; }
+        .checkmark:after { content: ""; position: absolute; display: none; }
+        .checkbox-container input:checked ~ .checkmark:after { display: block; }
+        .checkbox-container .checkmark:after { left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -132,7 +143,7 @@
 </header>
 <section class="hero" id="heroSection"><h2 id="heroTitle"></h2></section>
 
-<!-- MODAL CLIENTE - COM APENAS UM BOTÃO ENTRAR -->
+<!-- MODAL CLIENTE - COM APENAS UM BOTÃO ENTRAR E CHECKBOX BONITO -->
 <div id="modalCliente" class="modal">
     <div class="modal-content">
         <div class="tab-buttons">
@@ -140,16 +151,28 @@
             <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
             <button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button>
         </div>
+        
+        <!-- LOGIN PANEL - APENAS UM BOTÃO "ENTRAR" -->
         <div id="loginPanel">
             <h3>Login</h3>
             <input type="text" id="loginEmail" placeholder="E-mail">
             <input type="password" id="loginSenha" placeholder="Senha">
-            <div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div>
+            
+            <!-- CHECKBOX LEMBRAR DE MIM - ESTILIZADO -->
+            <div class="lembrar-checkbox">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="lembrarLogin">
+                    <span class="checkmark"></span>
+                    Lembrar de mim
+                </label>
+            </div>
+            
             <button id="btnLogin">Entrar</button>
             <button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button>
             <hr style="margin:15px 0">
             <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
         </div>
+        
         <div id="cadastroPanel" style="display:none;">
             <h3>Cadastro</h3>
             <input type="text" id="cadNome" placeholder="Nome completo *">
@@ -171,6 +194,7 @@
             <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
             <button id="btnCadastrar">Cadastrar</button>
         </div>
+        
         <div id="perfilPanel" style="display:none;">
             <h3>Meu Perfil</h3>
             <input type="text" id="perfilNome" placeholder="Nome">
@@ -189,7 +213,7 @@
             <input type="text" id="perfilTelefone" placeholder="Telefone">
             <input type="email" id="perfilEmail" readonly style="background:#f0f0f0;">
             <input type="password" id="perfilNovaSenha" placeholder="Nova senha">
-            <div class="senha-requisitos" id="senhaRequisitos">
+            <div class="senha-requisitos">
                 🔒 A senha deve ter:<br>
                 • Mínimo 8 caracteres<br>
                 • Pelo menos 1 letra maiúscula<br>
@@ -200,6 +224,7 @@
             <button id="btnAtualizarPerfil">Atualizar</button>
             <button id="btnSair" style="background:#e74c3c;">Sair</button>
         </div>
+        
         <div id="recuperarPanel" style="display:none;">
             <h3>Recuperar Senha</h3>
             <p>Digite seu e-mail cadastrado. Enviaremos uma nova senha de acesso.</p>
@@ -207,6 +232,7 @@
             <button id="btnEnviarRecuperacao">📧 Enviar nova senha</button>
             <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
         </div>
+        
         <div id="trocarSenhaPanel" style="display:none;">
             <h3>⚠️ Troca de Senha Obrigatória</h3>
             <div class="aviso-trocar-senha">
@@ -214,7 +240,7 @@
             </div>
             <input type="password" id="trocarNovaSenha" placeholder="Nova senha *">
             <input type="password" id="trocarConfirmarSenha" placeholder="Confirmar nova senha *">
-            <div class="senha-requisitos" id="trocarSenhaRequisitos">
+            <div class="senha-requisitos">
                 🔒 A senha deve ter:<br>
                 • Mínimo 8 caracteres<br>
                 • Pelo menos 1 letra maiúscula<br>
@@ -253,7 +279,7 @@
                 <p><strong>Retirar no Local</strong></p>
                 <small>Rua das Delícias, 123 - Centro, SP</small>
             </div>
-            <div class="opcao-entrega" data-opcao="entrega" id="opcaoDeliveryModal">
+            <div class="opcao-entrega" data-opcao="entrega">
                 <span>🚚</span>
                 <p><strong>Delivery</strong></p>
                 <small>Entregamos no seu endereço</small>
@@ -344,12 +370,12 @@
 <footer id="mainFooter">
     <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
     <p id="footerContato"></p>
-    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.8.0</span></p>
+    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.9.0</span></p>
 </footer>
 
 <script>
     // ==================== CONFIGURAÇÕES ====================
-    const SISTEMA_VERSAO = "2.8.0";
+    const SISTEMA_VERSAO = "2.9.0";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
@@ -638,9 +664,6 @@
     async function fazerLogin(email, senha) {
         try {
             const senhaHash = hashSenha(senha);
-            console.log("🔐 Tentando login com:", email);
-            console.log("Hash da senha digitada:", senhaHash);
-            
             const { data, error } = await supabaseClient
                 .from('clientes')
                 .select('*')
@@ -651,21 +674,11 @@
                 return null;
             }
             
-            console.log("Usuário encontrado no banco:", data);
-            
             if (data && data.length > 0) {
                 const user = data[0];
-                console.log("Hash no banco:", user.senha);
-                console.log("Senhas são iguais?", user.senha === senhaHash);
-                
                 if (user.senha === senhaHash) {
-                    console.log("✅ LOGIN BEM SUCEDIDO!");
                     return user;
-                } else {
-                    console.log("❌ Senha incorreta!");
                 }
-            } else {
-                console.log("❌ Usuário não encontrado!");
             }
             return null;
         } catch (error) {
