@@ -101,6 +101,7 @@
         .aviso-trocar-senha { background: #fff5ea; border-left: 4px solid #f39c12; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
         .contato-editor { background: #fef9f5; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
         .contato-editor input { width: 100%; padding: 10px; border-radius: 25px; border: 1px solid #ddd; margin-top: 5px; }
+        .admin-footer-buttons { display: flex; gap: 15px; margin-top: 20px; justify-content: flex-end; border-top: 1px solid #f0e4da; padding-top: 20px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -118,7 +119,7 @@
 </header>
 <section class="hero" id="heroSection"><h2 id="heroTitle"></h2></section>
 
-<!-- MODAL CLIENTE -->
+<!-- MODAL CLIENTE (COM APENAS UM BOTÃO ENTRAR) -->
 <div id="modalCliente" class="modal">
     <div class="modal-content">
         <div class="tab-buttons">
@@ -213,7 +214,7 @@
     </div>
 </div>
 
-<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN (APENAS RETIRADA) -->
+<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN -->
 <div id="modalEnderecoPedido" class="modal">
     <div class="modal-content">
         <h3>📦 Informe seus dados para retirada</h3>
@@ -264,6 +265,7 @@
             <button class="admin-tab" data-tab="clientes">👥 Clientes Cadastrados</button>
             <button class="admin-tab" data-tab="rodape">📞 Rodapé / Contato</button>
         </div>
+        
         <div id="tabProdutos" class="admin-tab-content ativo">
             <div class="form-produto-row">
                 <div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
@@ -278,15 +280,19 @@
             <div id="listaAdminProdutos"></div>
             <div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR TODAS ALTERAÇÕES NO BANCO</button><p style="font-size:0.7rem; margin-top:8px; color:#666;">Clique para salvar permanentemente no Supabase</p></div>
         </div>
+        
         <div id="tabCabecalho" class="admin-tab-content">
             <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div>
             <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div>
             <div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div>
+            <div style="margin-top:20px; text-align:center;"><button id="btnSalvarCabecalho" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR ALTERAÇÕES DO CABEÇALHO</button></div>
         </div>
+        
         <div id="tabClientes" class="admin-tab-content">
             <h4>👥 Clientes Cadastrados</h4>
             <div id="listaClientesAdmin"></div>
         </div>
+        
         <div id="tabRodape" class="admin-tab-content">
             <div class="contato-editor">
                 <h4>📞 Telefone para Contato</h4>
@@ -296,8 +302,12 @@
                 <h4>📧 E-mail para Contato</h4>
                 <input type="email" id="editEmail" placeholder="contato@docesdi.com">
             </div>
+            <div style="margin-top:20px; text-align:center;"><button id="btnSalvarRodape" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR ALTERAÇÕES DO RODAPÉ</button></div>
         </div>
-        <div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div>
+        
+        <div class="admin-footer-buttons">
+            <button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button>
+        </div>
     </div>
 </div>
 
@@ -321,20 +331,18 @@
 <footer id="mainFooter">
     <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
     <p id="footerContato"></p>
-    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.2.0</span></p>
+    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.3.0</span></p>
 </footer>
 
 <script>
     // ==================== CONFIGURAÇÕES ====================
-    const SISTEMA_VERSAO = "2.2.0";
-    const VERSAO_DATA = "2026-06-04";
+    const SISTEMA_VERSAO = "2.3.0";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // ==================== GERENCIAMENTO AUTOMÁTICO DE CACHE ====================
     let produtos = [];
     let clientes = [];
     let configs = { 
@@ -348,7 +356,6 @@
     };
     let carrinho = [], metodoSelecionado = null, usuarioLogado = null;
     let usuarioAguardandoTrocaSenha = null;
-    let observacaoPedido = "";
     
     function mostrarStatus(mensagem, sucesso = true) {
         const status = document.getElementById('saveStatus');
@@ -356,22 +363,6 @@
         status.style.display = 'block';
         status.style.background = sucesso ? '#25d366' : '#e74c3c';
         setTimeout(() => { status.style.display = 'none'; }, 3000);
-    }
-    
-    // Contador de caracteres
-    function iniciarContadores() {
-        const obsField = document.getElementById('pedidoObservacao');
-        const obsFieldLogado = document.getElementById('pedidoObservacaoLogado');
-        if (obsField) {
-            obsField.addEventListener('input', function() {
-                document.getElementById('contadorObs').innerText = this.value.length;
-            });
-        }
-        if (obsFieldLogado) {
-            obsFieldLogado.addEventListener('input', function() {
-                document.getElementById('contadorObsLogado').innerText = this.value.length;
-            });
-        }
     }
     
     // Limpeza automática de cache a cada 10 minutos
@@ -429,7 +420,7 @@
         document.getElementById('anoAtual').innerText = new Date().getFullYear();
         document.getElementById('footerNome').innerText = configs.logo_nome;
         document.getElementById('versaoSistema').innerText = SISTEMA_VERSAO;
-        const contatoHtml = `${configs.telefone_contato || ''}${configs.telefone_contato && configs.email_contato ? ' | ' : ''}${configs.email_contato ? configs.email_contato : ''}`;
+        const contatoHtml = `${configs.telefone_contato || ''}${configs.telefone_contato && configs.email_contato ? ' | ' : ''}${configs.email_contato || ''}`;
         document.getElementById('footerContato').innerHTML = contatoHtml;
     }
     
@@ -487,22 +478,38 @@
     }
     
     async function fazerLogin(email, senha) {
-        const senhaHash = hashSenha(senha);
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('*')
-            .eq('email', email)
-            .eq('senha', senhaHash);
-        
-        if (error) {
+        try {
+            const senhaHash = hashSenha(senha);
+            console.log("Tentando login com:", email);
+            console.log("Hash da senha:", senhaHash);
+            
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .select('*')
+                .eq('email', email);
+            
+            if (error) {
+                console.error("Erro na consulta:", error);
+                return null;
+            }
+            
+            console.log("Usuário encontrado:", data);
+            
+            if (data && data.length > 0) {
+                const user = data[0];
+                console.log("Hash no banco:", user.senha);
+                if (user.senha === senhaHash) {
+                    console.log("Senha correta!");
+                    return user;
+                } else {
+                    console.log("Senha incorreta!");
+                }
+            }
+            return null;
+        } catch (error) {
             console.error("Erro no login:", error);
             return null;
         }
-        
-        if (data && data.length > 0) {
-            return data[0];
-        }
-        return null;
     }
     
     async function atualizarCliente(id, updates) {
@@ -611,34 +618,65 @@
             document.getElementById('logoSlogan').innerText = configs.logo_slogan;
             document.getElementById('heroTitle').innerText = configs.hero_title;
             document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+            document.getElementById('editTelefone').value = configs.telefone_contato || '';
+            document.getElementById('editEmail').value = configs.email_contato || '';
             atualizarRodape();
             return true;
         } catch (error) { return false; }
     }
     
-    async function salvarTodosOsDados() {
-        mostrarStatus("Salvando no Supabase...", true);
+    async function salvarProdutos() {
+        mostrarStatus("Salvando produtos no Supabase...", true);
         try {
             for (const produto of produtos) {
                 await supabaseClient.from('produtos').upsert(produto, { onConflict: 'id' });
             }
+            mostrarStatus("Produtos salvos com sucesso!", true);
+            setTimeout(() => location.reload(), 1500);
+            return true;
+        } catch (error) {
+            mostrarStatus("Erro ao salvar produtos!", false);
+            return false;
+        }
+    }
+    
+    async function salvarCabecalho() {
+        mostrarStatus("Salvando cabeçalho no Supabase...", true);
+        try {
             const configsToSave = [
                 { chave: "logo_nome", valor: configs.logo_nome },
                 { chave: "logo_slogan", valor: configs.logo_slogan },
                 { chave: "hero_title", valor: configs.hero_title },
                 { chave: "hero_imagem", valor: configs.hero_imagem },
-                { chave: "delivery_ativo", valor: configs.delivery_ativo },
+                { chave: "delivery_ativo", valor: configs.delivery_ativo }
+            ];
+            for (const config of configsToSave) {
+                await supabaseClient.from('config').upsert(config, { onConflict: 'chave' });
+            }
+            mostrarStatus("Cabeçalho salvo com sucesso!", true);
+            setTimeout(() => location.reload(), 1500);
+            return true;
+        } catch (error) {
+            mostrarStatus("Erro ao salvar cabeçalho!", false);
+            return false;
+        }
+    }
+    
+    async function salvarRodape() {
+        mostrarStatus("Salvando rodapé no Supabase...", true);
+        try {
+            const configsToSave = [
                 { chave: "telefone_contato", valor: configs.telefone_contato },
                 { chave: "email_contato", valor: configs.email_contato }
             ];
             for (const config of configsToSave) {
                 await supabaseClient.from('config').upsert(config, { onConflict: 'chave' });
             }
-            mostrarStatus("Salvo com sucesso! Recarregando...", true);
+            mostrarStatus("Rodapé salvo com sucesso!", true);
             setTimeout(() => location.reload(), 1500);
             return true;
         } catch (error) {
-            mostrarStatus("Erro ao salvar!", false);
+            mostrarStatus("Erro ao salvar rodapé!", false);
             return false;
         }
     }
@@ -717,7 +755,7 @@
             p.estoque = parseInt(document.querySelector(`.edit-estoque[data-id="${id}"]`).value);
             const imagemUrl = document.querySelector(`.edit-imagem[data-id="${id}"]`).value;
             if (imagemUrl) p.imagem = imagemUrl;
-            alert("Produto atualizado! Clique em SALVAR para salvar no banco.");
+            alert("Produto atualizado! Clique em SALVAR PRODUTOS para salvar no banco.");
             renderizarAdminLista(); renderizarProdutos();
         }
     };
@@ -744,7 +782,7 @@
         const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
         produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
         renderizarAdminLista(); renderizarProdutos();
-        alert("Produto adicionado! Clique em SALVAR para salvar no banco.");
+        alert("Produto adicionado! Clique em SALVAR PRODUTOS para salvar no banco.");
         document.getElementById('prodNome').value = ''; document.getElementById('prodDesc').value = '';
         document.getElementById('prodPreco').value = ''; document.getElementById('prodEstoque').value = '';
         document.getElementById('prodImagem').value = ''; document.getElementById('uploadImagem').value = '';
@@ -795,7 +833,6 @@
         if (!metodoSelecionado) { alert("Selecione um método de pagamento!"); return; }
         
         if (usuarioLogado) {
-            // Cliente logado: pode escolher entrega ou retirada (se delivery ativo)
             if (configs.delivery_ativo === "true") {
                 const modal = document.getElementById('modalEntrega');
                 document.getElementById('pedidoObservacaoLogado').value = '';
@@ -805,7 +842,6 @@
                 finalizarPedidoComDados(usuarioLogado, 'retirada', '');
             }
         } else {
-            // Cliente não logado: apenas retirada no local
             document.getElementById('modalEnderecoPedido').style.display = 'flex';
             document.getElementById('pedidoObservacao').value = '';
             document.getElementById('contadorObs').innerText = '0';
@@ -875,33 +911,33 @@
             document.getElementById('editHeroImage').value = configs.hero_imagem;
             document.getElementById('previewHeroImg').src = configs.hero_imagem;
             document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true";
-            document.getElementById('editTelefone').value = configs.telefone_contato || '';
-            document.getElementById('editEmail').value = configs.email_contato || '';
             renderizarAdminLista();
             renderizarClientesAdmin();
         } else alert("Senha incorreta!");
     });
     
-    document.getElementById('btnSalvarAdmin')?.addEventListener('click', () => {
+    document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
+    document.getElementById('btnSalvarNoSupabase')?.addEventListener('click', async () => { await salvarProdutos(); });
+    document.getElementById('btnSalvarCabecalho')?.addEventListener('click', async () => {
         configs.logo_nome = document.getElementById('editLogoNome').value;
         configs.logo_slogan = document.getElementById('editLogoSlogan').value;
         configs.hero_title = document.getElementById('editHeroTitle').value;
         configs.hero_imagem = document.getElementById('editHeroImage').value;
         configs.delivery_ativo = document.getElementById('toggleDeliveryAtivo').checked ? "true" : "false";
-        configs.telefone_contato = document.getElementById('editTelefone').value;
-        configs.email_contato = document.getElementById('editEmail').value;
         renderizarProdutos();
         document.getElementById('logoNome').innerText = configs.logo_nome;
         document.getElementById('logoSlogan').innerText = configs.logo_slogan;
         document.getElementById('heroTitle').innerText = configs.hero_title;
         document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
-        atualizarRodape();
-        alert("Alterações salvas localmente! Clique em SALVAR NO SUPABASE para salvar permanentemente.");
+        await salvarCabecalho();
     });
-    
-    document.getElementById('btnSalvarNoSupabase')?.addEventListener('click', async () => { await salvarTodosOsDados(); });
+    document.getElementById('btnSalvarRodape')?.addEventListener('click', async () => {
+        configs.telefone_contato = document.getElementById('editTelefone').value;
+        configs.email_contato = document.getElementById('editEmail').value;
+        atualizarRodape();
+        await salvarRodape();
+    });
     document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
-    document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
     
     document.querySelectorAll('.admin-tab').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1145,7 +1181,6 @@
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
     
     async function inicializar() {
-        iniciarContadores();
         await carregarProdutos();
         await carregarConfig();
         await carregarClientes();
