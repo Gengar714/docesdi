@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Doces Di | Sobremesas Artesanais</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -331,12 +329,12 @@
 <footer id="mainFooter">
     <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
     <p id="footerContato"></p>
-    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.4.0</span></p>
+    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.5.0</span></p>
 </footer>
 
 <script>
     // ==================== CONFIGURAÇÕES ====================
-    const SISTEMA_VERSAO = "2.4.0";
+    const SISTEMA_VERSAO = "2.5.0";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
@@ -365,7 +363,6 @@
         setTimeout(() => { status.style.display = 'none'; }, 3000);
     }
     
-    // Contadores para observações
     function iniciarContadores() {
         const obsField = document.getElementById('pedidoObservacao');
         const obsFieldLogado = document.getElementById('pedidoObservacaoLogado');
@@ -381,7 +378,6 @@
         }
     }
     
-    // Limpeza automática de cache a cada 10 minutos
     setInterval(() => {
         if ('caches' in window) {
             caches.keys().then(function(names) {
@@ -431,7 +427,6 @@
         return CryptoJS.SHA256(senha).toString();
     }
     
-    // ==================== RODAPÉ ====================
     function atualizarRodape() {
         document.getElementById('anoAtual').innerText = new Date().getFullYear();
         document.getElementById('footerNome').innerText = configs.logo_nome;
@@ -642,14 +637,17 @@
                 const { error } = await supabaseClient
                     .from('produtos')
                     .upsert(produto, { onConflict: 'id' });
-                if (error) throw error;
+                if (error) {
+                    console.error("Erro no produto:", produto, error);
+                    throw error;
+                }
             }
             mostrarStatus("Produtos salvos com sucesso! Recarregando...", true);
             setTimeout(() => location.reload(), 1500);
             return true;
         } catch (error) {
-            console.error("Erro ao salvar produtos:", error);
-            mostrarStatus("Erro ao salvar produtos!", false);
+            console.error("Erro detalhado ao salvar produtos:", error);
+            mostrarStatus("Erro ao salvar produtos: " + (error.message || "Verifique o console"), false);
             return false;
         }
     }
