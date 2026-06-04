@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Doces Di | Sobremesas Artesanais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fcf8f5;
+            color: #4a3b32;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        header h1 { color: #d4a373; font-size: 2.2rem; margin-bottom: 5px; }
+        header p { font-style: italic; color: #8b7d77; }
+
+        .cliente-btn-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .btn-cliente {
+            background: linear-gradient(135deg, #d4a373, #c49a6c);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .btn-cliente:hover { transform: scale(1.05); }
+        .usuario-info {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn-sair { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
+
+        .admin-btn-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .btn-admin-float {
+            background: linear-gradient(135deg, #654321, #4a3b32);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .btn-admin-float:hover { transform: scale(1.05); }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), var(--hero-bg, url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80')) no-repeat center center/cover;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .hero h2 { font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); }
+
+        .main-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            gap: 30px;
+        }
+        .vitrine { flex: 2; }
+        .section-title { margin-bottom: 30px; font-size: 1.8rem; color: #654321; }
+        
+        .grid-produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .card-nome { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #4a3b32; }
+        .card-descricao { font-size: 0.85rem; color: #8b7d77; margin-bottom: 15px; line-height: 1.4; flex: 1; }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .card-preco { font-size: 1.25rem; font-weight: bold; color: #d4a373; }
+        .estoque-badge { font-size: 0.7rem; background: #f0e4da; padding: 2px 8px; border-radius: 20px; }
+        .btn-comprar {
+            background: linear-gradient(135deg, #d4a373, #c49a6c);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+        .btn-comprar:hover { transform: scale(1.02); }
+        .btn-comprar:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+        .carrinho-sidebar {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .btn-finalizar-pedido {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #128C7E);
+            color: white;
+            text-align: center;
+            padding: 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        .btn-finalizar-pedido:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
+        .btn-finalizar-pedido:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        .pagamento-area {
+            margin-top: 15px;
+        }
+        .metodos-pagamento {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .metodos-pagamento button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .metodos-pagamento button:hover {
+            border-color: #d4a373;
+            background: #fef9f5;
+        }
+        .detalhe-pagamento {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fef9f5;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .btn-mercado-pago-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #009EE3, #0072BC);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+        .btn-mercado-pago-link:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,158,227,0.3);
+        }
+        .btn-copiar-pix {
+            background: #d4a373;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Botão limpar cache */
+        .limpar-cache-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #999;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            z-index: 1000;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .limpar-cache-btn:hover {
+            opacity: 1;
+            background: #e74c3c;
+        }
+
+        /* MODAIS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 { color: #654321; margin-bottom: 20px; border-bottom: 2px solid #f0e4da; padding-bottom: 10px; }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+        .modal-content button { background: #d4a373; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; }
+        
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; background: #f0e4da; color: #4a3b32; }
+        .tab-btn.ativo { background: #d4a373; color: white; }
+        
+        .cep-grupo { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+        .cep-grupo input { flex: 3; margin: 0; }
+        .cep-grupo button { width: auto; padding: 10px 15px; margin: 0; background: #3498db; }
+        
+        .linha-dois-campos { display: flex; gap: 10px; }
+        .linha-dois-campos > div { flex: 1; }
+        
+        .opcoes-entrega { display: flex; gap: 20px; margin: 20px 0; }
+        .opcao-entrega {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #f0e4da;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .opcao-entrega.selecionado { border-color: #d4a373; background: #fef9f5; }
+        .opcao-entrega span { font-size: 2rem; display: block; margin-bottom: 10px; }
+        
+        /* ADMIN */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f0e4da;
+        }
+        .admin-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #8b7d77;
+            transition: all 0.3s;
+            border-radius: 30px 30px 0 0;
+        }
+        .admin-tab.ativo {
+            color: #d4a373;
+            background: #fef9f5;
+            border-bottom: 3px solid #d4a373;
+            margin-bottom: -2px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.ativo { display: block; }
+        
+        .form-produto-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+            align-items: flex-end;
+            background: #fef9f5;
+            padding: 20px;
+            border-radius: 20px;
+        }
+        .form-field { flex: 2; min-width: 180px; }
+        .form-field.small { flex: 0.8; min-width: 100px; }
+        .form-field label { display: block; font-size: 0.75rem; font-weight: bold; color: #654321; margin-bottom: 5px; }
+        .form-field input, .form-field textarea { width: 100%; padding: 10px 12px; border-radius: 25px; border: 1px solid #ddd; font-size: 0.9rem; }
+        .upload-mini { position: relative; display: inline-block; width: 100%; }
+        .upload-mini input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .upload-mini-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #654321;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-add-produto {
+            background: linear-gradient(135deg, #25d366, #1ebd57);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .produto-admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fef9f5;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .edit-field { padding: 8px 12px; border-radius: 25px; border: 1px solid #ddd; font-size: 0.85rem; }
+        .edit-nome { width: 140px; }
+        .edit-desc { width: 200px; }
+        .edit-preco { width: 80px; }
+        .edit-estoque { width: 70px; }
+        .edit-imagem { width: 180px; }
+        
+        .toggle-switch { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
+        .toggle-switch input {
+            width: 50px;
+            height: 25px;
+            appearance: none;
+            background: #ccc;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+        }
+        .toggle-switch input:checked { background: #25d366; }
+        .toggle-switch input::before {
+            content: '';
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+        .toggle-switch input:checked::before { left: 26px; }
+        
+        .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .lembrar-checkbox input { width: 18px; height: 18px; margin: 0; }
+        
+        footer {
+            background-color: #4a3b32;
+            color: #fcf8f5;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+        @media (max-width: 900px) {
+            .main-layout { flex-direction: column; }
+            .carrinho-sidebar { position: static; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+<!-- Botão para limpar cache -->
+<button class="limpar-cache-btn" id="btnLimparCache" title="Limpar cache do navegador e recarregar">🔄 Limpar Cache</button>
+
+<div class="cliente-btn-container"><div id="clienteButtonArea"></div></div>
+<div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
+
+<header id="mainHeader">
+    <h1 id="logoNome">Doces Di</h1>
+    <p id="logoSlogan">A vida é mais doce quando compartilhada</p>
+</header>
+<section class="hero" id="heroSection"><h2 id="heroTitle">Sobremesas Irresistíveis</h2></section>
+
+<!-- MODAL CLIENTE -->
+<div id="modalCliente" class="modal">
+    <div class="modal-content">
+        <div class="tab-buttons">
+            <button class="tab-btn ativo" id="tabLoginBtn">Entrar</button>
+            <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
+            <button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button>
+        </div>
+        <div id="loginPanel">
+            <h3>Login</h3>
+            <input type="text" id="loginEmail" placeholder="E-mail">
+            <input type="password" id="loginSenha" placeholder="Senha">
+            <div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div>
+            <button id="btnLogin">Entrar</button>
+            <button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button>
+            <hr style="margin:15px 0">
+            <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
+        </div>
+        <div id="cadastroPanel" style="display:none;">
+            <h3>Cadastro</h3>
+            <input type="text" id="cadNome" placeholder="Nome completo *">
+            <input type="text" id="cadNomeSocial" placeholder="Nome social">
+            <input type="date" id="cadDataNasc">
+            <div class="cep-grupo">
+                <input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')">
+                <button type="button" id="buscarCepCadastro" class="buscar-cep">🔍</button>
+            </div>
+            <input type="text" id="cadEndereco" placeholder="Endereço">
+            <div class="linha-dois-campos">
+                <div><input type="text" id="cadNumero" placeholder="Número"></div>
+                <div><input type="text" id="cadComplemento" placeholder="Complemento"></div>
+            </div>
+            <input type="text" id="cadReferencia" placeholder="Ponto referência">
+            <input type="text" id="cadTelefone" placeholder="Telefone">
+            <input type="email" id="cadEmail" placeholder="E-mail *">
+            <input type="password" id="cadSenha" placeholder="Senha *">
+            <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
+            <button id="btnCadastrar">Cadastrar</button>
+        </div>
+        <div id="perfilPanel" style="display:none;">
+            <h3>Meu Perfil</h3>
+            <input type="text" id="perfilNome" placeholder="Nome">
+            <input type="text" id="perfilNomeSocial" placeholder="Nome social">
+            <input type="date" id="perfilDataNasc">
+            <div class="cep-grupo">
+                <input type="text" id="perfilCep" placeholder="CEP">
+                <button type="button" id="buscarCepPerfil" class="buscar-cep">🔍</button>
+            </div>
+            <input type="text" id="perfilEndereco" placeholder="Endereço">
+            <div class="linha-dois-campos">
+                <div><input type="text" id="perfilNumero" placeholder="Número"></div>
+                <div><input type="text" id="perfilComplemento" placeholder="Complemento"></div>
+            </div>
+            <input type="text" id="perfilReferencia" placeholder="Referência">
+            <input type="text" id="perfilTelefone" placeholder="Telefone">
+            <input type="email" id="perfilEmail" readonly>
+            <input type="password" id="perfilNovaSenha" placeholder="Nova senha">
+            <button id="btnAtualizarPerfil">Atualizar</button>
+            <button id="btnSair" style="background:#e74c3c;">Sair</button>
+        </div>
+        <div id="recuperarPanel" style="display:none;">
+            <h3>Recuperar Senha</h3>
+            <input type="email" id="recuperarEmail" placeholder="Seu e-mail">
+            <button id="btnEnviarRecuperacao">Enviar nova senha</button>
+            <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN -->
+<div id="modalEnderecoPedido" class="modal">
+    <div class="modal-content">
+        <h3>📦 Informe seus dados</h3>
+        <input type="text" id="pedidoNome" placeholder="Seu nome *">
+        <input type="text" id="pedidoTelefone" placeholder="Telefone *">
+        <div class="cep-grupo">
+            <input type="text" id="pedidoCep" placeholder="CEP">
+            <button type="button" id="buscarCepPedido" class="buscar-cep">🔍</button>
+        </div>
+        <input type="text" id="pedidoEndereco" placeholder="Endereço">
+        <div class="linha-dois-campos">
+            <div><input type="text" id="pedidoNumero" placeholder="Número"></div>
+            <div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div>
+        </div>
+        <input type="text" id="pedidoReferencia" placeholder="Ponto referência">
+        <button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button>
+        <button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div id="modalAdmin" class="modal">
+    <div class="modal-content" style="max-width:900px; width:95%;">
+        <h3>🔧 Área Administrativa</h3>
+        <div class="admin-tabs">
+            <button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button>
+            <button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button>
+        </div>
+        
+        <div id="tabProdutos" class="admin-tab-content ativo">
+            <div class="form-produto-row">
+                <div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
+                <div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div>
+                <div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div>
+                <div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
+                <div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div class="form-field small">
+                    <label>📁 OU Upload</label>
+                    <div class="upload-mini">
+                        <div class="upload-mini-label">📎 Escolher arquivo</div>
+                        <input type="file" id="uploadImagem" accept="image/jpeg,image/png">
+                    </div>
+                </div>
+                <div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div>
+            </div>
+            <h4>📋 Produtos Cadastrados</h4>
+            <div id="listaAdminProdutos"></div>
+        </div>
+        
+        <div id="tabCabecalho" class="admin-tab-content">
+            <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;">
+                <h4>🏷️ Logo e Frase</h4>
+                <input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; margin:5px 0; padding:10px; border-radius:25px; border:1px solid #ddd;">
+                <input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; margin:5px 0; padding:10px; border-radius:25px; border:1px solid #ddd;">
+                <input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; margin:5px 0; padding:10px; border-radius:25px; border:1px solid #ddd;">
+            </div>
+            <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;">
+                <h4>🖼️ Imagem de Fundo</h4>
+                <input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;">
+                <div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div>
+            </div>
+            <div style="background:#fef9f5; padding:15px; border-radius:15px;">
+                <h4>🚚 Configuração de Delivery</h4>
+                <div class="toggle-switch">
+                    <span>Ativar opção de Delivery:</span>
+                    <input type="checkbox" id="toggleDeliveryAtivo">
+                </div>
+            </div>
+        </div>
+        
+        <div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;">
+            <button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Tudo</button>
+            <button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ADMIN SENHA -->
+<div id="modalAdminSenha" class="modal">
+    <div class="modal-content">
+        <h3>🔐 Acesso Admin</h3>
+        <input type="password" id="adminSenha" placeholder="Senha administrativa">
+        <button id="btnVerificarAdmin">Entrar</button>
+        <button id="btnFecharAdminModal" style="background:#999;">Cancelar</button>
+    </div>
+</div>
+
+<div class="main-layout">
+    <main class="vitrine">
+        <h3 class="section-title">🍬 Nosso Cardápio</h3>
+        <div id="produtosGrid" class="grid-produtos"></div>
+    </main>
+    <aside class="carrinho-sidebar">
+        <h3>🛒 Seu Pedido</h3>
+        <div id="itens-carrinho"><p>Carrinho vazio</p></div>
+        <div style="display:flex; justify-content:space-between; margin:15px 0;"><span>Total:</span><span id="valor-total">R$ 0,00</span></div>
+        <div class="pagamento-area" id="pagamento-area" style="display:none;">
+            <h4>💰 Pagamento</h4>
+            <div class="metodos-pagamento">
+                <button onclick="selecionarMetodo('pix')" id="btnMetodoPix">📱 PIX</button>
+                <button onclick="selecionarMetodo('mercadopago')" id="btnMetodoMercadoPago">🟦 Mercado Pago</button>
+            </div>
+            <div id="detalhe-pix" class="detalhe-pagamento" style="display:none;">
+                <strong>💚 PIX: 21965783597</strong><br>
+                <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar chave</button>
+            </div>
+            <div id="detalhe-mercadopago" class="detalhe-pagamento" style="display:none;">
+                <p>Pague de forma rápida e segura com o Mercado Pago</p>
+                <a href="https://link.mercadopago.com.br/docesdipay" target="_blank" class="btn-mercado-pago-link">🟦 Pagar no Mercado Pago</a>
+            </div>
+        </div>
+        <button id="btn-finalizar" class="btn-finalizar-pedido" onclick="iniciarFinalizacaoPedido()" disabled>📦 FINALIZAR PEDIDO</button>
+    </aside>
+</div>
+<footer><p>© 2026 Doces Di - PIX: 21965783597 | Mercado Pago</p></footer>
+
+<script>
+    // ==================== VERSÃO DO SISTEMA ====================
+    const SISTEMA_VERSAO = "2.0.0";
+    const DATA_VERSAO = "2026-06-03";
+    
+    // Verificar se o navegador está com cache antigo
+    function verificarVersao() {
+        const versaoSalva = localStorage.getItem("docesdi_versao");
+        if (versaoSalva !== SISTEMA_VERSAO) {
+            console.log(`Atualizando sistema da versão ${versaoSalva} para ${SISTEMA_VERSAO}`);
+            localStorage.setItem("docesdi_versao", SISTEMA_VERSAO);
+            // Limpar dados antigos que podem causar conflito
+            return true;
+        }
+        return false;
+    }
+    
+    // Função para limpar todo o cache
+    function limparCacheERecarregar() {
+        if (confirm("Isso irá limpar o cache do navegador e recarregar a página com a versão mais recente.\n\nDeseja continuar?")) {
+            // Limpar localStorage relacionado ao sistema (opcional)
+            // localStorage.clear(); // CUIDADO: Isso apaga todos os dados!
+            
+            // Tentar limpar caches via Service Worker se existir
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Recarregar a página forçando limpeza de cache
+            location.reload(true);
+        }
+    }
+    
+    // Adicionar listener para o botão de limpar cache
+    document.getElementById('btnLimparCache')?.addEventListener('click', limparCacheERecarregar);
+    
+    // Verificar versão ao carregar
+    verificarVersao();
+    
+    // Forçar recarga se a página veio do cache (para mobile)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            // Página foi carregada do cache bfcache (back-forward cache)
+            location.reload(true);
+        }
+    });
+    
+    // ==================== RESTO DO CÓDIGO DO SISTEMA ====================
+    
+    const ADMIN_SENHA_HASH = CryptoJS.SHA256("admin123").toString();
+    const CHAVE_PIX = "21965783597";
+    const SEU_WHATSAPP = "5521965783597";
+    const ENDERECO_LOJA = "Rua das Delícias, 123 - Centro, São Paulo - SP";
+    
+    let produtos = [], carrinho = [], metodoSelecionado = null, usuarioLogado = null, deliveryAtivo = true, usuarios = [];
+    let logoConfig = { nome: "Doces Di", slogan: "A vida é mais doce quando compartilhada", heroTitle: "Sobremesas Irresistíveis" };
+    let heroConfig = { imagem: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80" };
+    
+    const produtosIniciais = [
+        { id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho do maracujá", preco: 18.90, estoque: 8, imagem: "https://media.istockphoto.com/id/1495638879/pt/foto/passion-fruit-cheesecake.jpg?s=1024x1024&w=is&k=20&c=I0te8C1WJbk2KVqfS3MHvqKGFh7p2g2CiUTowcjV1A4=" },
+        { id: 2, nome: "Cheesecake New York", descricao: "Base crocante com calda de frutas vermelhas", preco: 16.50, estoque: 5, imagem: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80" },
+        { id: 3, nome: "Petit Gâteau", descricao: "Bolinho quente com doce de leite e sorvete", preco: 22.00, estoque: 3, imagem: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=500&q=80" }
+    ];
+    
+    function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+    function salvarProdutos() { localStorage.setItem("docesdi_produtos", JSON.stringify(produtos)); }
+    function carregarProdutos() {
+        const data = localStorage.getItem("docesdi_produtos");
+        if(data) produtos = JSON.parse(data);
+        else { produtos = JSON.parse(JSON.stringify(produtosIniciais)); salvarProdutos(); }
+    }
+    function salvarLogo() { localStorage.setItem("docesdi_logo", JSON.stringify(logoConfig)); }
+    function carregarLogo() {
+        const data = localStorage.getItem("docesdi_logo");
+        if(data) logoConfig = JSON.parse(data);
+        document.getElementById('logoNome').innerText = logoConfig.nome;
+        document.getElementById('logoSlogan').innerText = logoConfig.slogan;
+        document.getElementById('heroTitle').innerText = logoConfig.heroTitle;
+    }
+    function salvarHero() { localStorage.setItem("docesdi_hero", JSON.stringify(heroConfig)); }
+    function carregarHero() {
+        const data = localStorage.getItem("docesdi_hero");
+        if(data) heroConfig = JSON.parse(data);
+        document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${heroConfig.imagem}')`);
+    }
+    function salvarDelivery() { localStorage.setItem("docesdi_delivery", JSON.stringify({ ativo: deliveryAtivo })); }
+    function carregarDelivery() {
+        const data = localStorage.getItem("docesdi_delivery");
+        if(data) deliveryAtivo = JSON.parse(data).ativo;
+    }
+    function carregarUsuarios() {
+        const data = localStorage.getItem("docesdi_usuarios");
+        if(data) usuarios = JSON.parse(data);
+        else usuarios = [];
+    }
+    function salvarUsuarios() { localStorage.setItem("docesdi_usuarios", JSON.stringify(usuarios)); }
+    function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
+    function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); if(data) carrinho = JSON.parse(data); else carrinho = []; }
+    
+    function salvarDadosLogin(email, senha) {
+        if(document.getElementById('lembrarLogin')?.checked) {
+            localStorage.setItem("docesdi_login_email", email);
+            localStorage.setItem("docesdi_login_senha", senha);
+        } else { localStorage.removeItem("docesdi_login_email"); localStorage.removeItem("docesdi_login_senha"); }
+    }
+    function carregarDadosLogin() {
+        const email = localStorage.getItem("docesdi_login_email");
+        const senha = localStorage.getItem("docesdi_login_senha");
+        if(email && senha) {
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginSenha').value = senha;
+            document.getElementById('lembrarLogin').checked = true;
+        }
+    }
+    
+    async function buscarCep(cep, tipo) {
+        cep = cep.replace(/\D/g,'');
+        if(cep.length!==8) { alert("CEP inválido!"); return; }
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+            if(data.erro) { alert("CEP não encontrado!"); return; }
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+            if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco;
+            else if(tipo==='perfil') document.getElementById('perfilEndereco').value = endereco;
+            else if(tipo==='pedido') document.getElementById('pedidoEndereco').value = endereco;
+        } catch(e) { alert("Erro ao buscar CEP!"); }
+    }
+    function buscarCepClick(tipo) {
+        const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCep':'pedidoCep')).value;
+        buscarCep(cep, tipo);
+    }
+    
+    function renderizarProdutos() {
+        const grid = document.getElementById('produtosGrid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        produtos.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${p.imagem}" class="card-img" onerror="this.src='https://via.placeholder.com/300'">
+                <div class="card-info">
+                    <div class="card-nome">${p.nome}</div>
+                    <div class="card-descricao">${p.descricao}</div>
+                    <div class="card-footer">
+                        <span class="card-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</span>
+                        <span class="estoque-badge">📦 ${p.estoque}</span>
+                    </div>
+                    <button class="btn-comprar" ${p.estoque<=0 ? 'disabled' : ''}>${p.estoque>0 ? 'Adicionar' : 'Esgotado'}</button>
+                </div>
+            `;
+            const btn = card.querySelector('.btn-comprar');
+            if(p.estoque>0) btn.addEventListener('click', () => adicionarAoCarrinho(p.id));
+            grid.appendChild(card);
+        });
+    }
+    
+    function adicionarAoCarrinho(id) {
+        const prod = produtos.find(p=>p.id===id);
+        if(!prod || prod.estoque<=0) return;
+        const item = carrinho.find(i=>i.id===id);
+        if(item) item.quantidade++;
+        else carrinho.push({id, nome:prod.nome, preco:prod.preco, quantidade:1});
+        salvarCarrinho();
+        atualizarCarrinho();
+    }
+    
+    function atualizarCarrinho() {
+        const container = document.getElementById('itens-carrinho');
+        const totalSpan = document.getElementById('valor-total');
+        if(carrinho.length===0) {
+            container.innerHTML = '<p>Carrinho vazio</p>';
+            totalSpan.innerText = 'R$ 0,00';
+            document.getElementById('btn-finalizar').disabled = true;
+            document.getElementById('pagamento-area').style.display = 'none';
+            return;
+        }
+        container.innerHTML = '';
+        let total=0;
+        carrinho.forEach(i=>{
+            total += i.preco*i.quantidade;
+            container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><strong>${i.nome}</strong><br><small>${i.quantidade}x R$ ${i.preco.toFixed(2).replace('.',',')}</small></div><span>R$ ${(i.preco*i.quantidade).toFixed(2).replace('.',',')}</span></div>`;
+        });
+        totalSpan.innerText = `R$ ${total.toFixed(2).replace('.',',')}`;
+        document.getElementById('btn-finalizar').disabled = false;
+        document.getElementById('pagamento-area').style.display = 'block';
+    }
+    
+    function selecionarMetodo(metodo) {
+        metodoSelecionado = metodo;
+        document.getElementById('detalhe-pix').style.display = metodo==='pix' ? 'block' : 'none';
+        document.getElementById('detalhe-mercadopago').style.display = metodo==='mercadopago' ? 'block' : 'none';
+    }
+    function copiarChavePix() { navigator.clipboard.writeText(CHAVE_PIX); alert("Chave PIX copiada!"); }
+    
+    function renderizarAdminLista() {
+        const container = document.getElementById('listaAdminProdutos');
+        if(!container) return;
+        if(produtos.length===0) { container.innerHTML="<p>Nenhum produto cadastrado</p>"; return; }
+        container.innerHTML = '';
+        produtos.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'produto-admin-item';
+            div.innerHTML = `
+                <input type="text" class="edit-field edit-nome" data-id="${p.id}" value="${p.nome}" placeholder="Nome">
+                <input type="text" class="edit-field edit-desc" data-id="${p.id}" value="${p.descricao}" placeholder="Descrição">
+                <input type="number" step="0.01" class="edit-field edit-preco" data-id="${p.id}" value="${p.preco}" placeholder="Preço">
+                <input type="number" class="edit-field edit-estoque" data-id="${p.id}" value="${p.estoque}" placeholder="Estoque">
+                <input type="text" class="edit-field edit-imagem" data-id="${p.id}" value="${p.imagem}" placeholder="URL da imagem">
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <div class="upload-mini" style="width:100px;">
+                        <div class="upload-mini-label" style="font-size:0.7rem; padding:6px 10px;">📁 Imagem</div>
+                        <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
+                    </div>
+                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 15px; border-radius:20px;">💾 Salvar</button>
+                    <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 15px; border-radius:20px;">🗑️ Excluir</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        
+        document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const id = parseInt(input.getAttribute('data-id'));
+                const file = e.target.files[0];
+                if(file && (file.type==='image/jpeg'||file.type==='image/png')) {
+                    const imagemBase64 = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(file);});
+                    const prod = produtos.find(p=>p.id===id);
+                    if(prod) {
+                        prod.imagem = imagemBase64;
+                        alert("Imagem carregada! Clique em Salvar para confirmar.");
+                        renderizarAdminLista();
+                        renderizarProdutos();
+                    }
+                } else { alert("Formato inválido! Use JPEG ou PNG."); }
+            });
+        });
+    }
+    
+    window.editarProdutoLocal = function(id) {
+        const p = produtos.find(p=>p.id==id);
+        if(p) {
+            p.nome = document.querySelector(`.edit-nome[data-id="${id}"]`).value;
+            p.descricao = document.querySelector(`.edit-desc[data-id="${id}"]`).value;
+            p.preco = parseFloat(document.querySelector(`.edit-preco[data-id="${id}"]`).value);
+            p.estoque = parseInt(document.querySelector(`.edit-estoque[data-id="${id}"]`).value);
+            const imagemUrl = document.querySelector(`.edit-imagem[data-id="${id}"]`).value;
+            if(imagemUrl) p.imagem = imagemUrl;
+            alert("Produto atualizado!");
+            renderizarAdminLista();
+            renderizarProdutos();
+            salvarProdutos();
+        }
+    };
+    window.excluirProdutoLocal = function(id) {
+        if(confirm("Excluir este produto?")) {
+            produtos = produtos.filter(p=>p.id!==id);
+            renderizarAdminLista();
+            renderizarProdutos();
+            atualizarCarrinho();
+            salvarProdutos();
+        }
+    };
+    
+    async function adicionarProdutoAdmin() {
+        const nome = document.getElementById('prodNome').value.trim();
+        const desc = document.getElementById('prodDesc').value.trim();
+        const preco = parseFloat(document.getElementById('prodPreco').value);
+        const estoque = parseInt(document.getElementById('prodEstoque').value);
+        let imagem = document.getElementById('prodImagem').value.trim();
+        const file = document.getElementById('uploadImagem').files[0];
+        if(file && (file.type==='image/jpeg'||file.type==='image/png')) {
+            imagem = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(file);});
+        }
+        if(!imagem) imagem = "https://via.placeholder.com/300";
+        if(!nome || isNaN(preco)) { alert("Preencha nome e preço!"); return; }
+        const novoId = produtos.length ? Math.max(...produtos.map(p=>p.id))+1 : 4;
+        produtos.push({ id:novoId, nome, descricao:desc, preco, estoque, imagem });
+        renderizarAdminLista();
+        renderizarProdutos();
+        alert("Produto adicionado!");
+        document.getElementById('prodNome').value = '';
+        document.getElementById('prodDesc').value = '';
+        document.getElementById('prodPreco').value = '';
+        document.getElementById('prodEstoque').value = '';
+        document.getElementById('prodImagem').value = '';
+        document.getElementById('uploadImagem').value = '';
+        salvarProdutos();
+    }
+    
+    function iniciarFinalizacaoPedido() {
+        if(carrinho.length===0) { alert("Carrinho vazio!"); return; }
+        if(!metodoSelecionado) { alert("Selecione um método de pagamento!"); return; }
+        if(usuarioLogado) {
+            if(deliveryAtivo) abrirModalEntrega();
+            else finalizarPedidoComDados(usuarioLogado, 'retirada');
+        } else {
+            document.getElementById('modalEnderecoPedido').style.display = 'flex';
+        }
+    }
+    
+    function abrirModalEntrega() {
+        let modal = document.getElementById('modalEntrega');
+        if(!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modalEntrega';
+            modal.className = 'modal';
+            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>${ENDERECO_LOJA}</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
+            document.body.appendChild(modal);
+        }
+        let opcaoSelecionada = null;
+        modal.querySelectorAll('.opcao-entrega').forEach(el => {
+            el.onclick = () => {
+                modal.querySelectorAll('.opcao-entrega').forEach(e=>e.classList.remove('selecionado'));
+                el.classList.add('selecionado');
+                opcaoSelecionada = el.getAttribute('data-opcao');
+            };
+        });
+        modal.querySelector('#btnConfirmarEntrega').onclick = () => {
+            if(!opcaoSelecionada) { alert("Selecione uma opção!"); return; }
+            modal.style.display = 'none';
+            finalizarPedidoComDados(usuarioLogado, opcaoSelecionada);
+        };
+        modal.querySelector('#btnCancelarEntrega').onclick = () => modal.style.display = 'none';
+        modal.style.display = 'flex';
+    }
+    
+    function finalizarPedidoComDados(cliente, opcaoEntrega = 'retirada') {
+        const total = carrinho.reduce((s,i)=>s+i.preco*i.quantidade,0);
+        let mensagem = `🧁 *NOVO PEDIDO - ${logoConfig.nome}* 🧁\n\n👤 *Cliente:* ${cliente.nome || cliente.pedidoNome || 'Cliente'}\n📞 *Telefone:* ${cliente.telefone || cliente.pedidoTelefone || 'Não informado'}\n\n📋 *Itens:*\n`;
+        carrinho.forEach(i => mensagem += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco*i.quantidade).toFixed(2).replace('.',',')}\n`);
+        mensagem += `\n💰 *Total:* R$ ${total.toFixed(2).replace('.',',')}\n💳 *Pagamento:* ${metodoSelecionado === 'pix' ? 'PIX (21965783597)' : 'Mercado Pago'}\n\n`;
+        if(!deliveryAtivo || opcaoEntrega === 'retirada') {
+            mensagem += `🏪 *RETIRADA NO LOCAL*\n📍 ${ENDERECO_LOJA}\n`;
+        } else {
+            const endCompleto = `${cliente.endereco || ''}, ${cliente.numero || ''}${cliente.complemento ? ' - '+cliente.complemento : ''}`;
+            mensagem += `🚚 *DELIVERY*\n📍 ${endCompleto}\n${cliente.referencia ? `📍 Referência: ${cliente.referencia}\n` : ''}`;
+        }
+        mensagem += `\n✨ Aguardo confirmação!`;
+        for(let item of carrinho) {
+            const prod = produtos.find(p=>p.id===item.id);
+            if(prod) prod.estoque -= item.quantidade;
+        }
+        salvarProdutos();
+        carrinho = [];
+        salvarCarrinho();
+        renderizarProdutos();
+        atualizarCarrinho();
+        window.open(`https://api.whatsapp.com/send?phone=${SEU_WHATSAPP}&text=${encodeURIComponent(mensagem)}`, '_blank');
+        alert("Pedido enviado! Obrigado!");
+        metodoSelecionado = null;
+        document.getElementById('detalhe-pix').style.display = 'none';
+        document.getElementById('detalhe-mercadopago').style.display = 'none';
+    }
+    
+    // Eventos
+    document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
+    document.getElementById('buscarCepPedido')?.addEventListener('click', () => buscarCepClick('pedido'));
+    document.getElementById('btnConfirmarDadosPedido')?.addEventListener('click', () => {
+        const dados = {
+            nome: document.getElementById('pedidoNome').value,
+            telefone: document.getElementById('pedidoTelefone').value,
+            endereco: document.getElementById('pedidoEndereco').value,
+            numero: document.getElementById('pedidoNumero').value,
+            complemento: document.getElementById('pedidoComplemento').value,
+            referencia: document.getElementById('pedidoReferencia').value
+        };
+        if(!dados.nome || !dados.telefone) { alert("Preencha nome e telefone!"); return; }
+        document.getElementById('modalEnderecoPedido').style.display = 'none';
+        if(deliveryAtivo) {
+            let modal = document.getElementById('modalEntrega');
+            if(!modal) abrirModalEntrega();
+            modal = document.getElementById('modalEntrega');
+            let opcao = null;
+            modal.querySelectorAll('.opcao-entrega').forEach(el => {
+                el.onclick = () => {
+                    modal.querySelectorAll('.opcao-entrega').forEach(e=>e.classList.remove('selecionado'));
+                    el.classList.add('selecionado');
+                    opcao = el.getAttribute('data-opcao');
+                };
+            });
+            modal.querySelector('#btnConfirmarEntrega').onclick = () => {
+                if(!opcao) { alert("Selecione uma opção!"); return; }
+                modal.style.display = 'none';
+                finalizarPedidoComDados(dados, opcao);
+            };
+            modal.style.display = 'flex';
+        } else {
+            finalizarPedidoComDados(dados, 'retirada');
+        }
+    });
+    document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
+    
+    // Admin
+    document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
+    document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
+        if(hashSenha(document.getElementById('adminSenha').value) === ADMIN_SENHA_HASH) {
+            document.getElementById('modalAdminSenha').style.display = 'none';
+            document.getElementById('modalAdmin').style.display = 'flex';
+            document.getElementById('editLogoNome').value = logoConfig.nome;
+            document.getElementById('editLogoSlogan').value = logoConfig.slogan;
+            document.getElementById('editHeroTitle').value = logoConfig.heroTitle;
+            document.getElementById('editHeroImage').value = heroConfig.imagem;
+            document.getElementById('previewHeroImg').src = heroConfig.imagem;
+            document.getElementById('toggleDeliveryAtivo').checked = deliveryAtivo;
+            renderizarAdminLista();
+        } else alert("Senha incorreta!");
+    });
+    document.getElementById('btnSalvarAdmin')?.addEventListener('click', () => {
+        logoConfig.nome = document.getElementById('editLogoNome').value;
+        logoConfig.slogan = document.getElementById('editLogoSlogan').value;
+        logoConfig.heroTitle = document.getElementById('editHeroTitle').value;
+        salvarLogo();
+        document.getElementById('logoNome').innerText = logoConfig.nome;
+        document.getElementById('logoSlogan').innerText = logoConfig.slogan;
+        document.getElementById('heroTitle').innerText = logoConfig.heroTitle;
+        heroConfig.imagem = document.getElementById('editHeroImage').value;
+        salvarHero();
+        document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${heroConfig.imagem}')`);
+        deliveryAtivo = document.getElementById('toggleDeliveryAtivo').checked;
+        salvarDelivery();
+        salvarProdutos();
+        alert("Alterações salvas! Recarregando...");
+        location.reload();
+    });
+    document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
+    document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
+    
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('ativo'));
+            document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('ativo'));
+            btn.classList.add('ativo');
+            document.getElementById(`tab${btn.getAttribute('data-tab').charAt(0).toUpperCase()+btn.getAttribute('data-tab').slice(1)}`).classList.add('ativo');
+        });
+    });
+    
+    // Cliente
+    document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display='block';
+        document.getElementById('cadastroPanel').style.display='none';
+        document.getElementById('perfilPanel').style.display='none';
+        document.getElementById('recuperarPanel').style.display='none';
+    });
+    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display='none';
+        document.getElementById('cadastroPanel').style.display='block';
+        document.getElementById('perfilPanel').style.display='none';
+        document.getElementById('recuperarPanel').style.display='none';
+    });
+    document.getElementById('btnCadastrar')?.addEventListener('click', () => {
+        const nome = document.getElementById('cadNome').value;
+        const email = document.getElementById('cadEmail').value;
+        const senha = document.getElementById('cadSenha').value;
+        const conf = document.getElementById('cadConfirmarSenha').value;
+        if(!nome || !email || !senha) { alert("Preencha nome, email e senha!"); return; }
+        if(senha !== conf) { alert("Senhas não conferem!"); return; }
+        if(usuarios.find(u=>u.email===email)) { alert("Email já cadastrado!"); return; }
+        usuarios.push({ email, senha:hashSenha(senha), nome, nomeSocial:document.getElementById('cadNomeSocial').value, dataNasc:document.getElementById('cadDataNasc').value, cep:document.getElementById('cadCep').value, endereco:document.getElementById('cadEndereco').value, numero:document.getElementById('cadNumero').value, complemento:document.getElementById('cadComplemento').value, referencia:document.getElementById('cadReferencia').value, telefone:document.getElementById('cadTelefone').value });
+        salvarUsuarios();
+        alert("Cadastro realizado!");
+        document.getElementById('modalCliente').style.display = 'none';
+    });
+    document.getElementById('btnLogin')?.addEventListener('click', () => {
+        const email = document.getElementById('loginEmail').value;
+        const senha = hashSenha(document.getElementById('loginSenha').value);
+        const user = usuarios.find(u=>u.email===email && u.senha===senha);
+        if(user) {
+            usuarioLogado = user;
+            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
+            salvarDadosLogin(email, document.getElementById('loginSenha').value);
+            atualizarBotaoCliente();
+            document.getElementById('modalCliente').style.display = 'none';
+            alert(`Bem-vindo, ${user.nome}!`);
+        } else alert("Email ou senha incorretos!");
+    });
+    document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display='none';
+        document.getElementById('recuperarPanel').style.display='block';
+    });
+    document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', () => {
+        const email = document.getElementById('recuperarEmail').value;
+        const user = usuarios.find(u=>u.email===email);
+        if(user) {
+            const novaSenha = Math.random().toString(36).slice(-8);
+            user.senha = hashSenha(novaSenha);
+            salvarUsuarios();
+            alert(`Sua nova senha é: ${novaSenha}`);
+            document.getElementById('recuperarPanel').style.display='none';
+            document.getElementById('loginPanel').style.display='block';
+        } else alert("Email não encontrado!");
+    });
+    document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
+        document.getElementById('recuperarPanel').style.display='none';
+        document.getElementById('loginPanel').style.display='block';
+    });
+    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', () => {
+        if(!usuarioLogado) return;
+        usuarioLogado.nome = document.getElementById('perfilNome').value;
+        usuarioLogado.nomeSocial = document.getElementById('perfilNomeSocial').value;
+        usuarioLogado.dataNasc = document.getElementById('perfilDataNasc').value;
+        usuarioLogado.cep = document.getElementById('perfilCep').value;
+        usuarioLogado.endereco = document.getElementById('perfilEndereco').value;
+        usuarioLogado.numero = document.getElementById('perfilNumero').value;
+        usuarioLogado.complemento = document.getElementById('perfilComplemento').value;
+        usuarioLogado.referencia = document.getElementById('perfilReferencia').value;
+        usuarioLogado.telefone = document.getElementById('perfilTelefone').value;
+        const novaSenha = document.getElementById('perfilNovaSenha').value;
+        if(novaSenha) usuarioLogado.senha = hashSenha(novaSenha);
+        const idx = usuarios.findIndex(u=>u.email===usuarioLogado.email);
+        if(idx!==-1) usuarios[idx]=usuarioLogado;
+        salvarUsuarios();
+        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
+        alert("Perfil atualizado!");
+    });
+    document.getElementById('btnSair')?.addEventListener('click', () => {
+        usuarioLogado = null;
+        localStorage.removeItem("docesdi_usuario_logado");
+        atualizarBotaoCliente();
+        document.getElementById('modalCliente').style.display='none';
+        alert("Saiu da conta!");
+    });
+    document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
+    document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
+    
+    function atualizarBotaoCliente() {
+        const area = document.getElementById('clienteButtonArea');
+        if(usuarioLogado) {
+            area.innerHTML = `<div class="usuario-info"><span>👤 ${usuarioLogado.nome.split(' ')[0]}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
+            document.getElementById('btnSairRapido')?.addEventListener('click', () => {
+                usuarioLogado = null;
+                localStorage.removeItem("docesdi_usuario_logado");
+                atualizarBotaoCliente();
+                alert("Saiu!");
+            });
+        } else {
+            area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
+            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => {
+                carregarDadosLogin();
+                document.getElementById('modalCliente').style.display = 'flex';
+            });
+        }
+    }
+    
+    window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    
+    carregarUsuarios();
+    const savedUser = localStorage.getItem("docesdi_usuario_logado");
+    if(savedUser) usuarioLogado = JSON.parse(savedUser);
+    carregarProdutos();
+    carregarCarrinho();
+    carregarLogo();
+    carregarHero();
+    carregarDelivery();
+    renderizarProdutos();
+    atualizarCarrinho();
+    atualizarBotaoCliente();
+    
+    // Log de versão no console
+    console.log(`Doces Di - Versão ${SISTEMA_VERSAO} (${DATA_VERSAO}) - Cache management ativado`);
+</script>
+</body>
+</html>
