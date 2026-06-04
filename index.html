@@ -63,6 +63,9 @@
         .opcao-entrega:hover { transform: translateY(-3px); border-color: #d4a373; }
         .opcao-entrega.selecionado { border-color: #d4a373; background: #fef9f5; box-shadow: 0 4px 12px rgba(212,163,115,0.3); }
         .opcao-entrega span { font-size: 2rem; display: block; margin-bottom: 10px; }
+        .observacao-field { margin: 15px 0; }
+        .observacao-field textarea { width: 100%; padding: 10px; border-radius: 15px; border: 1px solid #ddd; resize: vertical; font-family: inherit; }
+        .contador-caracteres { font-size: 0.7rem; color: #8b7d77; text-align: right; margin-top: 5px; }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #f0e4da; }
         .admin-tab { padding: 12px 24px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; color: #8b7d77; transition: all 0.3s; }
         .admin-tab.ativo { color: #d4a373; border-bottom: 3px solid #d4a373; margin-bottom: -2px; }
@@ -88,12 +91,16 @@
         .toggle-switch input:checked::before { left: 26px; }
         .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
         .senha-requisitos { font-size: 0.7rem; color: #8b7d77; margin-top: 5px; }
-        footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; }
+        footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; font-size: 0.85rem; }
+        footer a { color: #d4a373; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .carrinho-sidebar { position: static; } }
         .loading { text-align: center; padding: 20px; color: #d4a373; font-size: 1.1rem; }
         .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; font-weight: bold; }
         .btn-salvar-supabase { background: #25d366 !important; margin-top: 20px !important; font-size: 1rem !important; }
         .aviso-trocar-senha { background: #fff5ea; border-left: 4px solid #f39c12; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .contato-editor { background: #fef9f5; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .contato-editor input { width: 100%; padding: 10px; border-radius: 25px; border: 1px solid #ddd; margin-top: 5px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -206,24 +213,44 @@
     </div>
 </div>
 
-<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN -->
+<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN (APENAS RETIRADA) -->
 <div id="modalEnderecoPedido" class="modal">
     <div class="modal-content">
-        <h3>📦 Informe seus dados</h3>
+        <h3>📦 Informe seus dados para retirada</h3>
+        <p style="margin-bottom:15px; color:#e74c3c;">⚠️ Você não está logado. O pedido será apenas para RETIRADA NO LOCAL.</p>
         <input type="text" id="pedidoNome" placeholder="Seu nome *">
         <input type="text" id="pedidoTelefone" placeholder="Telefone *">
-        <div class="cep-grupo">
-            <input type="text" id="pedidoCep" placeholder="CEP">
-            <button type="button" id="buscarCepPedido" class="buscar-cep">🔍 Buscar</button>
+        <div class="observacao-field">
+            <textarea id="pedidoObservacao" rows="3" maxlength="200" placeholder="Observações (opcional, máximo 200 caracteres)"></textarea>
+            <div class="contador-caracteres"><span id="contadorObs">0</span>/200</div>
         </div>
-        <input type="text" id="pedidoEndereco" placeholder="Endereço">
-        <div class="linha-dois-campos">
-            <div><input type="text" id="pedidoNumero" placeholder="Número"></div>
-            <div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div>
-        </div>
-        <input type="text" id="pedidoReferencia" placeholder="Ponto referência">
-        <button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button>
+        <button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido (Retirada Local)</button>
         <button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL ENTREGA PARA CLIENTE LOGADO -->
+<div id="modalEntrega" class="modal">
+    <div class="modal-content">
+        <h3>📦 Opção de Recebimento</h3>
+        <div class="opcoes-entrega">
+            <div class="opcao-entrega" data-opcao="retirada">
+                <span>🏪</span>
+                <p><strong>Retirar no Local</strong></p>
+                <small>Rua das Delícias, 123 - Centro, SP</small>
+            </div>
+            <div class="opcao-entrega" data-opcao="entrega" id="opcaoDeliveryModal">
+                <span>🚚</span>
+                <p><strong>Delivery</strong></p>
+                <small>Entregamos no seu endereço</small>
+            </div>
+        </div>
+        <div class="observacao-field">
+            <textarea id="pedidoObservacaoLogado" rows="3" maxlength="200" placeholder="Observações (opcional, máximo 200 caracteres)"></textarea>
+            <div class="contador-caracteres"><span id="contadorObsLogado">0</span>/200</div>
+        </div>
+        <button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar Pedido</button>
+        <button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button>
     </div>
 </div>
 
@@ -235,6 +262,7 @@
             <button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button>
             <button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button>
             <button class="admin-tab" data-tab="clientes">👥 Clientes Cadastrados</button>
+            <button class="admin-tab" data-tab="rodape">📞 Rodapé / Contato</button>
         </div>
         <div id="tabProdutos" class="admin-tab-content ativo">
             <div class="form-produto-row">
@@ -259,6 +287,16 @@
             <h4>👥 Clientes Cadastrados</h4>
             <div id="listaClientesAdmin"></div>
         </div>
+        <div id="tabRodape" class="admin-tab-content">
+            <div class="contato-editor">
+                <h4>📞 Telefone para Contato</h4>
+                <input type="text" id="editTelefone" placeholder="(00) 00000-0000">
+            </div>
+            <div class="contato-editor">
+                <h4>📧 E-mail para Contato</h4>
+                <input type="email" id="editEmail" placeholder="contato@docesdi.com">
+            </div>
+        </div>
         <div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div>
     </div>
 </div>
@@ -267,13 +305,28 @@
 
 <div class="main-layout">
     <main class="vitrine"><h3 class="section-title">🍬 Nosso Cardápio</h3><div id="produtosGrid" class="grid-produtos"><div class="loading">🔄 Carregando produtos...</div></div></main>
-    <aside class="carrinho-sidebar"><h3>🛒 Seu Pedido</h3><div id="itens-carrinho"><p>Carrinho vazio</p></div><div style="display:flex; justify-content:space-between; margin:15px 0;"><span>Total:</span><span id="valor-total">R$ 0,00</span></div><div class="pagamento-area" id="pagamento-area" style="display:none;"><h4>💰 Pagamento</h4><div class="metodos-pagamento"><button onclick="selecionarMetodo('pix')">📱 PIX</button><button onclick="selecionarMetodo('mercadopago')">🟦 Mercado Pago</button></div><div id="detalhe-pix" class="detalhe-pagamento" style="display:none;"><strong>💚 PIX: 21965783597</strong><br><button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar chave</button></div><div id="detalhe-mercadopago" class="detalhe-pagamento" style="display:none;"><p>Pague de forma rápida e segura com o Mercado Pago</p><a href="https://link.mercadopago.com.br/docesdipay" target="_blank" class="btn-mercado-pago-link">🟦 Pagar no Mercado Pago</a></div></div><button id="btn-finalizar" class="btn-finalizar-pedido" onclick="iniciarFinalizacaoPedido()" disabled>📦 FINALIZAR PEDIDO</button></aside>
+    <aside class="carrinho-sidebar">
+        <h3>🛒 Seu Pedido</h3>
+        <div id="itens-carrinho"><p>Carrinho vazio</p></div>
+        <div style="display:flex; justify-content:space-between; margin:15px 0;"><span>Total:</span><span id="valor-total">R$ 0,00</span></div>
+        <div class="pagamento-area" id="pagamento-area" style="display:none;">
+            <h4>💰 Pagamento</h4>
+            <div class="metodos-pagamento"><button onclick="selecionarMetodo('pix')">📱 PIX</button><button onclick="selecionarMetodo('mercadopago')">🟦 Mercado Pago</button></div>
+            <div id="detalhe-pix" class="detalhe-pagamento" style="display:none;"><strong>💚 PIX: 21965783597</strong><br><button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar chave</button></div>
+            <div id="detalhe-mercadopago" class="detalhe-pagamento" style="display:none;"><p>Pague de forma rápida e segura com o Mercado Pago</p><a href="https://link.mercadopago.com.br/docesdipay" target="_blank" class="btn-mercado-pago-link">🟦 Pagar no Mercado Pago</a></div>
+        </div>
+        <button id="btn-finalizar" class="btn-finalizar-pedido" onclick="iniciarFinalizacaoPedido()" disabled>📦 FINALIZAR PEDIDO</button>
+    </aside>
 </div>
-<footer><p>© 2026 Doces Di - PIX: 21965783597 | Mercado Pago</p></footer>
+<footer id="mainFooter">
+    <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
+    <p id="footerContato"></p>
+    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">2.2.0</span></p>
+</footer>
 
 <script>
-    // ==================== CONFIGURAÇÕES DO SUPABASE ====================
-    const SISTEMA_VERSAO = "2.1.0";
+    // ==================== CONFIGURAÇÕES ====================
+    const SISTEMA_VERSAO = "2.2.0";
     const VERSAO_DATA = "2026-06-04";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
@@ -282,64 +335,20 @@
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // ==================== GERENCIAMENTO AUTOMÁTICO DE CACHE ====================
-    // Função para limpar cache automaticamente a cada 10 minutos
-    function iniciarLimpezaAutomaticaCache() {
-        // Verificar versão ao carregar
-        const versaoSalva = localStorage.getItem("docesdi_versao");
-        if (versaoSalva !== SISTEMA_VERSAO) {
-            console.log(`🔄 Atualizando sistema: versão ${versaoSalva} → ${SISTEMA_VERSAO}`);
-            localStorage.setItem("docesdi_versao", SISTEMA_VERSAO);
-            // Recarregar a página para garantir versão mais recente
-            setTimeout(() => location.reload(), 500);
-            return;
-        }
-        
-        // Verificar timestamp da última atualização
-        const ultimaAtualizacao = localStorage.getItem("docesdi_ultima_atualizacao");
-        const agora = Date.now();
-        const DEZ_MINUTOS = 10 * 60 * 1000; // 10 minutos em milissegundos
-        
-        if (!ultimaAtualizacao || (agora - parseInt(ultimaAtualizacao)) > DEZ_MINUTOS) {
-            console.log("🔄 Limpeza automática de cache a cada 10 minutos");
-            localStorage.setItem("docesdi_ultima_atualizacao", agora.toString());
-            
-            // Limpar caches do navegador
-            if ('caches' in window) {
-                caches.keys().then(function(names) {
-                    for (let name of names) {
-                        caches.delete(name);
-                    }
-                });
-            }
-            
-            // Recarregar dados do servidor
-            carregarDadosAtualizados();
-        }
-    }
-    
-    async function carregarDadosAtualizados() {
-        console.log("🔄 Recarregando dados do servidor...");
-        await carregarProdutos();
-        await carregarConfig();
-        await carregarClientes();
-        renderizarProdutos();
-        atualizarCarrinho();
-        renderizarClientesAdmin();
-    }
-    
-    // Executar a cada 10 minutos
-    setInterval(() => {
-        iniciarLimpezaAutomaticaCache();
-    }, 10 * 60 * 1000); // 10 minutos
-    
-    // Executar ao carregar a página
-    iniciarLimpezaAutomaticaCache();
-    
     let produtos = [];
     let clientes = [];
-    let configs = { logo_nome: "Doces Di", logo_slogan: "A vida é mais doce quando compartilhada", hero_title: "Sobremesas Irresistíveis", hero_imagem: "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200", delivery_ativo: "true" };
+    let configs = { 
+        logo_nome: "Doces Di", 
+        logo_slogan: "A vida é mais doce quando compartilhada", 
+        hero_title: "Sobremesas Irresistíveis", 
+        hero_imagem: "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200", 
+        delivery_ativo: "true",
+        telefone_contato: "(21) 96578-3597",
+        email_contato: "contato@docesdi.com"
+    };
     let carrinho = [], metodoSelecionado = null, usuarioLogado = null;
     let usuarioAguardandoTrocaSenha = null;
+    let observacaoPedido = "";
     
     function mostrarStatus(mensagem, sucesso = true) {
         const status = document.getElementById('saveStatus');
@@ -347,6 +356,42 @@
         status.style.display = 'block';
         status.style.background = sucesso ? '#25d366' : '#e74c3c';
         setTimeout(() => { status.style.display = 'none'; }, 3000);
+    }
+    
+    // Contador de caracteres
+    function iniciarContadores() {
+        const obsField = document.getElementById('pedidoObservacao');
+        const obsFieldLogado = document.getElementById('pedidoObservacaoLogado');
+        if (obsField) {
+            obsField.addEventListener('input', function() {
+                document.getElementById('contadorObs').innerText = this.value.length;
+            });
+        }
+        if (obsFieldLogado) {
+            obsFieldLogado.addEventListener('input', function() {
+                document.getElementById('contadorObsLogado').innerText = this.value.length;
+            });
+        }
+    }
+    
+    // Limpeza automática de cache a cada 10 minutos
+    setInterval(() => {
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        carregarDadosAtualizados();
+    }, 10 * 60 * 1000);
+    
+    async function carregarDadosAtualizados() {
+        await carregarProdutos();
+        await carregarConfig();
+        await carregarClientes();
+        renderizarProdutos();
+        atualizarCarrinho();
+        renderizarClientesAdmin();
+        atualizarRodape();
     }
     
     function validarSenhaForte(senha) {
@@ -375,6 +420,19 @@
         return senha.split('').sort(() => Math.random() - 0.5).join('');
     }
     
+    function hashSenha(senha) {
+        return CryptoJS.SHA256(senha).toString();
+    }
+    
+    // ==================== RODAPÉ ====================
+    function atualizarRodape() {
+        document.getElementById('anoAtual').innerText = new Date().getFullYear();
+        document.getElementById('footerNome').innerText = configs.logo_nome;
+        document.getElementById('versaoSistema').innerText = SISTEMA_VERSAO;
+        const contatoHtml = `${configs.telefone_contato || ''}${configs.telefone_contato && configs.email_contato ? ' | ' : ''}${configs.email_contato ? configs.email_contato : ''}`;
+        document.getElementById('footerContato').innerHTML = contatoHtml;
+    }
+    
     // ==================== CLIENTES ====================
     async function carregarClientes() {
         try {
@@ -384,7 +442,6 @@
                 .order('id', { ascending: true });
             if (error) throw error;
             clientes = data || [];
-            console.log("Clientes carregados:", clientes.length);
             return true;
         } catch (error) {
             console.error("Erro ao carregar clientes:", error);
@@ -392,59 +449,34 @@
         }
     }
     
-    async function emailExiste(email) {
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('id')
-            .eq('email', email);
-        if (error) return false;
-        return data && data.length > 0;
-    }
-    
     async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
         try {
-            console.log("Iniciando cadastro para:", email);
-            
             if (!validarSenhaForte(senha)) {
                 alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
                 return false;
             }
             
-            const existe = await emailExiste(email);
-            if (existe) {
-                alert(`❌ O e-mail "${email}" já está cadastrado!\n\nSe você perdeu o acesso, use a opção "Esqueci minha senha" na tela de login.`);
+            const { data: existing, error: checkError } = await supabaseClient
+                .from('clientes')
+                .select('id')
+                .eq('email', email);
+            
+            if (checkError) throw checkError;
+            if (existing && existing.length > 0) {
+                alert(`❌ O e-mail "${email}" já está cadastrado!`);
                 return false;
             }
             
-            const senhaHash = CryptoJS.SHA256(senha).toString();
+            const senhaHash = hashSenha(senha);
             const { error } = await supabaseClient
                 .from('clientes')
                 .insert([{
-                    nome, 
-                    email, 
-                    senha: senhaHash, 
-                    nome_social: nomeSocial,
-                    data_nasc: dataNasc, 
-                    cep, 
-                    endereco, 
-                    numero, 
-                    complemento, 
-                    referencia, 
-                    telefone,
+                    nome, email, senha: senhaHash, nome_social: nomeSocial,
+                    data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone,
                     force_password_change: false
                 }]);
             
-            if (error) {
-                console.error("Erro do Supabase:", error);
-                if (error.code === '23505') {
-                    alert(`❌ E-mail "${email}" já cadastrado! Use a opção "Esqueci minha senha".`);
-                } else {
-                    alert(`Erro: ${error.message}`);
-                }
-                return false;
-            }
-            
-            console.log("Cadastro realizado com sucesso!");
+            if (error) throw error;
             alert("✅ Cadastro realizado com sucesso! Faça login.");
             return true;
         } catch (error) {
@@ -455,11 +487,12 @@
     }
     
     async function fazerLogin(email, senha) {
-        const senhaHash = CryptoJS.SHA256(senha).toString();
+        const senhaHash = hashSenha(senha);
         const { data, error } = await supabaseClient
             .from('clientes')
             .select('*')
-            .eq('email', email);
+            .eq('email', email)
+            .eq('senha', senhaHash);
         
         if (error) {
             console.error("Erro no login:", error);
@@ -467,10 +500,7 @@
         }
         
         if (data && data.length > 0) {
-            const user = data[0];
-            if (user.senha === senhaHash) {
-                return user;
-            }
+            return data[0];
         }
         return null;
     }
@@ -497,23 +527,18 @@
                 .eq('email', email);
             
             if (buscaError) throw buscaError;
-            
             if (!clientes || clientes.length === 0) {
-                alert(`❌ E-mail "${email}" não encontrado!\n\nVerifique o e-mail digitado ou faça um novo cadastro.`);
+                alert(`❌ E-mail "${email}" não encontrado!`);
                 return false;
             }
             
             const cliente = clientes[0];
             const novaSenha = gerarSenhaAleatoria();
-            const senhaHash = CryptoJS.SHA256(novaSenha).toString();
+            const senhaHash = hashSenha(novaSenha);
             
             const { error: updateError } = await supabaseClient
                 .from('clientes')
-                .update({ 
-                    senha: senhaHash, 
-                    force_password_change: true,
-                    temp_password: novaSenha
-                })
+                .update({ senha: senhaHash, force_password_change: true })
                 .eq('id', cliente.id);
             
             if (updateError) throw updateError;
@@ -521,21 +546,11 @@
             alert(`✅ SENHA RECUPERADA!\n\nCliente: ${cliente.nome}\n\n🔑 Nova senha temporária: ${novaSenha}\n\n⚠️ A senha foi copiada. Ao fazer login, você será obrigado a criar uma senha forte.`);
             navigator.clipboard.writeText(novaSenha);
             return true;
-            
         } catch (error) {
             console.error("Erro na recuperação:", error);
             alert("Erro ao recuperar senha. Tente novamente.");
             return false;
         }
-    }
-    
-    async function listarClientesAdmin() {
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('id, nome, email, telefone, created_at, force_password_change')
-            .order('id');
-        if (error) return [];
-        return data || [];
     }
     
     function renderizarClientesAdmin() {
@@ -596,6 +611,7 @@
             document.getElementById('logoSlogan').innerText = configs.logo_slogan;
             document.getElementById('heroTitle').innerText = configs.hero_title;
             document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+            atualizarRodape();
             return true;
         } catch (error) { return false; }
     }
@@ -611,7 +627,9 @@
                 { chave: "logo_slogan", valor: configs.logo_slogan },
                 { chave: "hero_title", valor: configs.hero_title },
                 { chave: "hero_imagem", valor: configs.hero_imagem },
-                { chave: "delivery_ativo", valor: configs.delivery_ativo }
+                { chave: "delivery_ativo", valor: configs.delivery_ativo },
+                { chave: "telefone_contato", valor: configs.telefone_contato },
+                { chave: "email_contato", valor: configs.email_contato }
             ];
             for (const config of configsToSave) {
                 await supabaseClient.from('config').upsert(config, { onConflict: 'chave' });
@@ -775,52 +793,61 @@
     function iniciarFinalizacaoPedido() {
         if (carrinho.length === 0) { alert("Carrinho vazio!"); return; }
         if (!metodoSelecionado) { alert("Selecione um método de pagamento!"); return; }
+        
         if (usuarioLogado) {
-            if (configs.delivery_ativo === "true") abrirModalEntrega();
-            else finalizarPedidoComDados(usuarioLogado, 'retirada');
+            // Cliente logado: pode escolher entrega ou retirada (se delivery ativo)
+            if (configs.delivery_ativo === "true") {
+                const modal = document.getElementById('modalEntrega');
+                document.getElementById('pedidoObservacaoLogado').value = '';
+                document.getElementById('contadorObsLogado').innerText = '0';
+                modal.style.display = 'flex';
+            } else {
+                finalizarPedidoComDados(usuarioLogado, 'retirada', '');
+            }
         } else {
+            // Cliente não logado: apenas retirada no local
             document.getElementById('modalEnderecoPedido').style.display = 'flex';
+            document.getElementById('pedidoObservacao').value = '';
+            document.getElementById('contadorObs').innerText = '0';
         }
     }
     
-    function abrirModalEntrega() {
-        let modal = document.getElementById('modalEntrega');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'modalEntrega';
-            modal.className = 'modal';
-            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p><strong>Retirar no Local</strong></p><small>Rua das Delícias, 123 - Centro, SP</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p><strong>Delivery</strong></p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
-            document.body.appendChild(modal);
-        }
-        let opcaoSelecionada = null;
-        modal.querySelectorAll('.opcao-entrega').forEach(el => {
-            el.onclick = () => {
-                modal.querySelectorAll('.opcao-entrega').forEach(e => e.classList.remove('selecionado'));
-                el.classList.add('selecionado');
-                opcaoSelecionada = el.getAttribute('data-opcao');
-            };
-        });
-        modal.querySelector('#btnConfirmarEntrega').onclick = () => {
-            if (!opcaoSelecionada) { alert("Selecione uma opção!"); return; }
-            modal.style.display = 'none';
-            finalizarPedidoComDados(usuarioLogado, opcaoSelecionada);
-        };
-        modal.querySelector('#btnCancelarEntrega').onclick = () => modal.style.display = 'none';
-        modal.style.display = 'flex';
+    async function buscarCep(cep, tipo) {
+        cep = cep.replace(/\D/g, '');
+        if (cep.length !== 8) { alert("CEP inválido! Digite 8 números."); return; }
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+            if (data.erro) { alert("CEP não encontrado!"); return; }
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+            if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco;
+            else if (tipo === 'perfil') document.getElementById('perfilEndereco').value = endereco;
+        } catch (e) { alert("Erro ao buscar CEP!"); }
+    }
+    function buscarCepClick(tipo) {
+        const cep = document.getElementById(tipo === 'cadastro' ? 'cadCep' : (tipo === 'perfil' ? 'perfilCep' : 'pedidoCep')).value;
+        buscarCep(cep, tipo);
     }
     
-    function finalizarPedidoComDados(cliente, opcaoEntrega = 'retirada') {
+    function finalizarPedidoComDados(cliente, opcaoEntrega = 'retirada', observacao = '') {
         const total = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
         let mensagem = `🧁 *NOVO PEDIDO - ${configs.logo_nome}* 🧁\n\n👤 *Cliente:* ${cliente.nome || cliente.pedidoNome || 'Cliente'}\n📞 *Telefone:* ${cliente.telefone || cliente.pedidoTelefone || 'Não informado'}\n\n📋 *Itens:*\n`;
         carrinho.forEach(i => mensagem += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco * i.quantidade).toFixed(2).replace('.', ',')}\n`);
         mensagem += `\n💰 *Total:* R$ ${total.toFixed(2).replace('.', ',')}\n💳 *Pagamento:* ${metodoSelecionado === 'pix' ? 'PIX (21965783597)' : 'Mercado Pago'}\n\n`;
-        if (configs.delivery_ativo !== "true" || opcaoEntrega === 'retirada') {
+        
+        if (opcaoEntrega === 'retirada') {
             mensagem += `🏪 *RETIRADA NO LOCAL*\n📍 Rua das Delícias, 123 - Centro, São Paulo - SP\n`;
         } else {
             const endCompleto = `${cliente.endereco || ''}, ${cliente.numero || ''}${cliente.complemento ? ' - ' + cliente.complemento : ''}`;
             mensagem += `🚚 *DELIVERY*\n📍 ${endCompleto}\n${cliente.referencia ? `📍 Referência: ${cliente.referencia}\n` : ''}`;
         }
+        
+        if (observacao && observacao.trim()) {
+            mensagem += `\n📝 *Observações:* ${observacao}\n`;
+        }
+        
         mensagem += `\n✨ Aguardo confirmação do pagamento e pedido!`;
+        
         for (let item of carrinho) {
             const prod = produtos.find(p => p.id === item.id);
             if (prod) prod.estoque -= item.quantidade;
@@ -836,28 +863,10 @@
         document.getElementById('detalhe-mercadopago').style.display = 'none';
     }
     
-    async function buscarCep(cep, tipo) {
-        cep = cep.replace(/\D/g, '');
-        if (cep.length !== 8) { alert("CEP inválido! Digite 8 números."); return; }
-        try {
-            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await resp.json();
-            if (data.erro) { alert("CEP não encontrado!"); return; }
-            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
-            if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco;
-            else if (tipo === 'perfil') document.getElementById('perfilEndereco').value = endereco;
-            else if (tipo === 'pedido') document.getElementById('pedidoEndereco').value = endereco;
-        } catch (e) { alert("Erro ao buscar CEP!"); }
-    }
-    function buscarCepClick(tipo) {
-        const cep = document.getElementById(tipo === 'cadastro' ? 'cadCep' : (tipo === 'perfil' ? 'perfilCep' : 'pedidoCep')).value;
-        buscarCep(cep, tipo);
-    }
-    
     // Eventos UI
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
     document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
-        if (CryptoJS.SHA256(document.getElementById('adminSenha').value).toString() === CryptoJS.SHA256("admin123").toString()) {
+        if (hashSenha(document.getElementById('adminSenha').value) === hashSenha("admin123")) {
             document.getElementById('modalAdminSenha').style.display = 'none';
             document.getElementById('modalAdmin').style.display = 'flex';
             document.getElementById('editLogoNome').value = configs.logo_nome;
@@ -866,6 +875,8 @@
             document.getElementById('editHeroImage').value = configs.hero_imagem;
             document.getElementById('previewHeroImg').src = configs.hero_imagem;
             document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true";
+            document.getElementById('editTelefone').value = configs.telefone_contato || '';
+            document.getElementById('editEmail').value = configs.email_contato || '';
             renderizarAdminLista();
             renderizarClientesAdmin();
         } else alert("Senha incorreta!");
@@ -877,11 +888,14 @@
         configs.hero_title = document.getElementById('editHeroTitle').value;
         configs.hero_imagem = document.getElementById('editHeroImage').value;
         configs.delivery_ativo = document.getElementById('toggleDeliveryAtivo').checked ? "true" : "false";
+        configs.telefone_contato = document.getElementById('editTelefone').value;
+        configs.email_contato = document.getElementById('editEmail').value;
         renderizarProdutos();
         document.getElementById('logoNome').innerText = configs.logo_nome;
         document.getElementById('logoSlogan').innerText = configs.logo_slogan;
         document.getElementById('heroTitle').innerText = configs.hero_title;
         document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+        atualizarRodape();
         alert("Alterações salvas localmente! Clique em SALVAR NO SUPABASE para salvar permanentemente.");
     });
     
@@ -958,6 +972,7 @@
     document.getElementById('btnLogin')?.addEventListener('click', async () => {
         const email = document.getElementById('loginEmail').value;
         const senha = document.getElementById('loginSenha').value;
+        if (!email || !senha) { alert("Preencha email e senha!"); return; }
         const user = await fazerLogin(email, senha);
         if (user) {
             if (user.force_password_change) {
@@ -1002,11 +1017,10 @@
             alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
             return;
         }
-        const senhaHash = CryptoJS.SHA256(novaSenha).toString();
+        const senhaHash = hashSenha(novaSenha);
         const sucesso = await atualizarCliente(usuarioAguardandoTrocaSenha.id, {
             senha: senhaHash,
-            force_password_change: false,
-            temp_password: null
+            force_password_change: false
         });
         if (sucesso) {
             usuarioLogado = usuarioAguardandoTrocaSenha;
@@ -1030,7 +1044,6 @@
     });
     
     document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
-    document.getElementById('buscarCepPedido')?.addEventListener('click', () => buscarCepClick('pedido'));
     document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
     document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
     
@@ -1067,7 +1080,7 @@
                 alert("A nova senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
                 return;
             }
-            updates.senha = CryptoJS.SHA256(novaSenha).toString();
+            updates.senha = hashSenha(novaSenha);
         }
         const sucesso = await atualizarCliente(usuarioLogado.id, updates);
         if (sucesso) {
@@ -1083,39 +1096,31 @@
         const dados = {
             nome: document.getElementById('pedidoNome').value,
             telefone: document.getElementById('pedidoTelefone').value,
-            endereco: document.getElementById('pedidoEndereco').value,
-            numero: document.getElementById('pedidoNumero').value,
-            complemento: document.getElementById('pedidoComplemento').value,
-            referencia: document.getElementById('pedidoReferencia').value
+            pedidoObservacao: document.getElementById('pedidoObservacao').value
         };
         if (!dados.nome || !dados.telefone) { alert("Preencha nome e telefone!"); return; }
         document.getElementById('modalEnderecoPedido').style.display = 'none';
-        if (configs.delivery_ativo === "true") {
-            let modal = document.getElementById('modalEntrega');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'modalEntrega';
-                modal.className = 'modal';
-                modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p><strong>Retirar no Local</strong></p><small>Rua das Delícias, 123 - Centro</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p><strong>Delivery</strong></p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
-                document.body.appendChild(modal);
-            }
-            let opcao = null;
-            modal.querySelectorAll('.opcao-entrega').forEach(el => {
-                el.onclick = () => {
-                    modal.querySelectorAll('.opcao-entrega').forEach(e => e.classList.remove('selecionado'));
-                    el.classList.add('selecionado');
-                    opcao = el.getAttribute('data-opcao');
-                };
-            });
-            modal.querySelector('#btnConfirmarEntrega').onclick = () => {
-                if (!opcao) { alert("Selecione uma opção!"); return; }
-                modal.style.display = 'none';
-                finalizarPedidoComDados(dados, opcao);
-            };
-            modal.style.display = 'flex';
-        } else { finalizarPedidoComDados(dados, 'retirada'); }
+        finalizarPedidoComDados(dados, 'retirada', dados.pedidoObservacao);
     });
     document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
+    
+    document.getElementById('btnConfirmarEntrega')?.addEventListener('click', () => {
+        let opcaoSelecionada = null;
+        const selected = document.querySelector('#modalEntrega .opcao-entrega.selecionado');
+        if (selected) opcaoSelecionada = selected.getAttribute('data-opcao');
+        if (!opcaoSelecionada) { alert("Selecione uma opção de recebimento!"); return; }
+        const observacao = document.getElementById('pedidoObservacaoLogado').value;
+        document.getElementById('modalEntrega').style.display = 'none';
+        finalizarPedidoComDados(usuarioLogado, opcaoSelecionada, observacao);
+    });
+    document.getElementById('btnCancelarEntrega')?.addEventListener('click', () => document.getElementById('modalEntrega').style.display = 'none');
+    
+    document.querySelectorAll('#modalEntrega .opcao-entrega').forEach(el => {
+        el.addEventListener('click', () => {
+            document.querySelectorAll('#modalEntrega .opcao-entrega').forEach(e => e.classList.remove('selecionado'));
+            el.classList.add('selecionado');
+        });
+    });
     
     function atualizarBotaoCliente() {
         const area = document.getElementById('clienteButtonArea');
@@ -1140,6 +1145,7 @@
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
     
     async function inicializar() {
+        iniciarContadores();
         await carregarProdutos();
         await carregarConfig();
         await carregarClientes();
