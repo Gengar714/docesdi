@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Doces Di | Sobremesas Artesanais</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -43,8 +45,6 @@
         .detalhe-pagamento { margin-top: 15px; padding: 15px; background: #fef9f5; border-radius: 15px; text-align: center; }
         .btn-mercado-pago-link { display: inline-block; background: linear-gradient(135deg, #009EE3, #0072BC); color: white; padding: 12px 25px; border-radius: 40px; text-decoration: none; font-weight: bold; margin-top: 8px; }
         .btn-copiar-pix { background: #d4a373; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; margin-top: 8px; }
-        .limpar-cache-btn { position: fixed; bottom: 20px; left: 20px; background: #999; color: white; border: none; padding: 8px 15px; border-radius: 30px; cursor: pointer; font-size: 0.7rem; z-index: 1000; opacity: 0.7; transition: opacity 0.2s; }
-        .limpar-cache-btn:hover { opacity: 1; background: #e74c3c; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
         .modal-content h3 { color: #654321; margin-bottom: 20px; border-bottom: 2px solid #f0e4da; padding-bottom: 10px; }
@@ -101,7 +101,7 @@
 <body>
 
 <div class="save-status" id="saveStatus">💾 Salvando...</div>
-<button class="limpar-cache-btn" id="btnLimparCache">🔄 Limpar Cache</button>
+
 <div class="cliente-btn-container"><div id="clienteButtonArea"></div></div>
 <div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
 
@@ -273,11 +273,67 @@
 
 <script>
     // ==================== CONFIGURAÇÕES DO SUPABASE ====================
+    const SISTEMA_VERSAO = "2.1.0";
+    const VERSAO_DATA = "2026-06-04";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // ==================== GERENCIAMENTO AUTOMÁTICO DE CACHE ====================
+    // Função para limpar cache automaticamente a cada 10 minutos
+    function iniciarLimpezaAutomaticaCache() {
+        // Verificar versão ao carregar
+        const versaoSalva = localStorage.getItem("docesdi_versao");
+        if (versaoSalva !== SISTEMA_VERSAO) {
+            console.log(`🔄 Atualizando sistema: versão ${versaoSalva} → ${SISTEMA_VERSAO}`);
+            localStorage.setItem("docesdi_versao", SISTEMA_VERSAO);
+            // Recarregar a página para garantir versão mais recente
+            setTimeout(() => location.reload(), 500);
+            return;
+        }
+        
+        // Verificar timestamp da última atualização
+        const ultimaAtualizacao = localStorage.getItem("docesdi_ultima_atualizacao");
+        const agora = Date.now();
+        const DEZ_MINUTOS = 10 * 60 * 1000; // 10 minutos em milissegundos
+        
+        if (!ultimaAtualizacao || (agora - parseInt(ultimaAtualizacao)) > DEZ_MINUTOS) {
+            console.log("🔄 Limpeza automática de cache a cada 10 minutos");
+            localStorage.setItem("docesdi_ultima_atualizacao", agora.toString());
+            
+            // Limpar caches do navegador
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Recarregar dados do servidor
+            carregarDadosAtualizados();
+        }
+    }
+    
+    async function carregarDadosAtualizados() {
+        console.log("🔄 Recarregando dados do servidor...");
+        await carregarProdutos();
+        await carregarConfig();
+        await carregarClientes();
+        renderizarProdutos();
+        atualizarCarrinho();
+        renderizarClientesAdmin();
+    }
+    
+    // Executar a cada 10 minutos
+    setInterval(() => {
+        iniciarLimpezaAutomaticaCache();
+    }, 10 * 60 * 1000); // 10 minutos
+    
+    // Executar ao carregar a página
+    iniciarLimpezaAutomaticaCache();
     
     let produtos = [];
     let clientes = [];
@@ -332,9 +388,6 @@
             return true;
         } catch (error) {
             console.error("Erro ao carregar clientes:", error);
-            if (error.code === '42P01') {
-                console.error("Tabela 'clientes' não existe! Execute o SQL de criação.");
-            }
             return false;
         }
     }
@@ -364,7 +417,7 @@
             }
             
             const senhaHash = CryptoJS.SHA256(senha).toString();
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('clientes')
                 .insert([{
                     nome, 
@@ -385,8 +438,6 @@
                 console.error("Erro do Supabase:", error);
                 if (error.code === '23505') {
                     alert(`❌ E-mail "${email}" já cadastrado! Use a opção "Esqueci minha senha".`);
-                } else if (error.code === '42P01') {
-                    alert("❌ Tabela de clientes não encontrada! Execute o SQL de criação no Supabase:\n\nCREATE TABLE clientes (id BIGSERIAL PRIMARY KEY, email TEXT UNIQUE NOT NULL, senha TEXT NOT NULL, nome TEXT NOT NULL, nome_social TEXT, data_nasc DATE, cep TEXT, endereco TEXT, numero TEXT, complemento TEXT, referencia TEXT, telefone TEXT, force_password_change BOOLEAN DEFAULT FALSE, temp_password TEXT, created_at TIMESTAMP DEFAULT NOW());\n\nALTER TABLE clientes DISABLE ROW LEVEL SECURITY;");
                 } else {
                     alert(`Erro: ${error.message}`);
                 }
@@ -804,7 +855,6 @@
     }
     
     // Eventos UI
-    document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); alert("Cache limpo! A página vai recarregar."); location.reload(true); });
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
     document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
         if (CryptoJS.SHA256(document.getElementById('adminSenha').value).toString() === CryptoJS.SHA256("admin123").toString()) {
