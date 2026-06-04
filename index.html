@@ -109,12 +109,131 @@
 </header>
 <section class="hero" id="heroSection"><h2 id="heroTitle"></h2></section>
 
-<!-- MODAIS -->
-<div id="modalCliente" class="modal"><div class="modal-content"><div class="tab-buttons"><button class="tab-btn ativo" id="tabLoginBtn">Entrar</button><button class="tab-btn" id="tabCadastroBtn">Cadastrar</button><button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button></div><div id="loginPanel"><h3>Login</h3><input type="text" id="loginEmail" placeholder="E-mail"><input type="password" id="loginSenha" placeholder="Senha"><div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div><button id="btnLogin">Entrar</button><button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button><hr style="margin:15px 0"><button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button></div><div id="cadastroPanel" style="display:none;"><h3>Cadastro</h3><input type="text" id="cadNome" placeholder="Nome completo *"><input type="text" id="cadNomeSocial" placeholder="Nome social"><input type="date" id="cadDataNasc"><div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')"><button type="button" id="buscarCepCadastro" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="cadEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div><input type="text" id="cadReferencia" placeholder="Ponto referência"><input type="text" id="cadTelefone" placeholder="Telefone"><input type="email" id="cadEmail" placeholder="E-mail *"><input type="password" id="cadSenha" placeholder="Senha *"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *"><button id="btnCadastrar">Cadastrar</button></div><div id="perfilPanel" style="display:none;"><h3>Meu Perfil</h3><input type="text" id="perfilNome" placeholder="Nome"><input type="text" id="perfilNomeSocial" placeholder="Nome social"><input type="date" id="perfilDataNasc"><div class="cep-grupo"><input type="text" id="perfilCep" placeholder="CEP"><button type="button" id="buscarCepPerfil" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="perfilEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="perfilNumero" placeholder="Número"></div><div><input type="text" id="perfilComplemento" placeholder="Complemento"></div></div><input type="text" id="perfilReferencia" placeholder="Referência"><input type="text" id="perfilTelefone" placeholder="Telefone"><input type="email" id="perfilEmail" readonly style="background:#f0f0f0;"><input type="password" id="perfilNovaSenha" placeholder="Nova senha (opcional)"><button id="btnAtualizarPerfil">Atualizar</button><button id="btnSair" style="background:#e74c3c;">Sair</button></div><div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div></div></div>
+<!-- MODAL CLIENTE -->
+<div id="modalCliente" class="modal">
+    <div class="modal-content">
+        <div class="tab-buttons">
+            <button class="tab-btn ativo" id="tabLoginBtn">Entrar</button>
+            <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
+            <button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button>
+        </div>
+        <div id="loginPanel">
+            <h3>Login</h3>
+            <input type="text" id="loginEmail" placeholder="E-mail">
+            <input type="password" id="loginSenha" placeholder="Senha">
+            <div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div>
+            <button id="btnLogin">Entrar</button>
+            <button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button>
+            <hr style="margin:15px 0">
+            <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
+        </div>
+        <div id="cadastroPanel" style="display:none;">
+            <h3>Cadastro</h3>
+            <input type="text" id="cadNome" placeholder="Nome completo *">
+            <input type="text" id="cadNomeSocial" placeholder="Nome social">
+            <input type="date" id="cadDataNasc">
+            <div class="cep-grupo">
+                <input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')">
+                <button type="button" id="buscarCepCadastro" class="buscar-cep">🔍 Buscar</button>
+            </div>
+            <input type="text" id="cadEndereco" placeholder="Endereço">
+            <div class="linha-dois-campos">
+                <div><input type="text" id="cadNumero" placeholder="Número"></div>
+                <div><input type="text" id="cadComplemento" placeholder="Complemento"></div>
+            </div>
+            <input type="text" id="cadReferencia" placeholder="Ponto referência">
+            <input type="text" id="cadTelefone" placeholder="Telefone">
+            <input type="email" id="cadEmail" placeholder="E-mail *">
+            <input type="password" id="cadSenha" placeholder="Senha *">
+            <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
+            <button id="btnCadastrar">Cadastrar</button>
+        </div>
+        <div id="perfilPanel" style="display:none;">
+            <h3>Meu Perfil</h3>
+            <input type="text" id="perfilNome" placeholder="Nome">
+            <input type="text" id="perfilNomeSocial" placeholder="Nome social">
+            <input type="date" id="perfilDataNasc">
+            <div class="cep-grupo">
+                <input type="text" id="perfilCep" placeholder="CEP">
+                <button type="button" id="buscarCepPerfil" class="buscar-cep">🔍 Buscar</button>
+            </div>
+            <input type="text" id="perfilEndereco" placeholder="Endereço">
+            <div class="linha-dois-campos">
+                <div><input type="text" id="perfilNumero" placeholder="Número"></div>
+                <div><input type="text" id="perfilComplemento" placeholder="Complemento"></div>
+            </div>
+            <input type="text" id="perfilReferencia" placeholder="Referência">
+            <input type="text" id="perfilTelefone" placeholder="Telefone">
+            <input type="email" id="perfilEmail" readonly style="background:#f0f0f0;">
+            <input type="password" id="perfilNovaSenha" placeholder="Nova senha (opcional)">
+            <button id="btnAtualizarPerfil">Atualizar</button>
+            <button id="btnSair" style="background:#e74c3c;">Sair</button>
+        </div>
+        <div id="recuperarPanel" style="display:none;">
+            <h3>Recuperar Senha</h3>
+            <input type="email" id="recuperarEmail" placeholder="Seu e-mail">
+            <button id="btnEnviarRecuperacao">Enviar nova senha</button>
+            <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
+        </div>
+    </div>
+</div>
 
-<div id="modalEnderecoPedido" class="modal"><div class="modal-content"><h3>📦 Informe seus dados</h3><input type="text" id="pedidoNome" placeholder="Seu nome *"><input type="text" id="pedidoTelefone" placeholder="Telefone *"><div class="cep-grupo"><input type="text" id="pedidoCep" placeholder="CEP"><button type="button" id="buscarCepPedido" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="pedidoEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="pedidoNumero" placeholder="Número"></div><div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div></div><input type="text" id="pedidoReferencia" placeholder="Ponto referência"><button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button><button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button></div></div>
+<!-- MODAL ENDEREÇO PARA COMPRA SEM LOGIN -->
+<div id="modalEnderecoPedido" class="modal">
+    <div class="modal-content">
+        <h3>📦 Informe seus dados</h3>
+        <input type="text" id="pedidoNome" placeholder="Seu nome *">
+        <input type="text" id="pedidoTelefone" placeholder="Telefone *">
+        <div class="cep-grupo">
+            <input type="text" id="pedidoCep" placeholder="CEP">
+            <button type="button" id="buscarCepPedido" class="buscar-cep">🔍 Buscar</button>
+        </div>
+        <input type="text" id="pedidoEndereco" placeholder="Endereço">
+        <div class="linha-dois-campos">
+            <div><input type="text" id="pedidoNumero" placeholder="Número"></div>
+            <div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div>
+        </div>
+        <input type="text" id="pedidoReferencia" placeholder="Ponto referência">
+        <button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button>
+        <button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button>
+    </div>
+</div>
 
-<div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:900px; width:95%;"><h3>🔧 Área Administrativa</h3><div class="admin-tabs"><button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button><button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button></div><div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto-row"><div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div><div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div><div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div><div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div><div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div><div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div><div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR TODAS ALTERAÇÕES NO BANCO</button><p style="font-size:0.7rem; margin-top:8px; color:#666;">Clique para salvar permanentemente no Supabase</p></div></div><div id="tabCabecalho" class="admin-tab-content"><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div><div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div></div><div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div></div></div>
+<!-- MODAL ADMIN -->
+<div id="modalAdmin" class="modal">
+    <div class="modal-content" style="max-width:900px; width:95%;">
+        <h3>🔧 Área Administrativa</h3>
+        <div class="admin-tabs">
+            <button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button>
+            <button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button>
+            <button class="admin-tab" data-tab="clientes">👥 Clientes Cadastrados</button>
+        </div>
+        <div id="tabProdutos" class="admin-tab-content ativo">
+            <div class="form-produto-row">
+                <div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
+                <div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div>
+                <div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div>
+                <div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
+                <div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div>
+                <div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div>
+            </div>
+            <h4>📋 Produtos Cadastrados</h4>
+            <div id="listaAdminProdutos"></div>
+            <div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR TODAS ALTERAÇÕES NO BANCO</button><p style="font-size:0.7rem; margin-top:8px; color:#666;">Clique para salvar permanentemente no Supabase</p></div>
+        </div>
+        <div id="tabCabecalho" class="admin-tab-content">
+            <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div>
+            <div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div>
+            <div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div>
+        </div>
+        <div id="tabClientes" class="admin-tab-content">
+            <h4>👥 Clientes Cadastrados</h4>
+            <div id="listaClientesAdmin"></div>
+        </div>
+        <div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div>
+    </div>
+</div>
 
 <div id="modalAdminSenha" class="modal"><div class="modal-content"><h3>🔐 Acesso Admin</h3><input type="password" id="adminSenha" placeholder="Senha administrativa"><button id="btnVerificarAdmin">Entrar</button><button id="btnFecharAdminModal" style="background:#999;">Cancelar</button></div></div>
 
@@ -133,8 +252,9 @@
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     let produtos = [];
+    let clientes = [];
     let configs = { logo_nome: "Doces Di", logo_slogan: "A vida é mais doce quando compartilhada", hero_title: "Sobremesas Irresistíveis", hero_imagem: "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200", delivery_ativo: "true" };
-    let carrinho = [], metodoSelecionado = null, usuarioLogado = null, usuarios = [];
+    let carrinho = [], metodoSelecionado = null, usuarioLogado = null;
     
     function mostrarStatus(mensagem, sucesso = true) {
         const status = document.getElementById('saveStatus');
@@ -144,74 +264,141 @@
         setTimeout(() => { status.style.display = 'none'; }, 3000);
     }
     
-    async function carregarDados() {
+    // ==================== CLIENTES ====================
+    async function carregarClientes() {
         try {
-            // Carregar produtos
-            const { data: produtosData, error: produtosError } = await supabaseClient
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .select('*')
+                .order('id', { ascending: true });
+            if (error) throw error;
+            clientes = data || [];
+            return true;
+        } catch (error) {
+            console.error("Erro ao carregar clientes:", error);
+            return false;
+        }
+    }
+    
+    async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
+        try {
+            const senhaHash = CryptoJS.SHA256(senha).toString();
+            const { data, error } = await supabaseClient
+                .from('clientes')
+                .insert([{
+                    nome, email, senha: senhaHash, nome_social: nomeSocial,
+                    data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone
+                }]);
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            console.error("Erro ao cadastrar:", error);
+            return false;
+        }
+    }
+    
+    async function fazerLogin(email, senha) {
+        const senhaHash = CryptoJS.SHA256(senha).toString();
+        const { data, error } = await supabaseClient
+            .from('clientes')
+            .select('*')
+            .eq('email', email)
+            .eq('senha', senhaHash);
+        if (error) return null;
+        if (data && data.length > 0) return data[0];
+        return null;
+    }
+    
+    async function atualizarCliente(id, updates) {
+        try {
+            const { error } = await supabaseClient
+                .from('clientes')
+                .update(updates)
+                .eq('id', id);
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            return false;
+        }
+    }
+    
+    async function listarClientesAdmin() {
+        const { data, error } = await supabaseClient
+            .from('clientes')
+            .select('id, nome, email, telefone, created_at')
+            .order('id');
+        if (error) return [];
+        return data || [];
+    }
+    
+    function renderizarClientesAdmin() {
+        const container = document.getElementById('listaClientesAdmin');
+        if (!container) return;
+        if (clientes.length === 0) {
+            container.innerHTML = "<p>Nenhum cliente cadastrado ainda.</p>";
+            return;
+        }
+        container.innerHTML = '';
+        clientes.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'produto-admin-item';
+            div.innerHTML = `
+                <div style="flex:2;"><strong>${c.nome}</strong></div>
+                <div style="flex:2;">${c.email}</div>
+                <div style="flex:1;">${c.telefone || '-'}</div>
+                <div style="flex:1; font-size:0.7rem;">${c.created_at ? new Date(c.created_at).toLocaleDateString() : '-'}</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    // ==================== PRODUTOS ====================
+    async function carregarProdutos() {
+        try {
+            const { data, error } = await supabaseClient
                 .from('produtos')
                 .select('*')
                 .order('id', { ascending: true });
-            
-            if (produtosError) throw produtosError;
-            if (produtosData && produtosData.length > 0) {
-                produtos = produtosData;
+            if (error) throw error;
+            if (data && data.length > 0) {
+                produtos = data;
             } else {
-                // Dados iniciais se não houver produtos
                 produtos = [
                     { id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho do maracujá", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?auto=compress&cs=tinysrgb&w=600" },
                     { id: 2, nome: "Cheesecake New York", descricao: "Base crocante com calda de frutas vermelhas", preco: 16.50, estoque: 5, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600" },
                     { id: 3, nome: "Petit Gâteau", descricao: "Bolinho quente com doce de leite e sorvete", preco: 22.00, estoque: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600" }
                 ];
             }
-            
-            // Carregar configurações
-            const { data: configData, error: configError } = await supabaseClient
-                .from('config')
-                .select('chave, valor');
-            
-            if (!configError && configData && configData.length > 0) {
-                configData.forEach(item => {
-                    configs[item.chave] = item.valor;
-                });
-            }
-            
-            // Aplicar na interface
-            document.getElementById('logoNome').innerText = configs.logo_nome;
-            document.getElementById('logoSlogan').innerText = configs.logo_slogan;
-            document.getElementById('heroTitle').innerText = configs.hero_title;
-            document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
-            
-            renderizarProdutos();
-            atualizarCarrinho();
             return true;
         } catch (error) {
-            console.error("Erro ao carregar dados:", error);
-            mostrarStatus("Erro ao carregar dados do banco!", false);
-            // Tentar carregar dados padrão
-            produtos = [
-                { id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho do maracujá", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?auto=compress&cs=tinysrgb&w=600" },
-                { id: 2, nome: "Cheesecake New York", descricao: "Base crocante com calda de frutas vermelhas", preco: 16.50, estoque: 5, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600" },
-                { id: 3, nome: "Petit Gâteau", descricao: "Bolinho quente com doce de leite e sorvete", preco: 22.00, estoque: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600" }
-            ];
-            renderizarProdutos();
-            atualizarCarrinho();
+            console.error("Erro ao carregar produtos:", error);
             return false;
         }
     }
     
+    async function carregarConfig() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('config')
+                .select('chave, valor');
+            if (!error && data && data.length > 0) {
+                data.forEach(item => { configs[item.chave] = item.valor; });
+            }
+            document.getElementById('logoNome').innerText = configs.logo_nome;
+            document.getElementById('logoSlogan').innerText = configs.logo_slogan;
+            document.getElementById('heroTitle').innerText = configs.hero_title;
+            document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+            return true;
+        } catch (error) { return false; }
+    }
+    
     async function salvarTodosOsDados() {
         mostrarStatus("Salvando no Supabase...", true);
-        
         try {
-            // Salvar produtos
             for (const produto of produtos) {
-                const { error } = await supabaseClient
-                    .from('produtos')
-                    .upsert(produto, { onConflict: 'id' });
-                if (error) throw error;
+                await supabaseClient.from('produtos').upsert(produto, { onConflict: 'id' });
             }
-            
-            // Salvar configurações
             const configsToSave = [
                 { chave: "logo_nome", valor: configs.logo_nome },
                 { chave: "logo_slogan", valor: configs.logo_slogan },
@@ -219,20 +406,14 @@
                 { chave: "hero_imagem", valor: configs.hero_imagem },
                 { chave: "delivery_ativo", valor: configs.delivery_ativo }
             ];
-            
             for (const config of configsToSave) {
-                const { error } = await supabaseClient
-                    .from('config')
-                    .upsert(config, { onConflict: 'chave' });
-                if (error) throw error;
+                await supabaseClient.from('config').upsert(config, { onConflict: 'chave' });
             }
-            
             mostrarStatus("Salvo com sucesso! Recarregando...", true);
             setTimeout(() => location.reload(), 1500);
             return true;
         } catch (error) {
-            console.error("Erro ao salvar:", error);
-            mostrarStatus("Erro ao salvar! Verifique sua conexão.", false);
+            mostrarStatus("Erro ao salvar!", false);
             return false;
         }
     }
@@ -269,10 +450,7 @@
     function renderizarAdminLista() {
         const container = document.getElementById('listaAdminProdutos');
         if (!container) return;
-        if (produtos.length === 0) {
-            container.innerHTML = "<p>Nenhum produto cadastrado</p>";
-            return;
-        }
+        if (produtos.length === 0) { container.innerHTML = "<p>Nenhum produto cadastrado</p>"; return; }
         container.innerHTML = '';
         produtos.forEach(p => {
             const div = document.createElement('div');
@@ -284,10 +462,7 @@
                 <input type="number" class="edit-field edit-estoque" data-id="${p.id}" value="${p.estoque}" placeholder="Estoque" style="width:70px;">
                 <input type="text" class="edit-field edit-imagem" data-id="${p.id}" value="${p.imagem}" placeholder="URL da imagem" style="width:180px;">
                 <div style="display:flex; gap:5px;">
-                    <div class="upload-mini" style="width:100px;">
-                        <div class="upload-mini-label" style="font-size:0.7rem; padding:6px;">📁 Imagem</div>
-                        <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
-                    </div>
+                    <div class="upload-mini" style="width:100px;"><div class="upload-mini-label" style="font-size:0.7rem; padding:6px;">📁 Imagem</div><input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png"></div>
                     <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12px; border-radius:20px; cursor:pointer;">💾</button>
                     <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:20px; cursor:pointer;">🗑️</button>
                 </div>
@@ -302,12 +477,7 @@
                 if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
                     const imagemBase64 = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
                     const prod = produtos.find(p => p.id === id);
-                    if (prod) {
-                        prod.imagem = imagemBase64;
-                        alert("Imagem carregada! Clique em SALVAR para confirmar.");
-                        renderizarAdminLista();
-                        renderizarProdutos();
-                    }
+                    if (prod) { prod.imagem = imagemBase64; renderizarAdminLista(); renderizarProdutos(); }
                 } else { alert("Formato inválido! Use JPEG ou PNG."); }
             });
         });
@@ -323,16 +493,14 @@
             const imagemUrl = document.querySelector(`.edit-imagem[data-id="${id}"]`).value;
             if (imagemUrl) p.imagem = imagemUrl;
             alert("Produto atualizado! Clique em SALVAR para salvar no banco.");
-            renderizarAdminLista();
-            renderizarProdutos();
+            renderizarAdminLista(); renderizarProdutos();
         }
     };
     
     window.excluirProdutoLocal = function(id) {
         if (confirm("Excluir este produto permanentemente?")) {
             produtos = produtos.filter(p => p.id !== id);
-            renderizarAdminLista();
-            renderizarProdutos();
+            renderizarAdminLista(); renderizarProdutos();
         }
     };
     
@@ -350,28 +518,20 @@
         if (!nome || isNaN(preco)) { alert("Preencha nome e preço!"); return; }
         const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
         produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
-        renderizarAdminLista();
-        renderizarProdutos();
+        renderizarAdminLista(); renderizarProdutos();
         alert("Produto adicionado! Clique em SALVAR para salvar no banco.");
-        document.getElementById('prodNome').value = '';
-        document.getElementById('prodDesc').value = '';
-        document.getElementById('prodPreco').value = '';
-        document.getElementById('prodEstoque').value = '';
-        document.getElementById('prodImagem').value = '';
-        document.getElementById('uploadImagem').value = '';
+        document.getElementById('prodNome').value = ''; document.getElementById('prodDesc').value = '';
+        document.getElementById('prodPreco').value = ''; document.getElementById('prodEstoque').value = '';
+        document.getElementById('prodImagem').value = ''; document.getElementById('uploadImagem').value = '';
     }
     
     function adicionarAoCarrinho(id) {
         const prod = produtos.find(p => p.id === id);
-        if (!prod || prod.estoque <= 0) {
-            alert("Produto sem estoque!");
-            return;
-        }
+        if (!prod || prod.estoque <= 0) { alert("Produto sem estoque!"); return; }
         const item = carrinho.find(i => i.id === id);
         if (item) item.quantidade++;
         else carrinho.push({ id, nome: prod.nome, preco: prod.preco, quantidade: 1 });
-        salvarCarrinho();
-        atualizarCarrinho();
+        salvarCarrinho(); atualizarCarrinho();
     }
     
     function atualizarCarrinho() {
@@ -402,13 +562,8 @@
     }
     
     function copiarChavePix() { navigator.clipboard.writeText("21965783597"); alert("Chave PIX copiada: 21965783597"); }
-    
     function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
     function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); if (data) carrinho = JSON.parse(data); else carrinho = []; }
-    
-    function carregarUsuarios() { const data = localStorage.getItem("docesdi_usuarios"); if (data) usuarios = JSON.parse(data); else usuarios = []; }
-    function salvarUsuarios() { localStorage.setItem("docesdi_usuarios", JSON.stringify(usuarios)); }
-    function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     
     function iniciarFinalizacaoPedido() {
         if (carrinho.length === 0) { alert("Carrinho vazio!"); return; }
@@ -474,11 +629,29 @@
         document.getElementById('detalhe-mercadopago').style.display = 'none';
     }
     
-    // Eventos
+    async function buscarCep(cep, tipo) {
+        cep = cep.replace(/\D/g, '');
+        if (cep.length !== 8) { alert("CEP inválido! Digite 8 números."); return; }
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+            if (data.erro) { alert("CEP não encontrado!"); return; }
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+            if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco;
+            else if (tipo === 'perfil') document.getElementById('perfilEndereco').value = endereco;
+            else if (tipo === 'pedido') document.getElementById('pedidoEndereco').value = endereco;
+        } catch (e) { alert("Erro ao buscar CEP!"); }
+    }
+    function buscarCepClick(tipo) {
+        const cep = document.getElementById(tipo === 'cadastro' ? 'cadCep' : (tipo === 'perfil' ? 'perfilCep' : 'pedidoCep')).value;
+        buscarCep(cep, tipo);
+    }
+    
+    // Eventos UI
     document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); alert("Cache limpo! A página vai recarregar."); location.reload(true); });
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
     document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
-        if (hashSenha(document.getElementById('adminSenha').value) === CryptoJS.SHA256("admin123").toString()) {
+        if (CryptoJS.SHA256(document.getElementById('adminSenha').value).toString() === CryptoJS.SHA256("admin123").toString()) {
             document.getElementById('modalAdminSenha').style.display = 'none';
             document.getElementById('modalAdmin').style.display = 'flex';
             document.getElementById('editLogoNome').value = configs.logo_nome;
@@ -488,6 +661,7 @@
             document.getElementById('previewHeroImg').src = configs.hero_imagem;
             document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true";
             renderizarAdminLista();
+            renderizarClientesAdmin();
         } else alert("Senha incorreta!");
     });
     
@@ -505,10 +679,7 @@
         alert("Alterações salvas localmente! Clique em SALVAR NO SUPABASE para salvar permanentemente.");
     });
     
-    document.getElementById('btnSalvarNoSupabase')?.addEventListener('click', async () => {
-        await salvarTodosOsDados();
-    });
-    
+    document.getElementById('btnSalvarNoSupabase')?.addEventListener('click', async () => { await salvarTodosOsDados(); });
     document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
     document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
     
@@ -518,10 +689,10 @@
             document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('ativo'));
             btn.classList.add('ativo');
             document.getElementById(`tab${btn.getAttribute('data-tab').charAt(0).toUpperCase() + btn.getAttribute('data-tab').slice(1)}`).classList.add('ativo');
+            if (btn.getAttribute('data-tab') === 'clientes') renderizarClientesAdmin();
         });
     });
     
-    // Cliente Login
     document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
         document.getElementById('loginPanel').style.display = 'block';
         document.getElementById('cadastroPanel').style.display = 'none';
@@ -535,24 +706,35 @@
         document.getElementById('recuperarPanel').style.display = 'none';
     });
     
-    document.getElementById('btnCadastrar')?.addEventListener('click', () => {
+    document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
         const nome = document.getElementById('cadNome').value;
         const email = document.getElementById('cadEmail').value;
         const senha = document.getElementById('cadSenha').value;
         const conf = document.getElementById('cadConfirmarSenha').value;
         if (!nome || !email || !senha) { alert("Preencha nome, email e senha!"); return; }
         if (senha !== conf) { alert("Senhas não conferem!"); return; }
-        if (usuarios.find(u => u.email === email)) { alert("Email já cadastrado!"); return; }
-        usuarios.push({ email, senha: hashSenha(senha), nome, nomeSocial: document.getElementById('cadNomeSocial').value, dataNasc: document.getElementById('cadDataNasc').value, cep: document.getElementById('cadCep').value, endereco: document.getElementById('cadEndereco').value, numero: document.getElementById('cadNumero').value, complemento: document.getElementById('cadComplemento').value, referencia: document.getElementById('cadReferencia').value, telefone: document.getElementById('cadTelefone').value });
-        salvarUsuarios();
-        alert("Cadastro realizado! Faça login.");
-        document.getElementById('modalCliente').style.display = 'none';
+        const sucesso = await cadastrarCliente(
+            nome, email, senha,
+            document.getElementById('cadNomeSocial').value,
+            document.getElementById('cadDataNasc').value,
+            document.getElementById('cadCep').value,
+            document.getElementById('cadEndereco').value,
+            document.getElementById('cadNumero').value,
+            document.getElementById('cadComplemento').value,
+            document.getElementById('cadReferencia').value,
+            document.getElementById('cadTelefone').value
+        );
+        if (sucesso) {
+            alert("Cadastro realizado! Faça login.");
+            document.getElementById('modalCliente').style.display = 'none';
+            await carregarClientes();
+        } else { alert("Erro ao cadastrar! Email pode já existir."); }
     });
     
-    document.getElementById('btnLogin')?.addEventListener('click', () => {
+    document.getElementById('btnLogin')?.addEventListener('click', async () => {
         const email = document.getElementById('loginEmail').value;
-        const senha = hashSenha(document.getElementById('loginSenha').value);
-        const user = usuarios.find(u => u.email === email && u.senha === senha);
+        const senha = document.getElementById('loginSenha').value;
+        const user = await fazerLogin(email, senha);
         if (user) {
             usuarioLogado = user;
             localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
@@ -572,63 +754,31 @@
     
     document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
     document.getElementById('buscarCepPedido')?.addEventListener('click', () => buscarCepClick('pedido'));
-    
-    function atualizarBotaoCliente() {
-        const area = document.getElementById('clienteButtonArea');
-        if (usuarioLogado) {
-            area.innerHTML = `<div class="usuario-info"><span>👤 ${usuarioLogado.nome.split(' ')[0]}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
-            document.getElementById('btnSairRapido')?.addEventListener('click', () => {
-                usuarioLogado = null;
-                localStorage.removeItem("docesdi_usuario_logado");
-                atualizarBotaoCliente();
-                alert("Saiu!");
-            });
-        } else {
-            area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
-            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => {
-                document.getElementById('modalCliente').style.display = 'flex';
-            });
-        }
-    }
-    
-    async function buscarCep(cep, tipo) {
-        cep = cep.replace(/\D/g, '');
-        if (cep.length !== 8) { alert("CEP inválido! Digite 8 números."); return; }
-        try {
-            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await resp.json();
-            if (data.erro) { alert("CEP não encontrado!"); return; }
-            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
-            if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco;
-            else if (tipo === 'perfil') document.getElementById('perfilEndereco').value = endereco;
-            else if (tipo === 'pedido') document.getElementById('pedidoEndereco').value = endereco;
-        } catch (e) { alert("Erro ao buscar CEP!"); }
-    }
-    function buscarCepClick(tipo) {
-        const cep = document.getElementById(tipo === 'cadastro' ? 'cadCep' : (tipo === 'perfil' ? 'perfilCep' : 'pedidoCep')).value;
-        buscarCep(cep, tipo);
-    }
-    
     document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
     document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
-    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', () => {
+    
+    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', async () => {
         if (!usuarioLogado) return;
-        usuarioLogado.nome = document.getElementById('perfilNome').value;
-        usuarioLogado.nomeSocial = document.getElementById('perfilNomeSocial').value;
-        usuarioLogado.dataNasc = document.getElementById('perfilDataNasc').value;
-        usuarioLogado.cep = document.getElementById('perfilCep').value;
-        usuarioLogado.endereco = document.getElementById('perfilEndereco').value;
-        usuarioLogado.numero = document.getElementById('perfilNumero').value;
-        usuarioLogado.complemento = document.getElementById('perfilComplemento').value;
-        usuarioLogado.referencia = document.getElementById('perfilReferencia').value;
-        usuarioLogado.telefone = document.getElementById('perfilTelefone').value;
+        const updates = {
+            nome: document.getElementById('perfilNome').value,
+            nome_social: document.getElementById('perfilNomeSocial').value,
+            data_nasc: document.getElementById('perfilDataNasc').value,
+            cep: document.getElementById('perfilCep').value,
+            endereco: document.getElementById('perfilEndereco').value,
+            numero: document.getElementById('perfilNumero').value,
+            complemento: document.getElementById('perfilComplemento').value,
+            referencia: document.getElementById('perfilReferencia').value,
+            telefone: document.getElementById('perfilTelefone').value
+        };
         const novaSenha = document.getElementById('perfilNovaSenha').value;
-        if (novaSenha) usuarioLogado.senha = hashSenha(novaSenha);
-        const idx = usuarios.findIndex(u => u.email === usuarioLogado.email);
-        if (idx !== -1) usuarios[idx] = usuarioLogado;
-        salvarUsuarios();
-        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-        alert("Perfil atualizado!");
+        if (novaSenha) updates.senha = CryptoJS.SHA256(novaSenha).toString();
+        const sucesso = await atualizarCliente(usuarioLogado.id, updates);
+        if (sucesso) {
+            Object.assign(usuarioLogado, updates);
+            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
+            alert("Perfil atualizado!");
+            await carregarClientes();
+        } else { alert("Erro ao atualizar!"); }
     });
     
     document.getElementById('btnConfirmarDadosPedido')?.addEventListener('click', () => {
@@ -665,20 +815,42 @@
                 finalizarPedidoComDados(dados, opcao);
             };
             modal.style.display = 'flex';
-        } else {
-            finalizarPedidoComDados(dados, 'retirada');
-        }
+        } else { finalizarPedidoComDados(dados, 'retirada'); }
     });
     document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
     
+    function atualizarBotaoCliente() {
+        const area = document.getElementById('clienteButtonArea');
+        if (usuarioLogado) {
+            area.innerHTML = `<div class="usuario-info"><span>👤 ${usuarioLogado.nome.split(' ')[0]}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
+            document.getElementById('btnSairRapido')?.addEventListener('click', () => {
+                usuarioLogado = null;
+                localStorage.removeItem("docesdi_usuario_logado");
+                atualizarBotaoCliente();
+                alert("Saiu!");
+            });
+        } else {
+            area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
+            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
+        }
+    }
+    
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
     
-    carregarUsuarios();
-    const savedUser = localStorage.getItem("docesdi_usuario_logado");
-    if (savedUser) usuarioLogado = JSON.parse(savedUser);
-    carregarCarrinho();
-    carregarDados();
-    atualizarBotaoCliente();
+    async function inicializar() {
+        await carregarProdutos();
+        await carregarConfig();
+        await carregarClientes();
+        carregarCarrinho();
+        const savedUser = localStorage.getItem("docesdi_usuario_logado");
+        if (savedUser) usuarioLogado = JSON.parse(savedUser);
+        renderizarProdutos();
+        atualizarCarrinho();
+        atualizarBotaoCliente();
+        renderizarClientesAdmin();
+    }
+    
+    inicializar();
 </script>
 </body>
 </html>
