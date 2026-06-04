@@ -87,11 +87,15 @@
         .toggle-switch input::before { content: ''; width: 21px; height: 21px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: all 0.3s; }
         .toggle-switch input:checked::before { left: 26px; }
         .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .senha-requisitos { font-size: 0.7rem; color: #8b7d77; margin-top: 5px; }
+        .senha-requisitos.valid { color: #25d366; }
+        .senha-requisitos.invalid { color: #e74c3c; }
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; }
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .carrinho-sidebar { position: static; } }
         .loading { text-align: center; padding: 20px; color: #d4a373; font-size: 1.1rem; }
         .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; font-weight: bold; }
         .btn-salvar-supabase { background: #25d366 !important; margin-top: 20px !important; font-size: 1rem !important; }
+        .aviso-trocar-senha { background: #fff5ea; border-left: 4px solid #f39c12; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -123,7 +127,7 @@
             <input type="password" id="loginSenha" placeholder="Senha">
             <div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div>
             <button id="btnLogin">Entrar</button>
-            <button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button>
+            <button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button>
             <hr style="margin:15px 0">
             <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
         </div>
@@ -165,15 +169,41 @@
             <input type="text" id="perfilReferencia" placeholder="Referência">
             <input type="text" id="perfilTelefone" placeholder="Telefone">
             <input type="email" id="perfilEmail" readonly style="background:#f0f0f0;">
-            <input type="password" id="perfilNovaSenha" placeholder="Nova senha (opcional)">
+            <input type="password" id="perfilNovaSenha" placeholder="Nova senha">
+            <div class="senha-requisitos" id="senhaRequisitos">
+                🔒 A senha deve ter:<br>
+                • Mínimo 8 caracteres<br>
+                • Pelo menos 1 letra maiúscula<br>
+                • Pelo menos 1 letra minúscula<br>
+                • Pelo menos 1 número<br>
+                • Pelo menos 1 caractere especial (!@#$%^&*)
+            </div>
             <button id="btnAtualizarPerfil">Atualizar</button>
             <button id="btnSair" style="background:#e74c3c;">Sair</button>
         </div>
         <div id="recuperarPanel" style="display:none;">
             <h3>Recuperar Senha</h3>
+            <p>Digite seu e-mail cadastrado. Enviaremos uma nova senha de acesso.</p>
             <input type="email" id="recuperarEmail" placeholder="Seu e-mail">
-            <button id="btnEnviarRecuperacao">Enviar nova senha</button>
+            <button id="btnEnviarRecuperacao">📧 Enviar nova senha</button>
             <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
+        </div>
+        <div id="trocarSenhaPanel" style="display:none;">
+            <h3>⚠️ Troca de Senha Obrigatória</h3>
+            <div class="aviso-trocar-senha">
+                <p>⚠️ Por motivos de segurança, você precisa criar uma nova senha forte para continuar.</p>
+            </div>
+            <input type="password" id="trocarNovaSenha" placeholder="Nova senha *">
+            <input type="password" id="trocarConfirmarSenha" placeholder="Confirmar nova senha *">
+            <div class="senha-requisitos" id="trocarSenhaRequisitos">
+                🔒 A senha deve ter:<br>
+                • Mínimo 8 caracteres<br>
+                • Pelo menos 1 letra maiúscula<br>
+                • Pelo menos 1 letra minúscula<br>
+                • Pelo menos 1 número<br>
+                • Pelo menos 1 caractere especial (!@#$%^&*)
+            </div>
+            <button id="btnConfirmarTrocaSenha" style="background:#25d366;">✅ Confirmar nova senha</button>
         </div>
     </div>
 </div>
@@ -255,6 +285,7 @@
     let clientes = [];
     let configs = { logo_nome: "Doces Di", logo_slogan: "A vida é mais doce quando compartilhada", hero_title: "Sobremesas Irresistíveis", hero_imagem: "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200", delivery_ativo: "true" };
     let carrinho = [], metodoSelecionado = null, usuarioLogado = null;
+    let usuarioAguardandoTrocaSenha = null;
     
     function mostrarStatus(mensagem, sucesso = true) {
         const status = document.getElementById('saveStatus');
@@ -262,6 +293,78 @@
         status.style.display = 'block';
         status.style.background = sucesso ? '#25d366' : '#e74c3c';
         setTimeout(() => { status.style.display = 'none'; }, 3000);
+    }
+    
+    // ==================== FUNÇÕES DE VALIDAÇÃO DE SENHA ====================
+    function validarSenhaForte(senha) {
+        const temMinimo = senha.length >= 8;
+        const temMaiuscula = /[A-Z]/.test(senha);
+        const temMinuscula = /[a-z]/.test(senha);
+        const temNumero = /[0-9]/.test(senha);
+        const temEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(senha);
+        return temMinimo && temMaiuscula && temMinuscula && temNumero && temEspecial;
+    }
+    
+    function gerarSenhaAleatoria() {
+        const maiusculas = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const minusculas = "abcdefghijkmnopqrstuvwxyz";
+        const numeros = "23456789";
+        const especiais = "!@#$%&*";
+        let senha = "";
+        senha += maiusculas.charAt(Math.floor(Math.random() * maiusculas.length));
+        senha += minusculas.charAt(Math.floor(Math.random() * minusculas.length));
+        senha += numeros.charAt(Math.floor(Math.random() * numeros.length));
+        senha += especiais.charAt(Math.floor(Math.random() * especiais.length));
+        for (let i = 4; i < 10; i++) {
+            const chars = maiusculas + minusculas + numeros + especiais;
+            senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return senha.split('').sort(() => Math.random() - 0.5).join('');
+    }
+    
+    // ==================== RECUPERAÇÃO DE SENHA ====================
+    async function solicitarRecuperacaoSenha(email) {
+        try {
+            const cliente = await buscarClientePorEmail(email);
+            if (!cliente) {
+                alert("E-mail não encontrado em nossa base!");
+                return false;
+            }
+            
+            const novaSenha = gerarSenhaAleatoria();
+            const senhaHash = CryptoJS.SHA256(novaSenha).toString();
+            
+            // Atualizar senha no banco e marcar para troca obrigatória
+            const { error } = await supabaseClient
+                .from('clientes')
+                .update({ 
+                    senha: senhaHash, 
+                    force_password_change: true,
+                    temp_password: novaSenha
+                })
+                .eq('email', email);
+            
+            if (error) throw error;
+            
+            // Mostrar a nova senha para o cliente (em produção seria enviada por e-mail/WhatsApp)
+            alert(`🔐 Uma nova senha foi gerada!\n\nSua nova senha temporária é: ${novaSenha}\n\n⚠️ IMPORTANTE: Ao fazer login, você será obrigado a criar uma senha forte.\n\n(A senha foi copiada para sua área de transferência)`);
+            navigator.clipboard.writeText(novaSenha);
+            
+            return true;
+        } catch (error) {
+            console.error("Erro na recuperação:", error);
+            alert("Erro ao recuperar senha. Tente novamente.");
+            return false;
+        }
+    }
+    
+    async function buscarClientePorEmail(email) {
+        const { data, error } = await supabaseClient
+            .from('clientes')
+            .select('*')
+            .eq('email', email);
+        if (error) return null;
+        return data && data.length > 0 ? data[0] : null;
     }
     
     // ==================== CLIENTES ====================
@@ -282,17 +385,23 @@
     
     async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
         try {
+            if (!validarSenhaForte(senha)) {
+                alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
+                return false;
+            }
             const senhaHash = CryptoJS.SHA256(senha).toString();
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('clientes')
                 .insert([{
                     nome, email, senha: senhaHash, nome_social: nomeSocial,
-                    data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone
+                    data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone,
+                    force_password_change: false
                 }]);
             if (error) throw error;
             return true;
         } catch (error) {
             console.error("Erro ao cadastrar:", error);
+            alert("Erro ao cadastrar! E-mail pode já existir.");
             return false;
         }
     }
@@ -302,10 +411,14 @@
         const { data, error } = await supabaseClient
             .from('clientes')
             .select('*')
-            .eq('email', email)
-            .eq('senha', senhaHash);
+            .eq('email', email);
         if (error) return null;
-        if (data && data.length > 0) return data[0];
+        if (data && data.length > 0) {
+            const user = data[0];
+            if (user.senha === senhaHash) {
+                return user;
+            }
+        }
         return null;
     }
     
@@ -348,12 +461,13 @@
                 <div style="flex:2;">${c.email}</div>
                 <div style="flex:1;">${c.telefone || '-'}</div>
                 <div style="flex:1; font-size:0.7rem;">${c.created_at ? new Date(c.created_at).toLocaleDateString() : '-'}</div>
+                <div style="flex:1; font-size:0.7rem;">${c.force_password_change ? '⚠️ Troca pendente' : '✅ OK'}</div>
             `;
             container.appendChild(div);
         });
     }
     
-    // ==================== PRODUTOS ====================
+    // ==================== PRODUTOS E OUTRAS FUNÇÕES ====================
     async function carregarProdutos() {
         try {
             const { data, error } = await supabaseClient
@@ -698,12 +812,27 @@
         document.getElementById('cadastroPanel').style.display = 'none';
         document.getElementById('perfilPanel').style.display = 'none';
         document.getElementById('recuperarPanel').style.display = 'none';
+        document.getElementById('trocarSenhaPanel').style.display = 'none';
     });
     document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('cadastroPanel').style.display = 'block';
         document.getElementById('perfilPanel').style.display = 'none';
         document.getElementById('recuperarPanel').style.display = 'none';
+        document.getElementById('trocarSenhaPanel').style.display = 'none';
+    });
+    document.getElementById('tabPerfilBtn')?.addEventListener('click', () => {
+        if (usuarioLogado) {
+            carregarPerfilNoModal();
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('cadastroPanel').style.display = 'none';
+            document.getElementById('perfilPanel').style.display = 'block';
+            document.getElementById('recuperarPanel').style.display = 'none';
+            document.getElementById('trocarSenhaPanel').style.display = 'none';
+        } else {
+            alert("Você precisa estar logado para acessar o perfil.");
+            document.getElementById('modalCliente').style.display = 'none';
+        }
     });
     
     document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
@@ -713,6 +842,10 @@
         const conf = document.getElementById('cadConfirmarSenha').value;
         if (!nome || !email || !senha) { alert("Preencha nome, email e senha!"); return; }
         if (senha !== conf) { alert("Senhas não conferem!"); return; }
+        if (!validarSenhaForte(senha)) {
+            alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
+            return;
+        }
         const sucesso = await cadastrarCliente(
             nome, email, senha,
             document.getElementById('cadNomeSocial').value,
@@ -728,7 +861,7 @@
             alert("Cadastro realizado! Faça login.");
             document.getElementById('modalCliente').style.display = 'none';
             await carregarClientes();
-        } else { alert("Erro ao cadastrar! Email pode já existir."); }
+        }
     });
     
     document.getElementById('btnLogin')?.addEventListener('click', async () => {
@@ -736,12 +869,65 @@
         const senha = document.getElementById('loginSenha').value;
         const user = await fazerLogin(email, senha);
         if (user) {
-            usuarioLogado = user;
-            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
+            if (user.force_password_change) {
+                usuarioAguardandoTrocaSenha = user;
+                document.getElementById('loginPanel').style.display = 'none';
+                document.getElementById('trocarSenhaPanel').style.display = 'block';
+                document.getElementById('modalCliente').style.display = 'flex';
+            } else {
+                usuarioLogado = user;
+                localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
+                atualizarBotaoCliente();
+                document.getElementById('modalCliente').style.display = 'none';
+                alert(`Bem-vindo, ${user.nome}!`);
+            }
+        } else alert("Email ou senha incorretos!");
+    });
+    
+    document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('recuperarPanel').style.display = 'block';
+    });
+    
+    document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => {
+        const email = document.getElementById('recuperarEmail').value;
+        if (!email) { alert("Digite seu e-mail!"); return; }
+        await solicitarRecuperacaoSenha(email);
+        document.getElementById('recuperarPanel').style.display = 'none';
+        document.getElementById('loginPanel').style.display = 'block';
+    });
+    
+    document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
+        document.getElementById('recuperarPanel').style.display = 'none';
+        document.getElementById('loginPanel').style.display = 'block';
+    });
+    
+    document.getElementById('btnConfirmarTrocaSenha')?.addEventListener('click', async () => {
+        const novaSenha = document.getElementById('trocarNovaSenha').value;
+        const confirmar = document.getElementById('trocarConfirmarSenha').value;
+        if (!novaSenha || !confirmar) { alert("Preencha os dois campos!"); return; }
+        if (novaSenha !== confirmar) { alert("As senhas não conferem!"); return; }
+        if (!validarSenhaForte(novaSenha)) {
+            alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
+            return;
+        }
+        const senhaHash = CryptoJS.SHA256(novaSenha).toString();
+        const sucesso = await atualizarCliente(usuarioAguardandoTrocaSenha.id, {
+            senha: senhaHash,
+            force_password_change: false,
+            temp_password: null
+        });
+        if (sucesso) {
+            usuarioLogado = usuarioAguardandoTrocaSenha;
+            usuarioLogado.senha = senhaHash;
+            usuarioLogado.force_password_change = false;
+            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
             atualizarBotaoCliente();
             document.getElementById('modalCliente').style.display = 'none';
-            alert(`Bem-vindo, ${user.nome}!`);
-        } else alert("Email ou senha incorretos!");
+            alert("Senha alterada com sucesso! Faça login novamente.");
+            usuarioAguardandoTrocaSenha = null;
+            location.reload();
+        } else { alert("Erro ao alterar senha!"); }
     });
     
     document.getElementById('btnSair')?.addEventListener('click', () => {
@@ -757,8 +943,23 @@
     document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
     document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
     
+    function carregarPerfilNoModal() {
+        if (!usuarioLogado) return;
+        document.getElementById('perfilNome').value = usuarioLogado.nome || '';
+        document.getElementById('perfilNomeSocial').value = usuarioLogado.nome_social || '';
+        document.getElementById('perfilDataNasc').value = usuarioLogado.data_nasc || '';
+        document.getElementById('perfilCep').value = usuarioLogado.cep || '';
+        document.getElementById('perfilEndereco').value = usuarioLogado.endereco || '';
+        document.getElementById('perfilNumero').value = usuarioLogado.numero || '';
+        document.getElementById('perfilComplemento').value = usuarioLogado.complemento || '';
+        document.getElementById('perfilReferencia').value = usuarioLogado.referencia || '';
+        document.getElementById('perfilTelefone').value = usuarioLogado.telefone || '';
+        document.getElementById('perfilEmail').value = usuarioLogado.email || '';
+    }
+    
     document.getElementById('btnAtualizarPerfil')?.addEventListener('click', async () => {
         if (!usuarioLogado) return;
+        const novaSenha = document.getElementById('perfilNovaSenha').value;
         const updates = {
             nome: document.getElementById('perfilNome').value,
             nome_social: document.getElementById('perfilNomeSocial').value,
@@ -770,14 +971,20 @@
             referencia: document.getElementById('perfilReferencia').value,
             telefone: document.getElementById('perfilTelefone').value
         };
-        const novaSenha = document.getElementById('perfilNovaSenha').value;
-        if (novaSenha) updates.senha = CryptoJS.SHA256(novaSenha).toString();
+        if (novaSenha) {
+            if (!validarSenhaForte(novaSenha)) {
+                alert("A nova senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
+                return;
+            }
+            updates.senha = CryptoJS.SHA256(novaSenha).toString();
+        }
         const sucesso = await atualizarCliente(usuarioLogado.id, updates);
         if (sucesso) {
             Object.assign(usuarioLogado, updates);
             localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
             alert("Perfil atualizado!");
             await carregarClientes();
+            document.getElementById('perfilNovaSenha').value = '';
         } else { alert("Erro ao atualizar!"); }
     });
     
@@ -831,7 +1038,11 @@
             });
         } else {
             area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
-            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
+            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => {
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginSenha').value = '';
+                document.getElementById('modalCliente').style.display = 'flex';
+            });
         }
     }
     
