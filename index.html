@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Doces Di | Sobremesas Artesanais</title>
     <style>
         * {
@@ -184,7 +187,6 @@
         .btn-finalizar-pedido:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
         .btn-finalizar-pedido:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
-        /* Pagamento - Mercado Pago com espaçamento adequado */
         .pagamento-area {
             margin-top: 15px;
         }
@@ -237,6 +239,27 @@
             border-radius: 30px;
             cursor: pointer;
             margin-top: 8px;
+        }
+
+        /* Botão limpar cache */
+        .limpar-cache-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #999;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            z-index: 1000;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .limpar-cache-btn:hover {
+            opacity: 1;
+            background: #e74c3c;
         }
 
         /* MODAIS */
@@ -323,7 +346,6 @@
         .admin-tab-content { display: none; }
         .admin-tab-content.ativo { display: block; }
         
-        /* Formulário admin - campos maiores */
         .form-produto-row {
             display: flex;
             flex-wrap: wrap;
@@ -334,44 +356,12 @@
             padding: 20px;
             border-radius: 20px;
         }
-        .form-field {
-            flex: 2;
-            min-width: 180px;
-        }
-        .form-field.small {
-            flex: 0.8;
-            min-width: 100px;
-        }
-        .form-field label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: #654321;
-            margin-bottom: 5px;
-        }
-        .form-field input, .form-field textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 25px;
-            border: 1px solid #ddd;
-            font-size: 0.9rem;
-        }
-        .form-field textarea {
-            resize: vertical;
-            min-height: 38px;
-        }
-        .upload-mini {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-        .upload-mini input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
+        .form-field { flex: 2; min-width: 180px; }
+        .form-field.small { flex: 0.8; min-width: 100px; }
+        .form-field label { display: block; font-size: 0.75rem; font-weight: bold; color: #654321; margin-bottom: 5px; }
+        .form-field input, .form-field textarea { width: 100%; padding: 10px 12px; border-radius: 25px; border: 1px solid #ddd; font-size: 0.9rem; }
+        .upload-mini { position: relative; display: inline-block; width: 100%; }
+        .upload-mini input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
         .upload-mini-label {
             display: flex;
             align-items: center;
@@ -384,10 +374,7 @@
             cursor: pointer;
             font-size: 0.8rem;
             font-weight: bold;
-            transition: all 0.2s;
         }
-        .upload-mini-label:hover { background: #4a3b32; transform: scale(1.02); }
-        
         .btn-add-produto {
             background: linear-gradient(135deg, #25d366, #1ebd57);
             color: white;
@@ -409,12 +396,7 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .produto-admin-item .edit-field {
-            padding: 8px 12px;
-            border-radius: 25px;
-            border: 1px solid #ddd;
-            font-size: 0.85rem;
-        }
+        .edit-field { padding: 8px 12px; border-radius: 25px; border: 1px solid #ddd; font-size: 0.85rem; }
         .edit-nome { width: 140px; }
         .edit-desc { width: 200px; }
         .edit-preco { width: 80px; }
@@ -458,12 +440,14 @@
         @media (max-width: 900px) {
             .main-layout { flex-direction: column; }
             .carrinho-sidebar { position: static; }
-            .produto-admin-item .edit-field { width: 100%; }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
+<!-- Botão para limpar cache -->
+<button class="limpar-cache-btn" id="btnLimparCache" title="Limpar cache do navegador e recarregar">🔄 Limpar Cache</button>
+
 <div class="cliente-btn-container"><div id="clienteButtonArea"></div></div>
 <div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
 
@@ -573,10 +557,9 @@
         </div>
         
         <div id="tabProdutos" class="admin-tab-content ativo">
-            <!-- Formulário de inclusão com campos maiores -->
             <div class="form-produto-row">
                 <div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
-                <div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada do produto..."></textarea></div>
+                <div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div>
                 <div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div>
                 <div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
                 <div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
@@ -661,6 +644,58 @@
 <footer><p>© 2026 Doces Di - PIX: 21965783597 | Mercado Pago</p></footer>
 
 <script>
+    // ==================== VERSÃO DO SISTEMA ====================
+    const SISTEMA_VERSAO = "2.0.0";
+    const DATA_VERSAO = "2026-06-03";
+    
+    // Verificar se o navegador está com cache antigo
+    function verificarVersao() {
+        const versaoSalva = localStorage.getItem("docesdi_versao");
+        if (versaoSalva !== SISTEMA_VERSAO) {
+            console.log(`Atualizando sistema da versão ${versaoSalva} para ${SISTEMA_VERSAO}`);
+            localStorage.setItem("docesdi_versao", SISTEMA_VERSAO);
+            // Limpar dados antigos que podem causar conflito
+            return true;
+        }
+        return false;
+    }
+    
+    // Função para limpar todo o cache
+    function limparCacheERecarregar() {
+        if (confirm("Isso irá limpar o cache do navegador e recarregar a página com a versão mais recente.\n\nDeseja continuar?")) {
+            // Limpar localStorage relacionado ao sistema (opcional)
+            // localStorage.clear(); // CUIDADO: Isso apaga todos os dados!
+            
+            // Tentar limpar caches via Service Worker se existir
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Recarregar a página forçando limpeza de cache
+            location.reload(true);
+        }
+    }
+    
+    // Adicionar listener para o botão de limpar cache
+    document.getElementById('btnLimparCache')?.addEventListener('click', limparCacheERecarregar);
+    
+    // Verificar versão ao carregar
+    verificarVersao();
+    
+    // Forçar recarga se a página veio do cache (para mobile)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            // Página foi carregada do cache bfcache (back-forward cache)
+            location.reload(true);
+        }
+    });
+    
+    // ==================== RESTO DO CÓDIGO DO SISTEMA ====================
+    
     const ADMIN_SENHA_HASH = CryptoJS.SHA256("admin123").toString();
     const CHAVE_PIX = "21965783597";
     const SEU_WHATSAPP = "5521965783597";
@@ -808,7 +843,6 @@
     }
     function copiarChavePix() { navigator.clipboard.writeText(CHAVE_PIX); alert("Chave PIX copiada!"); }
     
-    // Admin - Renderizar lista com opção de upload na edição
     function renderizarAdminLista() {
         const container = document.getElementById('listaAdminProdutos');
         if(!container) return;
@@ -835,7 +869,6 @@
             container.appendChild(div);
         });
         
-        // Adicionar listeners para upload de imagem na edição
         document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
             input.addEventListener('change', async (e) => {
                 const id = parseInt(input.getAttribute('data-id'));
@@ -1172,6 +1205,9 @@
     renderizarProdutos();
     atualizarCarrinho();
     atualizarBotaoCliente();
+    
+    // Log de versão no console
+    console.log(`Doces Di - Versão ${SISTEMA_VERSAO} (${DATA_VERSAO}) - Cache management ativado`);
 </script>
 </body>
 </html>
