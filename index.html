@@ -328,9 +328,13 @@
                 .order('id', { ascending: true });
             if (error) throw error;
             clientes = data || [];
+            console.log("Clientes carregados:", clientes.length);
             return true;
         } catch (error) {
             console.error("Erro ao carregar clientes:", error);
+            if (error.code === '42P01') {
+                console.error("Tabela 'clientes' não existe! Execute o SQL de criação.");
+            }
             return false;
         }
     }
@@ -346,6 +350,8 @@
     
     async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
         try {
+            console.log("Iniciando cadastro para:", email);
+            
             if (!validarSenhaForte(senha)) {
                 alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
                 return false;
@@ -358,26 +364,41 @@
             }
             
             const senhaHash = CryptoJS.SHA256(senha).toString();
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('clientes')
                 .insert([{
-                    nome, email, senha: senhaHash, nome_social: nomeSocial,
-                    data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone,
+                    nome, 
+                    email, 
+                    senha: senhaHash, 
+                    nome_social: nomeSocial,
+                    data_nasc: dataNasc, 
+                    cep, 
+                    endereco, 
+                    numero, 
+                    complemento, 
+                    referencia, 
+                    telefone,
                     force_password_change: false
                 }]);
             
             if (error) {
+                console.error("Erro do Supabase:", error);
                 if (error.code === '23505') {
                     alert(`❌ E-mail "${email}" já cadastrado! Use a opção "Esqueci minha senha".`);
+                } else if (error.code === '42P01') {
+                    alert("❌ Tabela de clientes não encontrada! Execute o SQL de criação no Supabase:\n\nCREATE TABLE clientes (id BIGSERIAL PRIMARY KEY, email TEXT UNIQUE NOT NULL, senha TEXT NOT NULL, nome TEXT NOT NULL, nome_social TEXT, data_nasc DATE, cep TEXT, endereco TEXT, numero TEXT, complemento TEXT, referencia TEXT, telefone TEXT, force_password_change BOOLEAN DEFAULT FALSE, temp_password TEXT, created_at TIMESTAMP DEFAULT NOW());\n\nALTER TABLE clientes DISABLE ROW LEVEL SECURITY;");
                 } else {
-                    throw error;
+                    alert(`Erro: ${error.message}`);
                 }
                 return false;
             }
+            
+            console.log("Cadastro realizado com sucesso!");
+            alert("✅ Cadastro realizado com sucesso! Faça login.");
             return true;
         } catch (error) {
             console.error("Erro ao cadastrar:", error);
-            alert("Erro ao cadastrar! Verifique sua conexão.");
+            alert(`Erro ao cadastrar: ${error.message || "Verifique sua conexão"}`);
             return false;
         }
     }
@@ -388,10 +409,15 @@
             .from('clientes')
             .select('*')
             .eq('email', email);
-        if (error) return null;
+        
+        if (error) {
+            console.error("Erro no login:", error);
+            return null;
+        }
+        
         if (data && data.length > 0) {
             const user = data[0];
-            if (user.senja === senhaHash) {
+            if (user.senha === senhaHash) {
                 return user;
             }
         }
@@ -455,7 +481,7 @@
     async function listarClientesAdmin() {
         const { data, error } = await supabaseClient
             .from('clientes')
-            .select('id, nome, email, telefone, created_at')
+            .select('id, nome, email, telefone, created_at, force_password_change')
             .order('id');
         if (error) return [];
         return data || [];
@@ -473,8 +499,8 @@
             const div = document.createElement('div');
             div.className = 'produto-admin-item';
             div.innerHTML = `
-                <div style="flex:2;"><strong>${c.nome}</strong></div>
-                <div style="flex:2;">${c.email}</div>
+                <div style="flex:2;"><strong>${c.nome || '-'}</strong></div>
+                <div style="flex:2;">${c.email || '-'}</div>
                 <div style="flex:1;">${c.telefone || '-'}</div>
                 <div style="flex:1; font-size:0.7rem;">${c.created_at ? new Date(c.created_at).toLocaleDateString() : '-'}</div>
                 <div style="flex:1; font-size:0.7rem;">${c.force_password_change ? '⚠️ Troca pendente' : '✅ OK'}</div>
@@ -874,7 +900,6 @@
             document.getElementById('cadTelefone').value
         );
         if (sucesso) {
-            alert("Cadastro realizado! Faça login.");
             document.getElementById('modalCliente').style.display = 'none';
             await carregarClientes();
         }
