@@ -84,6 +84,7 @@
         .loading { text-align: center; padding: 20px; color: #d4a373; }
         .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
@@ -99,11 +100,12 @@
 </header>
 <section class="hero" id="heroSection"><h2 id="heroTitle"></h2></section>
 
+<!-- MODAIS -->
 <div id="modalCliente" class="modal"><div class="modal-content"><div class="tab-buttons"><button class="tab-btn ativo" id="tabLoginBtn">Entrar</button><button class="tab-btn" id="tabCadastroBtn">Cadastrar</button><button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button></div><div id="loginPanel"><h3>Login</h3><input type="text" id="loginEmail" placeholder="E-mail"><input type="password" id="loginSenha" placeholder="Senha"><div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div><button id="btnLogin">Entrar</button><button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button><hr style="margin:15px 0"><button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button></div><div id="cadastroPanel" style="display:none;"><h3>Cadastro</h3><input type="text" id="cadNome" placeholder="Nome completo *"><input type="text" id="cadNomeSocial" placeholder="Nome social"><input type="date" id="cadDataNasc"><div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')"><button type="button" id="buscarCepCadastro" class="buscar-cep">🔍</button></div><input type="text" id="cadEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div><input type="text" id="cadReferencia" placeholder="Ponto referência"><input type="text" id="cadTelefone" placeholder="Telefone"><input type="email" id="cadEmail" placeholder="E-mail *"><input type="password" id="cadSenha" placeholder="Senha *"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *"><button id="btnCadastrar">Cadastrar</button></div><div id="perfilPanel" style="display:none;"><h3>Meu Perfil</h3><input type="text" id="perfilNome" placeholder="Nome"><input type="text" id="perfilNomeSocial" placeholder="Nome social"><input type="date" id="perfilDataNasc"><div class="cep-grupo"><input type="text" id="perfilCep" placeholder="CEP"><button type="button" id="buscarCepPerfil" class="buscar-cep">🔍</button></div><input type="text" id="perfilEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="perfilNumero" placeholder="Número"></div><div><input type="text" id="perfilComplemento" placeholder="Complemento"></div></div><input type="text" id="perfilReferencia" placeholder="Referência"><input type="text" id="perfilTelefone" placeholder="Telefone"><input type="email" id="perfilEmail" readonly><input type="password" id="perfilNovaSenha" placeholder="Nova senha"><button id="btnAtualizarPerfil">Atualizar</button><button id="btnSair" style="background:#e74c3c;">Sair</button></div><div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div></div></div>
 
 <div id="modalEnderecoPedido" class="modal"><div class="modal-content"><h3>📦 Informe seus dados</h3><input type="text" id="pedidoNome" placeholder="Seu nome *"><input type="text" id="pedidoTelefone" placeholder="Telefone *"><div class="cep-grupo"><input type="text" id="pedidoCep" placeholder="CEP"><button type="button" id="buscarCepPedido" class="buscar-cep">🔍</button></div><input type="text" id="pedidoEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="pedidoNumero" placeholder="Número"></div><div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div></div><input type="text" id="pedidoReferencia" placeholder="Ponto referência"><button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button><button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button></div></div>
 
-<div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:900px; width:95%;"><h3>🔧 Área Administrativa</h3><div class="admin-tabs"><button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button><button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button></div><div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto-row"><div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div><div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div><div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div><div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div><div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div><div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div><div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoGitHub" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 SALVAR TUDO NO GITHUB</button><p style="font-size:0.7rem; margin-top:5px;">Clique para salvar permanentemente todas as alterações</p></div></div><div id="tabCabecalho" class="admin-tab-content"><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div><div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div></div><div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Tudo</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div></div></div>
+<div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:900px; width:95%;"><h3>🔧 Área Administrativa</h3><div class="admin-tabs"><button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button><button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button></div><div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto-row"><div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div><div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div><div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div><div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div><div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div><div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div><div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 SALVAR TODAS ALTERAÇÕES</button><p style="font-size:0.7rem; margin-top:5px;">Clique para salvar permanentemente no banco de dados</p></div></div><div id="tabCabecalho" class="admin-tab-content"><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div><div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div></div><div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div></div></div>
 
 <div id="modalAdminSenha" class="modal"><div class="modal-content"><h3>🔐 Acesso Admin</h3><input type="password" id="adminSenha" placeholder="Senha administrativa"><button id="btnVerificarAdmin">Entrar</button><button id="btnFecharAdminModal" style="background:#999;">Cancelar</button></div></div>
 
@@ -114,24 +116,17 @@
 <footer><p>© 2026 Doces Di - PIX: 21965783597 | Mercado Pago</p></footer>
 
 <script>
-    // ==================== CONFIGURAÇÕES DO GITHUB ====================
-    // TOKEN INSERIDO ABAIXO (SEU TOKEN PESSOAL)
-    const GITHUB_TOKEN = "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";
-    const GITHUB_USER = "gengar714";
-    const GITHUB_REPO = "docesdi";
-    const GITHUB_FILE = "produtos.json";
-    const GITHUB_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+    // ==================== CONFIGURAÇÕES DO SUPABASE ====================
+    const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJLiZ1Ijoib3Bp";
     
-    let dadosCompletos = {
-        produtos: [],
-        logo: { nome: "", slogan: "", heroTitle: "" },
-        hero: { imagem: "" },
-        deliveryAtivo: true
-    };
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    let produtos = [];
+    let configs = { logo_nome: "Doces Di", logo_slogan: "A vida é mais doce quando compartilhada", hero_title: "Sobremesas Irresistíveis", hero_imagem: "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200", delivery_ativo: "true" };
     let carrinho = [], metodoSelecionado = null, usuarioLogado = null, usuarios = [];
     
-    // ==================== FUNÇÕES DE LEITURA/ESCRITA NO GITHUB ====================
     function mostrarStatus(mensagem, sucesso = true) {
         const status = document.getElementById('saveStatus');
         status.textContent = sucesso ? `✅ ${mensagem}` : `❌ ${mensagem}`;
@@ -140,76 +135,122 @@
         setTimeout(() => { status.style.display = 'none'; }, 3000);
     }
     
-    async function lerDoGitHub() {
+    async function carregarDados() {
         try {
-            const response = await fetch(GITHUB_URL, {
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                const conteudo = JSON.parse(atob(data.content));
-                dadosCompletos = conteudo;
-                return true;
-            } else if (response.status === 404) {
-                console.log("Arquivo não encontrado, usando dados padrão");
-                return false;
+            // Carregar produtos
+            const { data: produtosData, error: produtosError } = await supabaseClient
+                .from('produtos')
+                .select('*')
+                .order('id');
+            
+            if (produtosError) throw produtosError;
+            produtos = produtosData || [];
+            
+            // Carregar configurações
+            const { data: configData, error: configError } = await supabaseClient
+                .from('config')
+                .select('chave, valor');
+            
+            if (configError) throw configError;
+            
+            if (configData) {
+                configData.forEach(item => {
+                    configs[item.chave] = item.valor;
+                });
             }
-            return false;
+            
+            // Aplicar na interface
+            document.getElementById('logoNome').innerText = configs.logo_nome;
+            document.getElementById('logoSlogan').innerText = configs.logo_slogan;
+            document.getElementById('heroTitle').innerText = configs.hero_title;
+            document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${configs.hero_imagem}')`);
+            
+            renderizarProdutos();
+            atualizarCarrinho();
+            return true;
         } catch (error) {
-            console.error("Erro ao ler do GitHub:", error);
+            console.error("Erro ao carregar dados:", error);
+            mostrarStatus("Erro ao carregar dados!", false);
             return false;
         }
     }
     
-    async function salvarNoGitHub() {
-        mostrarStatus("Salvando no GitHub...", true);
+    async function salvarTodosOsDados() {
+        mostrarStatus("Salvando no Supabase...", true);
+        
         try {
-            let sha = null;
-            const getResponse = await fetch(GITHUB_URL, {
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-            });
-            if (getResponse.ok) {
-                const data = await getResponse.json();
-                sha = data.sha;
+            // Salvar produtos
+            for (const produto of produtos) {
+                const { error } = await supabaseClient
+                    .from('produtos')
+                    .upsert(produto, { onConflict: 'id' });
+                if (error) throw error;
             }
             
-            const conteudo = btoa(JSON.stringify(dadosCompletos, null, 2));
-            const body = { message: "Atualização via Admin Doces Di", content: conteudo };
-            if (sha) body.sha = sha;
+            // Salvar configurações
+            const configsToSave = [
+                { chave: "logo_nome", valor: configs.logo_nome },
+                { chave: "logo_slogan", valor: configs.logo_slogan },
+                { chave: "hero_title", valor: configs.hero_title },
+                { chave: "hero_imagem", valor: configs.hero_imagem },
+                { chave: "delivery_ativo", valor: configs.delivery_ativo }
+            ];
             
-            const response = await fetch(GITHUB_URL, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-            
-            if (response.ok) {
-                mostrarStatus("Salvo com sucesso! Recarregando...", true);
-                setTimeout(() => location.reload(), 1500);
-                return true;
-            } else {
-                mostrarStatus("Erro ao salvar!", false);
-                return false;
+            for (const config of configsToSave) {
+                const { error } = await supabaseClient
+                    .from('config')
+                    .upsert(config, { onConflict: 'chave' });
+                if (error) throw error;
             }
+            
+            mostrarStatus("Salvo com sucesso! Recarregando...", true);
+            setTimeout(() => location.reload(), 1500);
+            return true;
         } catch (error) {
-            mostrarStatus("Erro de conexão!", false);
+            console.error("Erro ao salvar:", error);
+            mostrarStatus("Erro ao salvar!", false);
             return false;
         }
     }
     
-    // ==================== FUNÇÕES DO ADMIN ====================
+    function renderizarProdutos() {
+        const grid = document.getElementById('produtosGrid');
+        if (!grid) return;
+        if (produtos.length === 0) {
+            grid.innerHTML = '<div class="loading">Nenhum produto cadastrado</div>';
+            return;
+        }
+        grid.innerHTML = '';
+        produtos.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${p.imagem}" class="card-img" onerror="this.src='https://placehold.co/600x400/f0e4da/d4a373?text=${encodeURIComponent(p.nome)}'">
+                <div class="card-info">
+                    <div class="card-nome">${p.nome}</div>
+                    <div class="card-descricao">${p.descricao}</div>
+                    <div class="card-footer">
+                        <span class="card-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</span>
+                        <span class="estoque-badge">📦 ${p.estoque}</span>
+                    </div>
+                    <button class="btn-comprar" ${p.estoque <= 0 ? 'disabled' : ''}>${p.estoque > 0 ? 'Adicionar' : 'Esgotado'}</button>
+                </div>
+            `;
+            const btn = card.querySelector('.btn-comprar');
+            if (p.estoque > 0) btn.addEventListener('click', () => adicionarAoCarrinho(p.id));
+            grid.appendChild(card);
+        });
+    }
+    
     function renderizarAdminLista() {
         const container = document.getElementById('listaAdminProdutos');
         if (!container) return;
-        if (dadosCompletos.produtos.length === 0) {
+        if (produtos.length === 0) {
             container.innerHTML = "<p>Nenhum produto cadastrado</p>";
             return;
         }
         container.innerHTML = '';
-        dadosCompletos.produtos.forEach(p => {
+        produtos.forEach(p => {
             const div = document.createElement('div');
             div.className = 'produto-admin-item';
             div.innerHTML = `
@@ -223,430 +264,4 @@
                         <div class="upload-mini-label" style="font-size:0.7rem; padding:6px;">📁 Imagem</div>
                         <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
                     </div>
-                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12px; border-radius:20px;">💾</button>
-                    <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:20px;">🗑️</button>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-        
-        document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
-            input.addEventListener('change', async (e) => {
-                const id = parseInt(input.getAttribute('data-id'));
-                const file = e.target.files[0];
-                if(file && (file.type==='image/jpeg'||file.type==='image/png')) {
-                    const imagemBase64 = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(file);});
-                    const prod = dadosCompletos.produtos.find(p=>p.id===id);
-                    if(prod) {
-                        prod.imagem = imagemBase64;
-                        alert("Imagem carregada! Clique em Salvar para confirmar.");
-                        renderizarAdminLista();
-                        renderizarProdutos();
-                    }
-                } else { alert("Formato inválido! Use JPEG ou PNG."); }
-            });
-        });
-    }
-    
-    window.editarProdutoLocal = function(id) {
-        const p = dadosCompletos.produtos.find(p=>p.id==id);
-        if(p) {
-            p.nome = document.querySelector(`.edit-nome[data-id="${id}"]`).value;
-            p.descricao = document.querySelector(`.edit-desc[data-id="${id}"]`).value;
-            p.preco = parseFloat(document.querySelector(`.edit-preco[data-id="${id}"]`).value);
-            p.estoque = parseInt(document.querySelector(`.edit-estoque[data-id="${id}"]`).value);
-            const imagemUrl = document.querySelector(`.edit-imagem[data-id="${id}"]`).value;
-            if(imagemUrl) p.imagem = imagemUrl;
-            alert("Produto atualizado localmente! Clique em SALVAR TUDO NO GITHUB para salvar permanentemente.");
-            renderizarAdminLista();
-            renderizarProdutos();
-        }
-    };
-    
-    window.excluirProdutoLocal = function(id) {
-        if(confirm("Excluir este produto?")) {
-            dadosCompletos.produtos = dadosCompletos.produtos.filter(p=>p.id!==id);
-            renderizarAdminLista();
-            renderizarProdutos();
-        }
-    };
-    
-    async function adicionarProdutoAdmin() {
-        const nome = document.getElementById('prodNome').value.trim();
-        const desc = document.getElementById('prodDesc').value.trim();
-        const preco = parseFloat(document.getElementById('prodPreco').value);
-        const estoque = parseInt(document.getElementById('prodEstoque').value);
-        let imagem = document.getElementById('prodImagem').value.trim();
-        const file = document.getElementById('uploadImagem').files[0];
-        if(file && (file.type==='image/jpeg'||file.type==='image/png')) {
-            imagem = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(file);});
-        }
-        if(!imagem) imagem = "https://placehold.co/600x400/f0e4da/d4a373?text=" + encodeURIComponent(nome);
-        if(!nome || isNaN(preco)) { alert("Preencha nome e preço!"); return; }
-        const novoId = dadosCompletos.produtos.length ? Math.max(...dadosCompletos.produtos.map(p=>p.id))+1 : 4;
-        dadosCompletos.produtos.push({ id:novoId, nome, descricao:desc, preco, estoque, imagem });
-        renderizarAdminLista();
-        renderizarProdutos();
-        alert("Produto adicionado! Clique em SALVAR TUDO NO GITHUB para salvar permanentemente.");
-        document.getElementById('prodNome').value = '';
-        document.getElementById('prodDesc').value = '';
-        document.getElementById('prodPreco').value = '';
-        document.getElementById('prodEstoque').value = '';
-        document.getElementById('prodImagem').value = '';
-        document.getElementById('uploadImagem').value = '';
-    }
-    
-    function renderizarProdutos() {
-        const grid = document.getElementById('produtosGrid');
-        if(!grid) return;
-        grid.innerHTML = '';
-        dadosCompletos.produtos.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${p.imagem}" class="card-img" onerror="this.src='https://placehold.co/600x400/f0e4da/d4a373?text=${encodeURIComponent(p.nome)}'">
-                <div class="card-info">
-                    <div class="card-nome">${p.nome}</div>
-                    <div class="card-descricao">${p.descricao}</div>
-                    <div class="card-footer">
-                        <span class="card-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</span>
-                        <span class="estoque-badge">📦 ${p.estoque}</span>
-                    </div>
-                    <button class="btn-comprar" ${p.estoque<=0 ? 'disabled' : ''}>${p.estoque>0 ? 'Adicionar' : 'Esgotado'}</button>
-                </div>
-            `;
-            const btn = card.querySelector('.btn-comprar');
-            if(p.estoque>0) btn.addEventListener('click', () => adicionarAoCarrinho(p.id));
-            grid.appendChild(card);
-        });
-    }
-    
-    function adicionarAoCarrinho(id) {
-        const prod = dadosCompletos.produtos.find(p=>p.id===id);
-        if(!prod || prod.estoque<=0) return;
-        const item = carrinho.find(i=>i.id===id);
-        if(item) item.quantidade++;
-        else carrinho.push({id, nome:prod.nome, preco:prod.preco, quantidade:1});
-        salvarCarrinho();
-        atualizarCarrinho();
-    }
-    
-    function atualizarCarrinho() {
-        const container = document.getElementById('itens-carrinho');
-        const totalSpan = document.getElementById('valor-total');
-        if(carrinho.length===0) {
-            container.innerHTML = '<p>Carrinho vazio</p>';
-            totalSpan.innerText = 'R$ 0,00';
-            document.getElementById('btn-finalizar').disabled = true;
-            document.getElementById('pagamento-area').style.display = 'none';
-            return;
-        }
-        container.innerHTML = '';
-        let total=0;
-        carrinho.forEach(i=>{
-            total += i.preco*i.quantidade;
-            container.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><strong>${i.nome}</strong><br><small>${i.quantidade}x R$ ${i.preco.toFixed(2).replace('.',',')}</small></div><span>R$ ${(i.preco*i.quantidade).toFixed(2).replace('.',',')}</span></div>`;
-        });
-        totalSpan.innerText = `R$ ${total.toFixed(2).replace('.',',')}`;
-        document.getElementById('btn-finalizar').disabled = false;
-        document.getElementById('pagamento-area').style.display = 'block';
-    }
-    
-    function selecionarMetodo(metodo) {
-        metodoSelecionado = metodo;
-        document.getElementById('detalhe-pix').style.display = metodo==='pix' ? 'block' : 'none';
-        document.getElementById('detalhe-mercadopago').style.display = metodo==='mercadopago' ? 'block' : 'none';
-    }
-    
-    function copiarChavePix() { navigator.clipboard.writeText("21965783597"); alert("Chave PIX copiada!"); }
-    
-    function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
-    function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); if(data) carrinho = JSON.parse(data); else carrinho = []; }
-    
-    function carregarUsuarios() { const data = localStorage.getItem("docesdi_usuarios"); if(data) usuarios = JSON.parse(data); else usuarios = []; }
-    function salvarUsuarios() { localStorage.setItem("docesdi_usuarios", JSON.stringify(usuarios)); }
-    function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
-    
-    function iniciarFinalizacaoPedido() {
-        if(carrinho.length===0) { alert("Carrinho vazio!"); return; }
-        if(!metodoSelecionado) { alert("Selecione um método de pagamento!"); return; }
-        if(usuarioLogado) {
-            if(dadosCompletos.deliveryAtivo) abrirModalEntrega();
-            else finalizarPedidoComDados(usuarioLogado, 'retirada');
-        } else {
-            document.getElementById('modalEnderecoPedido').style.display = 'flex';
-        }
-    }
-    
-    function abrirModalEntrega() {
-        let modal = document.getElementById('modalEntrega');
-        if(!modal) {
-            modal = document.createElement('div');
-            modal.id = 'modalEntrega';
-            modal.className = 'modal';
-            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro, São Paulo - SP</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
-            document.body.appendChild(modal);
-        }
-        let opcaoSelecionada = null;
-        modal.querySelectorAll('.opcao-entrega').forEach(el => {
-            el.onclick = () => {
-                modal.querySelectorAll('.opcao-entrega').forEach(e=>e.classList.remove('selecionado'));
-                el.classList.add('selecionado');
-                opcaoSelecionada = el.getAttribute('data-opcao');
-            };
-        });
-        modal.querySelector('#btnConfirmarEntrega').onclick = () => {
-            if(!opcaoSelecionada) { alert("Selecione uma opção!"); return; }
-            modal.style.display = 'none';
-            finalizarPedidoComDados(usuarioLogado, opcaoSelecionada);
-        };
-        modal.querySelector('#btnCancelarEntrega').onclick = () => modal.style.display = 'none';
-        modal.style.display = 'flex';
-    }
-    
-    function finalizarPedidoComDados(cliente, opcaoEntrega = 'retirada') {
-        const total = carrinho.reduce((s,i)=>s+i.preco*i.quantidade,0);
-        let mensagem = `🧁 *NOVO PEDIDO - ${dadosCompletos.logo.nome}* 🧁\n\n👤 *Cliente:* ${cliente.nome || cliente.pedidoNome || 'Cliente'}\n📞 *Telefone:* ${cliente.telefone || cliente.pedidoTelefone || 'Não informado'}\n\n📋 *Itens:*\n`;
-        carrinho.forEach(i => mensagem += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco*i.quantidade).toFixed(2).replace('.',',')}\n`);
-        mensagem += `\n💰 *Total:* R$ ${total.toFixed(2).replace('.',',')}\n💳 *Pagamento:* ${metodoSelecionado === 'pix' ? 'PIX (21965783597)' : 'Mercado Pago'}\n\n`;
-        if(!dadosCompletos.deliveryAtivo || opcaoEntrega === 'retirada') {
-            mensagem += `🏪 *RETIRADA NO LOCAL*\n📍 Rua das Delícias, 123 - Centro, São Paulo - SP\n`;
-        } else {
-            const endCompleto = `${cliente.endereco || ''}, ${cliente.numero || ''}${cliente.complemento ? ' - '+cliente.complemento : ''}`;
-            mensagem += `🚚 *DELIVERY*\n📍 ${endCompleto}\n${cliente.referencia ? `📍 Referência: ${cliente.referencia}\n` : ''}`;
-        }
-        mensagem += `\n✨ Aguardo confirmação!`;
-        for(let item of carrinho) {
-            const prod = dadosCompletos.produtos.find(p=>p.id===item.id);
-            if(prod) prod.estoque -= item.quantidade;
-        }
-        carrinho = [];
-        salvarCarrinho();
-        renderizarProdutos();
-        atualizarCarrinho();
-        window.open(`https://api.whatsapp.com/send?phone=5521965783597&text=${encodeURIComponent(mensagem)}`, '_blank');
-        alert("Pedido enviado! Obrigado!");
-        metodoSelecionado = null;
-        document.getElementById('detalhe-pix').style.display = 'none';
-        document.getElementById('detalhe-mercadopago').style.display = 'none';
-    }
-    
-    async function carregarDadosIniciais() {
-        await lerDoGitHub();
-        document.getElementById('logoNome').innerText = dadosCompletos.logo.nome;
-        document.getElementById('logoSlogan').innerText = dadosCompletos.logo.slogan;
-        document.getElementById('heroTitle').innerText = dadosCompletos.logo.heroTitle;
-        document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${dadosCompletos.hero.imagem}')`);
-        document.getElementById('toggleDeliveryAtivo').checked = dadosCompletos.deliveryAtivo;
-        renderizarProdutos();
-        atualizarCarrinho();
-    }
-    
-    // Eventos
-    document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); location.reload(true); });
-    document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
-    document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
-        if(hashSenha(document.getElementById('adminSenha').value) === CryptoJS.SHA256("admin123").toString()) {
-            document.getElementById('modalAdminSenha').style.display = 'none';
-            document.getElementById('modalAdmin').style.display = 'flex';
-            document.getElementById('editLogoNome').value = dadosCompletos.logo.nome;
-            document.getElementById('editLogoSlogan').value = dadosCompletos.logo.slogan;
-            document.getElementById('editHeroTitle').value = dadosCompletos.logo.heroTitle;
-            document.getElementById('editHeroImage').value = dadosCompletos.hero.imagem;
-            document.getElementById('previewHeroImg').src = dadosCompletos.hero.imagem;
-            document.getElementById('toggleDeliveryAtivo').checked = dadosCompletos.deliveryAtivo;
-            renderizarAdminLista();
-        } else alert("Senha incorreta!");
-    });
-    
-    document.getElementById('btnSalvarAdmin')?.addEventListener('click', () => {
-        dadosCompletos.logo.nome = document.getElementById('editLogoNome').value;
-        dadosCompletos.logo.slogan = document.getElementById('editLogoSlogan').value;
-        dadosCompletos.logo.heroTitle = document.getElementById('editHeroTitle').value;
-        dadosCompletos.hero.imagem = document.getElementById('editHeroImage').value;
-        dadosCompletos.deliveryAtivo = document.getElementById('toggleDeliveryAtivo').checked;
-        renderizarProdutos();
-        document.getElementById('logoNome').innerText = dadosCompletos.logo.nome;
-        document.getElementById('logoSlogan').innerText = dadosCompletos.logo.slogan;
-        document.getElementById('heroTitle').innerText = dadosCompletos.logo.heroTitle;
-        document.getElementById('heroSection').style.setProperty('--hero-bg', `url('${dadosCompletos.hero.imagem}')`);
-        alert("Alterações salvas localmente! Clique em SALVAR TUDO NO GITHUB para salvar permanentemente.");
-    });
-    
-    document.getElementById('btnSalvarNoGitHub')?.addEventListener('click', async () => {
-        await salvarNoGitHub();
-    });
-    
-    document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
-    document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
-    
-    document.querySelectorAll('.admin-tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('ativo'));
-            document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('ativo'));
-            btn.classList.add('ativo');
-            document.getElementById(`tab${btn.getAttribute('data-tab').charAt(0).toUpperCase()+btn.getAttribute('data-tab').slice(1)}`).classList.add('ativo');
-        });
-    });
-    
-    // Cliente Login
-    document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
-        document.getElementById('loginPanel').style.display='block';
-        document.getElementById('cadastroPanel').style.display='none';
-        document.getElementById('perfilPanel').style.display='none';
-        document.getElementById('recuperarPanel').style.display='none';
-    });
-    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
-        document.getElementById('loginPanel').style.display='none';
-        document.getElementById('cadastroPanel').style.display='block';
-        document.getElementById('perfilPanel').style.display='none';
-        document.getElementById('recuperarPanel').style.display='none';
-    });
-    
-    document.getElementById('btnCadastrar')?.addEventListener('click', () => {
-        const nome = document.getElementById('cadNome').value;
-        const email = document.getElementById('cadEmail').value;
-        const senha = document.getElementById('cadSenha').value;
-        const conf = document.getElementById('cadConfirmarSenha').value;
-        if(!nome || !email || !senha) { alert("Preencha nome, email e senha!"); return; }
-        if(senha !== conf) { alert("Senhas não conferem!"); return; }
-        if(usuarios.find(u=>u.email===email)) { alert("Email já cadastrado!"); return; }
-        usuarios.push({ email, senha:hashSenha(senha), nome, nomeSocial:document.getElementById('cadNomeSocial').value, dataNasc:document.getElementById('cadDataNasc').value, cep:document.getElementById('cadCep').value, endereco:document.getElementById('cadEndereco').value, numero:document.getElementById('cadNumero').value, complemento:document.getElementById('cadComplemento').value, referencia:document.getElementById('cadReferencia').value, telefone:document.getElementById('cadTelefone').value });
-        salvarUsuarios();
-        alert("Cadastro realizado!");
-        document.getElementById('modalCliente').style.display = 'none';
-    });
-    
-    document.getElementById('btnLogin')?.addEventListener('click', () => {
-        const email = document.getElementById('loginEmail').value;
-        const senha = hashSenha(document.getElementById('loginSenha').value);
-        const user = usuarios.find(u=>u.email===email && u.senha===senha);
-        if(user) {
-            usuarioLogado = user;
-            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
-            atualizarBotaoCliente();
-            document.getElementById('modalCliente').style.display = 'none';
-            alert(`Bem-vindo, ${user.nome}!`);
-        } else alert("Email ou senha incorretos!");
-    });
-    
-    document.getElementById('btnSair')?.addEventListener('click', () => {
-        usuarioLogado = null;
-        localStorage.removeItem("docesdi_usuario_logado");
-        atualizarBotaoCliente();
-        document.getElementById('modalCliente').style.display='none';
-        alert("Saiu da conta!");
-    });
-    
-    document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
-    document.getElementById('buscarCepPedido')?.addEventListener('click', () => buscarCepClick('pedido'));
-    
-    function atualizarBotaoCliente() {
-        const area = document.getElementById('clienteButtonArea');
-        if(usuarioLogado) {
-            area.innerHTML = `<div class="usuario-info"><span>👤 ${usuarioLogado.nome.split(' ')[0]}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
-            document.getElementById('btnSairRapido')?.addEventListener('click', () => {
-                usuarioLogado = null;
-                localStorage.removeItem("docesdi_usuario_logado");
-                atualizarBotaoCliente();
-                alert("Saiu!");
-            });
-        } else {
-            area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
-            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => {
-                document.getElementById('modalCliente').style.display = 'flex';
-            });
-        }
-    }
-    
-    async function buscarCep(cep, tipo) {
-        cep = cep.replace(/\D/g,'');
-        if(cep.length!==8) { alert("CEP inválido!"); return; }
-        try {
-            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await resp.json();
-            if(data.erro) { alert("CEP não encontrado!"); return; }
-            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
-            if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco;
-            else if(tipo==='perfil') document.getElementById('perfilEndereco').value = endereco;
-            else if(tipo==='pedido') document.getElementById('pedidoEndereco').value = endereco;
-        } catch(e) { alert("Erro ao buscar CEP!"); }
-    }
-    function buscarCepClick(tipo) {
-        const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCep':'pedidoCep')).value;
-        buscarCep(cep, tipo);
-    }
-    
-    document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
-    document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
-    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', () => {
-        if(!usuarioLogado) return;
-        usuarioLogado.nome = document.getElementById('perfilNome').value;
-        usuarioLogado.nomeSocial = document.getElementById('perfilNomeSocial').value;
-        usuarioLogado.dataNasc = document.getElementById('perfilDataNasc').value;
-        usuarioLogado.cep = document.getElementById('perfilCep').value;
-        usuarioLogado.endereco = document.getElementById('perfilEndereco').value;
-        usuarioLogado.numero = document.getElementById('perfilNumero').value;
-        usuarioLogado.complemento = document.getElementById('perfilComplemento').value;
-        usuarioLogado.referencia = document.getElementById('perfilReferencia').value;
-        usuarioLogado.telefone = document.getElementById('perfilTelefone').value;
-        const novaSenha = document.getElementById('perfilNovaSenha').value;
-        if(novaSenha) usuarioLogado.senha = hashSenha(novaSenha);
-        const idx = usuarios.findIndex(u=>u.email===usuarioLogado.email);
-        if(idx!==-1) usuarios[idx]=usuarioLogado;
-        salvarUsuarios();
-        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-        alert("Perfil atualizado!");
-    });
-    
-    document.getElementById('btnConfirmarDadosPedido')?.addEventListener('click', () => {
-        const dados = {
-            nome: document.getElementById('pedidoNome').value,
-            telefone: document.getElementById('pedidoTelefone').value,
-            endereco: document.getElementById('pedidoEndereco').value,
-            numero: document.getElementById('pedidoNumero').value,
-            complemento: document.getElementById('pedidoComplemento').value,
-            referencia: document.getElementById('pedidoReferencia').value
-        };
-        if(!dados.nome || !dados.telefone) { alert("Preencha nome e telefone!"); return; }
-        document.getElementById('modalEnderecoPedido').style.display = 'none';
-        if(dadosCompletos.deliveryAtivo) {
-            let modal = document.getElementById('modalEntrega');
-            if(!modal) {
-                modal = document.createElement('div');
-                modal.id = 'modalEntrega';
-                modal.className = 'modal';
-                modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
-                document.body.appendChild(modal);
-            }
-            let opcao = null;
-            modal.querySelectorAll('.opcao-entrega').forEach(el => {
-                el.onclick = () => {
-                    modal.querySelectorAll('.opcao-entrega').forEach(e=>e.classList.remove('selecionado'));
-                    el.classList.add('selecionado');
-                    opcao = el.getAttribute('data-opcao');
-                };
-            });
-            modal.querySelector('#btnConfirmarEntrega').onclick = () => {
-                if(!opcao) { alert("Selecione uma opção!"); return; }
-                modal.style.display = 'none';
-                finalizarPedidoComDados(dados, opcao);
-            };
-            modal.style.display = 'flex';
-        } else {
-            finalizarPedidoComDados(dados, 'retirada');
-        }
-    });
-    document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
-    
-    window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-    
-    carregarUsuarios();
-    const savedUser = localStorage.getItem("docesdi_usuario_logado");
-    if(savedUser) usuarioLogado = JSON.parse(savedUser);
-    carregarCarrinho();
-    carregarDadosIniciais();
-    atualizarBotaoCliente();
-</script>
-</body>
-</html>
+                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12
