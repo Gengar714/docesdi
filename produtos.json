@@ -1,0 +1,37 @@
+{
+  "produtos": [
+    {
+      "id": 1,
+      "nome": "Mousse de Maracujá",
+      "descricao": "Cremoso com toque azedinho do maracujá",
+      "preco": 18.90,
+      "estoque": 8,
+      "imagem": "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      "id": 2,
+      "nome": "Cheesecake New York",
+      "descricao": "Base crocante com calda de frutas vermelhas",
+      "preco": 16.50,
+      "estoque": 5,
+      "imagem": "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      "id": 3,
+      "nome": "Petit Gâteau",
+      "descricao": "Bolinho quente com doce de leite e sorvete",
+      "preco": 22.00,
+      "estoque": 3,
+      "imagem": "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600"
+    }
+  ],
+  "logo": {
+    "nome": "Doces Di",
+    "slogan": "A vida é mais doce quando compartilhada",
+    "heroTitle": "Sobremesas Irresistíveis"
+  },
+  "hero": {
+    "imagem": "https://images.pexels.com/photos/2067418/pexels-photo-2067418.jpeg?auto=compress&cs=tinysrgb&w=1200"
+  },
+  "deliveryAtivo": true
+}
