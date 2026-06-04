@@ -25,7 +25,7 @@
         .grid-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: transform 0.2s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #f0e4da; }
         .card-info { padding: 15px; display: flex; flex-direction: column; flex: 1; }
         .card-nome { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; }
         .card-descricao { font-size: 0.85rem; color: #8b7d77; margin-bottom: 15px; flex: 1; }
@@ -38,51 +38,60 @@
         .btn-finalizar-pedido { display: block; width: 100%; background: linear-gradient(135deg, #25d366, #128C7E); color: white; text-align: center; padding: 16px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; border: none; cursor: pointer; margin-top: 20px; }
         .pagamento-area { margin-top: 15px; }
         .metodos-pagamento { display: flex; gap: 12px; margin-bottom: 15px; }
-        .metodos-pagamento button { flex: 1; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; }
+        .metodos-pagamento button { flex: 1; padding: 12px; border-radius: 30px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .metodos-pagamento button:hover { background: #fef9f5; border-color: #d4a373; }
         .detalhe-pagamento { margin-top: 15px; padding: 15px; background: #fef9f5; border-radius: 15px; text-align: center; }
-        .btn-mercado-pago-link { display: inline-block; background: linear-gradient(135deg, #009EE3, #0072BC); color: white; padding: 12px 25px; border-radius: 40px; text-decoration: none; font-weight: bold; }
+        .btn-mercado-pago-link { display: inline-block; background: linear-gradient(135deg, #009EE3, #0072BC); color: white; padding: 12px 25px; border-radius: 40px; text-decoration: none; font-weight: bold; margin-top: 8px; }
         .btn-copiar-pix { background: #d4a373; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; margin-top: 8px; }
-        .limpar-cache-btn { position: fixed; bottom: 20px; left: 20px; background: #999; color: white; border: none; padding: 8px 15px; border-radius: 30px; cursor: pointer; font-size: 0.7rem; z-index: 1000; }
+        .limpar-cache-btn { position: fixed; bottom: 20px; left: 20px; background: #999; color: white; border: none; padding: 8px 15px; border-radius: 30px; cursor: pointer; font-size: 0.7rem; z-index: 1000; opacity: 0.7; transition: opacity 0.2s; }
+        .limpar-cache-btn:hover { opacity: 1; background: #e74c3c; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .modal-content h3 { color: #654321; margin-bottom: 20px; border-bottom: 2px solid #f0e4da; padding-bottom: 10px; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 25px; border: 1px solid #ddd; }
-        .modal-content button { background: #d4a373; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; }
+        .modal-content button { background: #d4a373; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; transition: all 0.2s; }
+        .modal-content button:hover { background: #c49a6c; transform: scale(1.02); }
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { flex: 1; background: #f0e4da; color: #4a3b32; border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: #d4a373; color: white; }
         .cep-grupo { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
         .cep-grupo input { flex: 3; margin: 0; }
-        .cep-grupo button { width: auto; padding: 10px 15px; margin: 0; background: #3498db; }
+        .cep-grupo button { width: auto; padding: 10px 15px; margin: 0; background: #3498db; border: none; border-radius: 25px; cursor: pointer; color: white; }
         .linha-dois-campos { display: flex; gap: 10px; }
         .opcoes-entrega { display: flex; gap: 20px; margin: 20px 0; }
-        .opcao-entrega { flex: 1; text-align: center; padding: 20px; border: 2px solid #f0e4da; border-radius: 20px; cursor: pointer; }
-        .opcao-entrega.selecionado { border-color: #d4a373; background: #fef9f5; }
+        .opcao-entrega { flex: 1; text-align: center; padding: 20px; border: 2px solid #f0e4da; border-radius: 20px; cursor: pointer; transition: all 0.3s; background: white; }
+        .opcao-entrega:hover { transform: translateY(-3px); border-color: #d4a373; }
+        .opcao-entrega.selecionado { border-color: #d4a373; background: #fef9f5; box-shadow: 0 4px 12px rgba(212,163,115,0.3); }
+        .opcao-entrega span { font-size: 2rem; display: block; margin-bottom: 10px; }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #f0e4da; }
-        .admin-tab { padding: 12px 24px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; color: #8b7d77; }
+        .admin-tab { padding: 12px 24px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 1rem; color: #8b7d77; transition: all 0.3s; }
         .admin-tab.ativo { color: #d4a373; border-bottom: 3px solid #d4a373; margin-bottom: -2px; }
         .admin-tab-content { display: none; }
         .admin-tab-content.ativo { display: block; }
         .form-produto-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; background: #fef9f5; padding: 20px; border-radius: 20px; align-items: flex-end; }
         .form-field { flex: 2; min-width: 180px; }
         .form-field.small { flex: 0.8; min-width: 100px; }
-        .form-field label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; }
+        .form-field label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; color: #654321; }
         .form-field input, .form-field textarea { width: 100%; padding: 10px; border-radius: 25px; border: 1px solid #ddd; }
         .upload-mini { position: relative; display: inline-block; width: 100%; }
         .upload-mini input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-        .upload-mini-label { background: #654321; color: white; padding: 10px; border-radius: 25px; cursor: pointer; text-align: center; }
-        .btn-add-produto { background: #25d366; color: white; border: none; padding: 12px 25px; border-radius: 30px; cursor: pointer; }
+        .upload-mini-label { background: #654321; color: white; padding: 10px; border-radius: 25px; cursor: pointer; text-align: center; font-size: 0.8rem; transition: all 0.2s; }
+        .upload-mini-label:hover { background: #4a3b32; transform: scale(1.02); }
+        .btn-add-produto { background: #25d366; color: white; border: none; padding: 12px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .btn-add-produto:hover { transform: scale(1.02); }
         .produto-admin-item { background: #fef9f5; padding: 15px; border-radius: 20px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
         .edit-field { padding: 8px; border-radius: 25px; border: 1px solid #ddd; }
         .toggle-switch { display: flex; align-items: center; gap: 15px; margin: 10px 0; }
-        .toggle-switch input { width: 50px; height: 25px; appearance: none; background: #ccc; border-radius: 25px; position: relative; cursor: pointer; }
+        .toggle-switch input { width: 50px; height: 25px; appearance: none; background: #ccc; border-radius: 25px; position: relative; cursor: pointer; transition: all 0.3s; }
         .toggle-switch input:checked { background: #25d366; }
         .toggle-switch input::before { content: ''; width: 21px; height: 21px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: all 0.3s; }
         .toggle-switch input:checked::before { left: 26px; }
         .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; }
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .carrinho-sidebar { position: static; } }
-        .loading { text-align: center; padding: 20px; color: #d4a373; }
-        .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; }
+        .loading { text-align: center; padding: 20px; color: #d4a373; font-size: 1.1rem; }
+        .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; font-weight: bold; }
+        .btn-salvar-supabase { background: #25d366 !important; margin-top: 20px !important; font-size: 1rem !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -101,16 +110,16 @@
 <section class="hero" id="heroSection"><h2 id="heroTitle"></h2></section>
 
 <!-- MODAIS -->
-<div id="modalCliente" class="modal"><div class="modal-content"><div class="tab-buttons"><button class="tab-btn ativo" id="tabLoginBtn">Entrar</button><button class="tab-btn" id="tabCadastroBtn">Cadastrar</button><button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button></div><div id="loginPanel"><h3>Login</h3><input type="text" id="loginEmail" placeholder="E-mail"><input type="password" id="loginSenha" placeholder="Senha"><div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div><button id="btnLogin">Entrar</button><button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button><hr style="margin:15px 0"><button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button></div><div id="cadastroPanel" style="display:none;"><h3>Cadastro</h3><input type="text" id="cadNome" placeholder="Nome completo *"><input type="text" id="cadNomeSocial" placeholder="Nome social"><input type="date" id="cadDataNasc"><div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')"><button type="button" id="buscarCepCadastro" class="buscar-cep">🔍</button></div><input type="text" id="cadEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div><input type="text" id="cadReferencia" placeholder="Ponto referência"><input type="text" id="cadTelefone" placeholder="Telefone"><input type="email" id="cadEmail" placeholder="E-mail *"><input type="password" id="cadSenha" placeholder="Senha *"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *"><button id="btnCadastrar">Cadastrar</button></div><div id="perfilPanel" style="display:none;"><h3>Meu Perfil</h3><input type="text" id="perfilNome" placeholder="Nome"><input type="text" id="perfilNomeSocial" placeholder="Nome social"><input type="date" id="perfilDataNasc"><div class="cep-grupo"><input type="text" id="perfilCep" placeholder="CEP"><button type="button" id="buscarCepPerfil" class="buscar-cep">🔍</button></div><input type="text" id="perfilEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="perfilNumero" placeholder="Número"></div><div><input type="text" id="perfilComplemento" placeholder="Complemento"></div></div><input type="text" id="perfilReferencia" placeholder="Referência"><input type="text" id="perfilTelefone" placeholder="Telefone"><input type="email" id="perfilEmail" readonly><input type="password" id="perfilNovaSenha" placeholder="Nova senha"><button id="btnAtualizarPerfil">Atualizar</button><button id="btnSair" style="background:#e74c3c;">Sair</button></div><div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div></div></div>
+<div id="modalCliente" class="modal"><div class="modal-content"><div class="tab-buttons"><button class="tab-btn ativo" id="tabLoginBtn">Entrar</button><button class="tab-btn" id="tabCadastroBtn">Cadastrar</button><button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button></div><div id="loginPanel"><h3>Login</h3><input type="text" id="loginEmail" placeholder="E-mail"><input type="password" id="loginSenha" placeholder="Senha"><div class="lembrar-checkbox"><input type="checkbox" id="lembrarLogin"> <label>Lembrar de mim</label></div><button id="btnLogin">Entrar</button><button id="btnEsqueciSenha" style="background:#999;">Esqueci minha senha</button><hr style="margin:15px 0"><button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button></div><div id="cadastroPanel" style="display:none;"><h3>Cadastro</h3><input type="text" id="cadNome" placeholder="Nome completo *"><input type="text" id="cadNomeSocial" placeholder="Nome social"><input type="date" id="cadDataNasc"><div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP" onkeypress="if(event.key==='Enter') buscarCepClick('cadastro')"><button type="button" id="buscarCepCadastro" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="cadEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div><input type="text" id="cadReferencia" placeholder="Ponto referência"><input type="text" id="cadTelefone" placeholder="Telefone"><input type="email" id="cadEmail" placeholder="E-mail *"><input type="password" id="cadSenha" placeholder="Senha *"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *"><button id="btnCadastrar">Cadastrar</button></div><div id="perfilPanel" style="display:none;"><h3>Meu Perfil</h3><input type="text" id="perfilNome" placeholder="Nome"><input type="text" id="perfilNomeSocial" placeholder="Nome social"><input type="date" id="perfilDataNasc"><div class="cep-grupo"><input type="text" id="perfilCep" placeholder="CEP"><button type="button" id="buscarCepPerfil" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="perfilEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="perfilNumero" placeholder="Número"></div><div><input type="text" id="perfilComplemento" placeholder="Complemento"></div></div><input type="text" id="perfilReferencia" placeholder="Referência"><input type="text" id="perfilTelefone" placeholder="Telefone"><input type="email" id="perfilEmail" readonly style="background:#f0f0f0;"><input type="password" id="perfilNovaSenha" placeholder="Nova senha (opcional)"><button id="btnAtualizarPerfil">Atualizar</button><button id="btnSair" style="background:#e74c3c;">Sair</button></div><div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div></div></div>
 
-<div id="modalEnderecoPedido" class="modal"><div class="modal-content"><h3>📦 Informe seus dados</h3><input type="text" id="pedidoNome" placeholder="Seu nome *"><input type="text" id="pedidoTelefone" placeholder="Telefone *"><div class="cep-grupo"><input type="text" id="pedidoCep" placeholder="CEP"><button type="button" id="buscarCepPedido" class="buscar-cep">🔍</button></div><input type="text" id="pedidoEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="pedidoNumero" placeholder="Número"></div><div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div></div><input type="text" id="pedidoReferencia" placeholder="Ponto referência"><button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button><button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button></div></div>
+<div id="modalEnderecoPedido" class="modal"><div class="modal-content"><h3>📦 Informe seus dados</h3><input type="text" id="pedidoNome" placeholder="Seu nome *"><input type="text" id="pedidoTelefone" placeholder="Telefone *"><div class="cep-grupo"><input type="text" id="pedidoCep" placeholder="CEP"><button type="button" id="buscarCepPedido" class="buscar-cep">🔍 Buscar</button></div><input type="text" id="pedidoEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="pedidoNumero" placeholder="Número"></div><div><input type="text" id="pedidoComplemento" placeholder="Complemento"></div></div><input type="text" id="pedidoReferencia" placeholder="Ponto referência"><button id="btnConfirmarDadosPedido" style="background:#25d366;">✅ Confirmar Pedido</button><button id="btnCancelarPedidoSemLogin" style="background:#999;">Cancelar</button></div></div>
 
-<div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:900px; width:95%;"><h3>🔧 Área Administrativa</h3><div class="admin-tabs"><button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button><button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button></div><div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto-row"><div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div><div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div><div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div><div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div><div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div><div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div><div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 SALVAR TODAS ALTERAÇÕES</button><p style="font-size:0.7rem; margin-top:5px;">Clique para salvar permanentemente no banco de dados</p></div></div><div id="tabCabecalho" class="admin-tab-content"><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div><div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div></div><div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div></div></div>
+<div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:900px; width:95%;"><h3>🔧 Área Administrativa</h3><div class="admin-tabs"><button class="admin-tab ativo" data-tab="produtos">🍰 Gestão de Produtos</button><button class="admin-tab" data-tab="cabecalho">🎨 Editar Cabeçalho</button></div><div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto-row"><div class="form-field"><label>📝 Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div><div class="form-field"><label>📋 Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição detalhada..."></textarea></div><div class="form-field small"><label>💰 Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div><div class="form-field small"><label>📦 Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div><div class="form-field"><label>🖼️ URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div><div class="form-field small"><label>📁 OU Upload</label><div class="upload-mini"><div class="upload-mini-label">📎 Escolher arquivo</div><input type="file" id="uploadImagem" accept="image/jpeg,image/png"></div></div><div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar Produto</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><div style="margin-top:20px; text-align:center;"><button id="btnSalvarNoSupabase" class="btn-salvar-supabase" style="background:#25d366; color:white; padding:14px 25px; border-radius:30px; border:none; cursor:pointer; font-weight:bold;">💾 SALVAR TODAS ALTERAÇÕES NO BANCO</button><p style="font-size:0.7rem; margin-top:8px; color:#666;">Clique para salvar permanentemente no Supabase</p></div></div><div id="tabCabecalho" class="admin-tab-content"><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🏷️ Logo e Frase</h4><input type="text" id="editLogoNome" placeholder="Nome da loja" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editLogoSlogan" placeholder="Slogan" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><input type="text" id="editHeroTitle" placeholder="Título do banner" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"></div><div style="background:#fef9f5; padding:15px; border-radius:15px; margin-bottom:20px;"><h4>🖼️ Imagem de Fundo</h4><input type="text" id="editHeroImage" placeholder="URL da imagem" style="width:100%; padding:10px; border-radius:25px; border:1px solid #ddd;"><div style="margin-top:10px;"><img id="previewHeroImg" src="" style="max-width:100%; height:80px; object-fit:cover; border-radius:10px;"></div></div><div style="background:#fef9f5; padding:15px; border-radius:15px;"><h4>🚚 Configuração de Delivery</h4><div class="toggle-switch"><span>Ativar opção de Delivery:</span><input type="checkbox" id="toggleDeliveryAtivo"></div></div></div><div style="display:flex; gap:15px; margin-top:20px; justify-content:flex-end;"><button id="btnSalvarAdmin" style="background:#25d366; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">💾 Salvar Local</button><button id="btnCancelarAdmin" style="background:#e74c3c; color:white; padding:12px 25px; border-radius:30px; border:none; cursor:pointer;">✖️ Cancelar</button></div></div></div>
 
 <div id="modalAdminSenha" class="modal"><div class="modal-content"><h3>🔐 Acesso Admin</h3><input type="password" id="adminSenha" placeholder="Senha administrativa"><button id="btnVerificarAdmin">Entrar</button><button id="btnFecharAdminModal" style="background:#999;">Cancelar</button></div></div>
 
 <div class="main-layout">
-    <main class="vitrine"><h3 class="section-title">🍬 Nosso Cardápio</h3><div id="produtosGrid" class="grid-produtos"><div class="loading">Carregando produtos...</div></div></main>
+    <main class="vitrine"><h3 class="section-title">🍬 Nosso Cardápio</h3><div id="produtosGrid" class="grid-produtos"><div class="loading">🔄 Carregando produtos...</div></div></main>
     <aside class="carrinho-sidebar"><h3>🛒 Seu Pedido</h3><div id="itens-carrinho"><p>Carrinho vazio</p></div><div style="display:flex; justify-content:space-between; margin:15px 0;"><span>Total:</span><span id="valor-total">R$ 0,00</span></div><div class="pagamento-area" id="pagamento-area" style="display:none;"><h4>💰 Pagamento</h4><div class="metodos-pagamento"><button onclick="selecionarMetodo('pix')">📱 PIX</button><button onclick="selecionarMetodo('mercadopago')">🟦 Mercado Pago</button></div><div id="detalhe-pix" class="detalhe-pagamento" style="display:none;"><strong>💚 PIX: 21965783597</strong><br><button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar chave</button></div><div id="detalhe-mercadopago" class="detalhe-pagamento" style="display:none;"><p>Pague de forma rápida e segura com o Mercado Pago</p><a href="https://link.mercadopago.com.br/docesdipay" target="_blank" class="btn-mercado-pago-link">🟦 Pagar no Mercado Pago</a></div></div><button id="btn-finalizar" class="btn-finalizar-pedido" onclick="iniciarFinalizacaoPedido()" disabled>📦 FINALIZAR PEDIDO</button></aside>
 </div>
 <footer><p>© 2026 Doces Di - PIX: 21965783597 | Mercado Pago</p></footer>
@@ -118,7 +127,7 @@
 <script>
     // ==================== CONFIGURAÇÕES DO SUPABASE ====================
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJLiZ1Ijoib3Bp";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -141,19 +150,26 @@
             const { data: produtosData, error: produtosError } = await supabaseClient
                 .from('produtos')
                 .select('*')
-                .order('id');
+                .order('id', { ascending: true });
             
             if (produtosError) throw produtosError;
-            produtos = produtosData || [];
+            if (produtosData && produtosData.length > 0) {
+                produtos = produtosData;
+            } else {
+                // Dados iniciais se não houver produtos
+                produtos = [
+                    { id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho do maracujá", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?auto=compress&cs=tinysrgb&w=600" },
+                    { id: 2, nome: "Cheesecake New York", descricao: "Base crocante com calda de frutas vermelhas", preco: 16.50, estoque: 5, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600" },
+                    { id: 3, nome: "Petit Gâteau", descricao: "Bolinho quente com doce de leite e sorvete", preco: 22.00, estoque: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600" }
+                ];
+            }
             
             // Carregar configurações
             const { data: configData, error: configError } = await supabaseClient
                 .from('config')
                 .select('chave, valor');
             
-            if (configError) throw configError;
-            
-            if (configData) {
+            if (!configError && configData && configData.length > 0) {
                 configData.forEach(item => {
                     configs[item.chave] = item.valor;
                 });
@@ -170,7 +186,15 @@
             return true;
         } catch (error) {
             console.error("Erro ao carregar dados:", error);
-            mostrarStatus("Erro ao carregar dados!", false);
+            mostrarStatus("Erro ao carregar dados do banco!", false);
+            // Tentar carregar dados padrão
+            produtos = [
+                { id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho do maracujá", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?auto=compress&cs=tinysrgb&w=600" },
+                { id: 2, nome: "Cheesecake New York", descricao: "Base crocante com calda de frutas vermelhas", preco: 16.50, estoque: 5, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600" },
+                { id: 3, nome: "Petit Gâteau", descricao: "Bolinho quente com doce de leite e sorvete", preco: 22.00, estoque: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600" }
+            ];
+            renderizarProdutos();
+            atualizarCarrinho();
             return false;
         }
     }
@@ -208,7 +232,7 @@
             return true;
         } catch (error) {
             console.error("Erro ao salvar:", error);
-            mostrarStatus("Erro ao salvar!", false);
+            mostrarStatus("Erro ao salvar! Verifique sua conexão.", false);
             return false;
         }
     }
@@ -217,7 +241,7 @@
         const grid = document.getElementById('produtosGrid');
         if (!grid) return;
         if (produtos.length === 0) {
-            grid.innerHTML = '<div class="loading">Nenhum produto cadastrado</div>';
+            grid.innerHTML = '<div class="loading">🍰 Nenhum produto cadastrado</div>';
             return;
         }
         grid.innerHTML = '';
@@ -233,7 +257,7 @@
                         <span class="card-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</span>
                         <span class="estoque-badge">📦 ${p.estoque}</span>
                     </div>
-                    <button class="btn-comprar" ${p.estoque <= 0 ? 'disabled' : ''}>${p.estoque > 0 ? 'Adicionar' : 'Esgotado'}</button>
+                    <button class="btn-comprar" ${p.estoque <= 0 ? 'disabled' : ''}>${p.estoque > 0 ? 'Adicionar ao carrinho' : 'Esgotado'}</button>
                 </div>
             `;
             const btn = card.querySelector('.btn-comprar');
@@ -264,8 +288,8 @@
                         <div class="upload-mini-label" style="font-size:0.7rem; padding:6px;">📁 Imagem</div>
                         <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
                     </div>
-                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12px; border-radius:20px;">💾</button>
-                    <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:20px;">🗑️</button>
+                    <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:8px 12px; border-radius:20px; cursor:pointer;">💾</button>
+                    <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:20px; cursor:pointer;">🗑️</button>
                 </div>
             `;
             container.appendChild(div);
@@ -305,7 +329,7 @@
     };
     
     window.excluirProdutoLocal = function(id) {
-        if (confirm("Excluir este produto?")) {
+        if (confirm("Excluir este produto permanentemente?")) {
             produtos = produtos.filter(p => p.id !== id);
             renderizarAdminLista();
             renderizarProdutos();
@@ -339,7 +363,10 @@
     
     function adicionarAoCarrinho(id) {
         const prod = produtos.find(p => p.id === id);
-        if (!prod || prod.estoque <= 0) return;
+        if (!prod || prod.estoque <= 0) {
+            alert("Produto sem estoque!");
+            return;
+        }
         const item = carrinho.find(i => i.id === id);
         if (item) item.quantidade++;
         else carrinho.push({ id, nome: prod.nome, preco: prod.preco, quantidade: 1 });
@@ -351,7 +378,7 @@
         const container = document.getElementById('itens-carrinho');
         const totalSpan = document.getElementById('valor-total');
         if (carrinho.length === 0) {
-            container.innerHTML = '<p>Carrinho vazio</p>';
+            container.innerHTML = '<p style="text-align:center; color:#8b7d77;">Carrinho vazio</p>';
             totalSpan.innerText = 'R$ 0,00';
             document.getElementById('btn-finalizar').disabled = true;
             document.getElementById('pagamento-area').style.display = 'none';
@@ -374,7 +401,7 @@
         document.getElementById('detalhe-mercadopago').style.display = metodo === 'mercadopago' ? 'block' : 'none';
     }
     
-    function copiarChavePix() { navigator.clipboard.writeText("21965783597"); alert("Chave PIX copiada!"); }
+    function copiarChavePix() { navigator.clipboard.writeText("21965783597"); alert("Chave PIX copiada: 21965783597"); }
     
     function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
     function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); if (data) carrinho = JSON.parse(data); else carrinho = []; }
@@ -400,7 +427,7 @@
             modal = document.createElement('div');
             modal.id = 'modalEntrega';
             modal.className = 'modal';
-            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro, São Paulo - SP</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
+            modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p><strong>Retirar no Local</strong></p><small>Rua das Delícias, 123 - Centro, SP</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p><strong>Delivery</strong></p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366; padding:12px;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
             document.body.appendChild(modal);
         }
         let opcaoSelecionada = null;
@@ -431,7 +458,7 @@
             const endCompleto = `${cliente.endereco || ''}, ${cliente.numero || ''}${cliente.complemento ? ' - ' + cliente.complemento : ''}`;
             mensagem += `🚚 *DELIVERY*\n📍 ${endCompleto}\n${cliente.referencia ? `📍 Referência: ${cliente.referencia}\n` : ''}`;
         }
-        mensagem += `\n✨ Aguardo confirmação!`;
+        mensagem += `\n✨ Aguardo confirmação do pagamento e pedido!`;
         for (let item of carrinho) {
             const prod = produtos.find(p => p.id === item.id);
             if (prod) prod.estoque -= item.quantidade;
@@ -441,14 +468,14 @@
         renderizarProdutos();
         atualizarCarrinho();
         window.open(`https://api.whatsapp.com/send?phone=5521965783597&text=${encodeURIComponent(mensagem)}`, '_blank');
-        alert("Pedido enviado! Obrigado!");
+        alert("Pedido enviado! Entraremos em contato em breve!");
         metodoSelecionado = null;
         document.getElementById('detalhe-pix').style.display = 'none';
         document.getElementById('detalhe-mercadopago').style.display = 'none';
     }
     
     // Eventos
-    document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); location.reload(true); });
+    document.getElementById('btnLimparCache')?.addEventListener('click', () => { localStorage.clear(); alert("Cache limpo! A página vai recarregar."); location.reload(true); });
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
     document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
         if (hashSenha(document.getElementById('adminSenha').value) === CryptoJS.SHA256("admin123").toString()) {
@@ -518,7 +545,7 @@
         if (usuarios.find(u => u.email === email)) { alert("Email já cadastrado!"); return; }
         usuarios.push({ email, senha: hashSenha(senha), nome, nomeSocial: document.getElementById('cadNomeSocial').value, dataNasc: document.getElementById('cadDataNasc').value, cep: document.getElementById('cadCep').value, endereco: document.getElementById('cadEndereco').value, numero: document.getElementById('cadNumero').value, complemento: document.getElementById('cadComplemento').value, referencia: document.getElementById('cadReferencia').value, telefone: document.getElementById('cadTelefone').value });
         salvarUsuarios();
-        alert("Cadastro realizado!");
+        alert("Cadastro realizado! Faça login.");
         document.getElementById('modalCliente').style.display = 'none';
     });
     
@@ -566,7 +593,7 @@
     
     async function buscarCep(cep, tipo) {
         cep = cep.replace(/\D/g, '');
-        if (cep.length !== 8) { alert("CEP inválido!"); return; }
+        if (cep.length !== 8) { alert("CEP inválido! Digite 8 números."); return; }
         try {
             const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await resp.json();
@@ -621,7 +648,7 @@
                 modal = document.createElement('div');
                 modal.id = 'modalEntrega';
                 modal.className = 'modal';
-                modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p>Retirar no Local</p><small>Rua das Delícias, 123 - Centro</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p>Delivery</p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
+                modal.innerHTML = `<div class="modal-content"><h3>📦 Opção de Recebimento</h3><div class="opcoes-entrega"><div class="opcao-entrega" data-opcao="retirada"><span>🏪</span><p><strong>Retirar no Local</strong></p><small>Rua das Delícias, 123 - Centro</small></div><div class="opcao-entrega" data-opcao="entrega"><span>🚚</span><p><strong>Delivery</strong></p><small>Entregamos no seu endereço</small></div></div><button id="btnConfirmarEntrega" style="background:#25d366;">✅ Confirmar</button><button id="btnCancelarEntrega" style="background:#999;">❌ Cancelar</button></div>`;
                 document.body.appendChild(modal);
             }
             let opcao = null;
