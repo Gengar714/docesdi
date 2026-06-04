@@ -88,8 +88,6 @@
         .toggle-switch input:checked::before { left: 26px; }
         .lembrar-checkbox { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
         .senha-requisitos { font-size: 0.7rem; color: #8b7d77; margin-top: 5px; }
-        .senha-requisitos.valid { color: #25d366; }
-        .senha-requisitos.invalid { color: #e74c3c; }
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 30px 20px; margin-top: 60px; }
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .carrinho-sidebar { position: static; } }
         .loading { text-align: center; padding: 20px; color: #d4a373; font-size: 1.1rem; }
@@ -295,7 +293,6 @@
         setTimeout(() => { status.style.display = 'none'; }, 3000);
     }
     
-    // ==================== FUNÇÕES DE VALIDAÇÃO DE SENHA ====================
     function validarSenhaForte(senha) {
         const temMinimo = senha.length >= 8;
         const temMaiuscula = /[A-Z]/.test(senha);
@@ -322,51 +319,6 @@
         return senha.split('').sort(() => Math.random() - 0.5).join('');
     }
     
-    // ==================== RECUPERAÇÃO DE SENHA ====================
-    async function solicitarRecuperacaoSenha(email) {
-        try {
-            const cliente = await buscarClientePorEmail(email);
-            if (!cliente) {
-                alert("E-mail não encontrado em nossa base!");
-                return false;
-            }
-            
-            const novaSenha = gerarSenhaAleatoria();
-            const senhaHash = CryptoJS.SHA256(novaSenha).toString();
-            
-            // Atualizar senha no banco e marcar para troca obrigatória
-            const { error } = await supabaseClient
-                .from('clientes')
-                .update({ 
-                    senha: senhaHash, 
-                    force_password_change: true,
-                    temp_password: novaSenha
-                })
-                .eq('email', email);
-            
-            if (error) throw error;
-            
-            // Mostrar a nova senha para o cliente (em produção seria enviada por e-mail/WhatsApp)
-            alert(`🔐 Uma nova senha foi gerada!\n\nSua nova senha temporária é: ${novaSenha}\n\n⚠️ IMPORTANTE: Ao fazer login, você será obrigado a criar uma senha forte.\n\n(A senha foi copiada para sua área de transferência)`);
-            navigator.clipboard.writeText(novaSenha);
-            
-            return true;
-        } catch (error) {
-            console.error("Erro na recuperação:", error);
-            alert("Erro ao recuperar senha. Tente novamente.");
-            return false;
-        }
-    }
-    
-    async function buscarClientePorEmail(email) {
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('*')
-            .eq('email', email);
-        if (error) return null;
-        return data && data.length > 0 ? data[0] : null;
-    }
-    
     // ==================== CLIENTES ====================
     async function carregarClientes() {
         try {
@@ -383,12 +335,28 @@
         }
     }
     
+    async function emailExiste(email) {
+        const { data, error } = await supabaseClient
+            .from('clientes')
+            .select('id')
+            .eq('email', email);
+        if (error) return false;
+        return data && data.length > 0;
+    }
+    
     async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
         try {
             if (!validarSenhaForte(senha)) {
                 alert("A senha deve ser forte: mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial!");
                 return false;
             }
+            
+            const existe = await emailExiste(email);
+            if (existe) {
+                alert(`❌ O e-mail "${email}" já está cadastrado!\n\nSe você perdeu o acesso, use a opção "Esqueci minha senha" na tela de login.`);
+                return false;
+            }
+            
             const senhaHash = CryptoJS.SHA256(senha).toString();
             const { error } = await supabaseClient
                 .from('clientes')
@@ -397,11 +365,19 @@
                     data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone,
                     force_password_change: false
                 }]);
-            if (error) throw error;
+            
+            if (error) {
+                if (error.code === '23505') {
+                    alert(`❌ E-mail "${email}" já cadastrado! Use a opção "Esqueci minha senha".`);
+                } else {
+                    throw error;
+                }
+                return false;
+            }
             return true;
         } catch (error) {
             console.error("Erro ao cadastrar:", error);
-            alert("Erro ao cadastrar! E-mail pode já existir.");
+            alert("Erro ao cadastrar! Verifique sua conexão.");
             return false;
         }
     }
@@ -415,7 +391,7 @@
         if (error) return null;
         if (data && data.length > 0) {
             const user = data[0];
-            if (user.senha === senhaHash) {
+            if (user.senja === senhaHash) {
                 return user;
             }
         }
@@ -432,6 +408,46 @@
             return true;
         } catch (error) {
             console.error("Erro ao atualizar:", error);
+            return false;
+        }
+    }
+    
+    async function solicitarRecuperacaoSenha(email) {
+        try {
+            const { data: clientes, error: buscaError } = await supabaseClient
+                .from('clientes')
+                .select('id, nome, email')
+                .eq('email', email);
+            
+            if (buscaError) throw buscaError;
+            
+            if (!clientes || clientes.length === 0) {
+                alert(`❌ E-mail "${email}" não encontrado!\n\nVerifique o e-mail digitado ou faça um novo cadastro.`);
+                return false;
+            }
+            
+            const cliente = clientes[0];
+            const novaSenha = gerarSenhaAleatoria();
+            const senhaHash = CryptoJS.SHA256(novaSenha).toString();
+            
+            const { error: updateError } = await supabaseClient
+                .from('clientes')
+                .update({ 
+                    senha: senhaHash, 
+                    force_password_change: true,
+                    temp_password: novaSenha
+                })
+                .eq('id', cliente.id);
+            
+            if (updateError) throw updateError;
+            
+            alert(`✅ SENHA RECUPERADA!\n\nCliente: ${cliente.nome}\n\n🔑 Nova senha temporária: ${novaSenha}\n\n⚠️ A senha foi copiada. Ao fazer login, você será obrigado a criar uma senha forte.`);
+            navigator.clipboard.writeText(novaSenha);
+            return true;
+            
+        } catch (error) {
+            console.error("Erro na recuperação:", error);
+            alert("Erro ao recuperar senha. Tente novamente.");
             return false;
         }
     }
@@ -467,7 +483,7 @@
         });
     }
     
-    // ==================== PRODUTOS E OUTRAS FUNÇÕES ====================
+    // ==================== PRODUTOS ====================
     async function carregarProdutos() {
         try {
             const { data, error } = await supabaseClient
