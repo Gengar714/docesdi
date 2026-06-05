@@ -35,9 +35,6 @@
             --border-color: #2a3a5e;
             --shadow: 0 4px 15px rgba(0,0,0,0.3);
             --input-bg: #1a1a2e;
-            --btn-bg: #d4a373;
-            --btn-hover: #c49a6c;
-            --accent-color: #d4a373;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -97,7 +94,7 @@
             position: absolute; 
             right: 0; 
             top: 55px; 
-            background: var(--dropdown-bg); 
+            background: var(--card-bg); 
             min-width: 320px; 
             max-width: 400px; 
             border-radius: var(--border-radius); 
@@ -614,6 +611,15 @@
     
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     function validarSenhaForte(s) { return s.length >= 8 && /[A-Z]/.test(s) && /[a-z]/.test(s) && /[0-9]/.test(s) && /[!@#$%^&*]/.test(s); }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
     
     // ==================== APLICAR ESTILOS ====================
     function aplicarEstilos() {
@@ -1370,25 +1376,83 @@
     }
     
     // ==================== LOGIN ====================
-    async function fazerLogin(email, senha) { const senhaHash = hashSenha(senha); const { data } = await supabaseClient.from('clientes').select('*').eq('email', email); if (data && data.length > 0 && data[0].senha === senhaHash) return data[0]; return null; }
-    async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) { 
-        if (!validarSenhaForte(senha)) { showToast("Senha fraca!", 'warning'); return false; } 
-        const { data: existing } = await supabaseClient.from('clientes').select('id').eq('email', email); 
-        if (existing && existing.length) { showToast("Email já cadastrado!", 'error'); return false; } 
-        const { error } = await supabaseClient.from('clientes').insert([{ nome, email, senha: hashSenha(senha), nome_social: nomeSocial, data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone }]); 
-        if (error) { showToast("Erro ao cadastrar!", 'error'); return false; } 
-        showToast("Cadastro realizado! Faça login.", 'success'); return true; 
+    async function fazerLogin(email, senha) { 
+        const senhaHash = hashSenha(senha); 
+        const { data } = await supabaseClient.from('clientes').select('*').eq('email', email); 
+        if (data && data.length > 0 && data[0].senha === senhaHash) return data[0]; 
+        return null; 
     }
-    async function solicitarRecuperacaoSenha(email) { const { data } = await supabaseClient.from('clientes').select('id').eq('email', email); if (!data || !data.length) { showToast("Email não encontrado!", 'error'); return false; } const novaSenha = Math.random().toString(36).slice(-8); await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email); showToast(`Sua nova senha é: ${novaSenha}`, 'success'); return true; }
     
-    async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g,''); if(cep.length!==8){ showToast("CEP inválido!", 'error'); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if(data.erro){ showToast("CEP não encontrado!", 'error'); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco; else if(tipo==='perfil') document.getElementById('perfilEnderecoDrop').value = endereco; showToast("Endereço encontrado!", 'success'); } catch(e){ showToast("Erro ao buscar CEP!", 'error'); } }
-    function buscarCepClick(tipo) { const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCepDrop':null))?.value; if(cep) buscarCep(cep, tipo); }
+    async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) { 
+        if (!validarSenhaForte(senha)) { 
+            showToast("Senha fraca! Mínimo 8 caracteres, letras, número e símbolo.", 'warning'); 
+            return false; 
+        } 
+        const { data: existing } = await supabaseClient.from('clientes').select('id').eq('email', email); 
+        if (existing && existing.length) { 
+            showToast("Email já cadastrado!", 'error'); 
+            return false; 
+        } 
+        const { error } = await supabaseClient.from('clientes').insert([{ 
+            nome, email, senha: hashSenha(senha), 
+            nome_social: nomeSocial, data_nasc: dataNasc,
+            cep, endereco, numero, complemento, referencia, telefone 
+        }]); 
+        if (error) { 
+            showToast("Erro ao cadastrar!", 'error'); 
+            return false; 
+        } 
+        showToast("Cadastro realizado! Faça login.", 'success'); 
+        return true; 
+    }
     
+    async function solicitarRecuperacaoSenha(email) { 
+        const { data } = await supabaseClient.from('clientes').select('id').eq('email', email); 
+        if (!data || !data.length) { 
+            showToast("Email não encontrado!", 'error'); 
+            return false; 
+        } 
+        const novaSenha = Math.random().toString(36).slice(-8); 
+        await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email); 
+        showToast(`Sua nova senha é: ${novaSenha}`, 'success'); 
+        return true; 
+    }
+    
+    async function buscarCep(cep, tipo) { 
+        cep = cep.replace(/\D/g,''); 
+        if(cep.length!==8){ showToast("CEP inválido!", 'error'); return; } 
+        try { 
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); 
+            const data = await resp.json(); 
+            if(data.erro){ showToast("CEP não encontrado!", 'error'); return; } 
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; 
+            if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco; 
+            else if(tipo==='perfil') document.getElementById('perfilEnderecoDrop').value = endereco; 
+            showToast("Endereço encontrado!", 'success'); 
+        } catch(e){ showToast("Erro ao buscar CEP!", 'error'); } 
+    }
+    
+    function buscarCepClick(tipo) { 
+        const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCepDrop':null))?.value; 
+        if(cep) buscarCep(cep, tipo); 
+    }
+    
+    // ==================== FUNÇÃO PRINCIPAL: atualizarBotaoCliente ====================
     function atualizarBotaoCliente() {
         const area = document.getElementById('clienteButtonArea');
         if (!area) return;
+        
+        // LIMPA COMPLETAMENTE para evitar qualquer duplicação
+        area.innerHTML = '';
+        
         if (usuarioLogado) {
-            const nomeExibir = usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente');
+            // Prioriza nome_social (apelido) se existir, senão usa primeiro nome
+            let nomeExibir = usuarioLogado.nome_social && usuarioLogado.nome_social.trim() !== ''
+                ? usuarioLogado.nome_social
+                : (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente');
+            
+            nomeExibir = escapeHtml(nomeExibir);
+            
             area.innerHTML = `
                 <div class="usuario-dropdown" id="usuarioDropdown">
                     <div class="usuario-info" onclick="toggleDropdown()">
@@ -1398,28 +1462,35 @@
                     <div class="dropdown-content">
                         <span class="close-dropdown" onclick="fecharDropdown()">✕</span>
                         <h4>✏️ Meus Dados</h4>
-                        <div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop"></div>
-                        <div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop"></div>
-                        <div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop"></div>
-                        <div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop"><button onclick="buscarCepNoDropdown()">🔍 Buscar</button></div></div>
-                        <div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop"></div>
-                        <div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop"></div></div>
-                        <div class="campo"><label>Referência</label><input type="text" id="perfilReferenciaDrop"></div>
-                        <div class="campo"><label>Telefone</label><input type="text" id="perfilTelefoneDrop"></div>
-                        <div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop"></div>
+                        <div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop" value="${escapeHtml(usuarioLogado.nome || '')}"></div>
+                        <div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop" value="${escapeHtml(usuarioLogado.nome_social || '')}"></div>
+                        <div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop" value="${usuarioLogado.data_nasc || ''}"></div>
+                        <div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop" value="${escapeHtml(usuarioLogado.cep || '')}"><button onclick="buscarCepNoDropdown()">🔍</button></div></div>
+                        <div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop" value="${escapeHtml(usuarioLogado.endereco || '')}"></div>
+                        <div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop" value="${escapeHtml(usuarioLogado.numero || '')}"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop" value="${escapeHtml(usuarioLogado.complemento || '')}"></div></div>
+                        <div class="campo"><label>Referência</label><input type="text" id="perfilReferenciaDrop" value="${escapeHtml(usuarioLogado.referencia || '')}"></div>
+                        <div class="campo"><label>Telefone</label><input type="text" id="perfilTelefoneDrop" value="${escapeHtml(usuarioLogado.telefone || '')}"></div>
+                        <div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop" value="${escapeHtml(usuarioLogado.email || '')}"></div>
                         <div class="campo"><label>Nova senha</label><input type="password" id="perfilNovaSenhaDrop" placeholder="Deixe em branco para manter"></div>
                         <button onclick="atualizarPerfilDropdown()">💾 Salvar</button>
-                        <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>
+                        <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>
                     </div>
                 </div>
             `;
             carregarPerfilNoDropdown();
         } else {
+            // APENAS UM BOTÃO "Cliente" – nenhum outro botão de entrar
             area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
-            document.getElementById('btnAbrirCliente')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
+            const btn = document.getElementById('btnAbrirCliente');
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    document.getElementById('modalCliente').style.display = 'flex';
+                });
+            }
         }
     }
     
+    // ==================== LOGOUT ====================
     function fazerLogout() {
         usuarioLogado = null;
         localStorage.removeItem("docesdi_usuario_logado");
@@ -1438,7 +1509,21 @@
     
     // ==================== EVENTOS ====================
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
-    document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => { if(hashSenha(document.getElementById('adminSenha').value) === hashSenha("admin123")) { document.getElementById('modalAdminSenha').style.display = 'none'; document.getElementById('modalAdmin').style.display = 'flex'; document.getElementById('editLogoNome').value = configs.logo_nome; document.getElementById('editLogoSlogan').value = configs.logo_slogan; document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true"; document.getElementById('editTelefone').value = configs.telefone_contato || ''; document.getElementById('editEmail').value = configs.email_contato || ''; renderizarAdminLista(); renderizarClientesAdmin(); renderizarSlidesAdmin(); renderizarAvaliacoesAdmin(); } else showToast("Senha incorreta!", 'error'); });
+    document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => { 
+        if(hashSenha(document.getElementById('adminSenha').value) === hashSenha("admin123")) { 
+            document.getElementById('modalAdminSenha').style.display = 'none'; 
+            document.getElementById('modalAdmin').style.display = 'flex'; 
+            document.getElementById('editLogoNome').value = configs.logo_nome; 
+            document.getElementById('editLogoSlogan').value = configs.logo_slogan; 
+            document.getElementById('toggleDeliveryAtivo').checked = configs.delivery_ativo === "true"; 
+            document.getElementById('editTelefone').value = configs.telefone_contato || ''; 
+            document.getElementById('editEmail').value = configs.email_contato || ''; 
+            renderizarAdminLista(); 
+            renderizarClientesAdmin(); 
+            renderizarSlidesAdmin(); 
+            renderizarAvaliacoesAdmin(); 
+        } else showToast("Senha incorreta!", 'error'); 
+    });
     document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
     document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
     document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
@@ -1489,8 +1574,16 @@
     
     document.getElementById('btnLogin')?.addEventListener('click', async () => { 
         const user = await fazerLogin(document.getElementById('loginEmail').value, document.getElementById('loginSenha').value);
-        if(user){ usuarioLogado = user; localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user)); atualizarBotaoCliente(); document.getElementById('modalCliente').style.display = 'none'; renderizarProdutos(); showToast(`Bem-vindo, ${user.nome_social || user.nome}!`, 'success'); } 
-        else showToast("Email ou senha incorretos!", 'error');
+        if(user){ 
+            usuarioLogado = user; 
+            localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user)); 
+            atualizarBotaoCliente(); 
+            document.getElementById('modalCliente').style.display = 'none'; 
+            renderizarProdutos(); 
+            showToast(`Bem-vindo, ${user.nome_social || user.nome}!`, 'success'); 
+        } else { 
+            showToast("Email ou senha incorretos!", 'error'); 
+        }
     });
     
     document.getElementById('btnCadastrar')?.addEventListener('click', async () => { 
@@ -1512,13 +1605,29 @@
         );
     });
     
-    document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('recuperarPanel').style.display = 'block'; });
-    document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => { await solicitarRecuperacaoSenha(document.getElementById('recuperarEmail').value); document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-    document.getElementById('btnVoltarLogin')?.addEventListener('click', () => { document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
+    document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => { 
+        document.getElementById('loginPanel').style.display = 'none'; 
+        document.getElementById('recuperarPanel').style.display = 'block'; 
+    });
+    document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => { 
+        await solicitarRecuperacaoSenha(document.getElementById('recuperarEmail').value); 
+        document.getElementById('recuperarPanel').style.display = 'none'; 
+        document.getElementById('loginPanel').style.display = 'block'; 
+    });
+    document.getElementById('btnVoltarLogin')?.addEventListener('click', () => { 
+        document.getElementById('recuperarPanel').style.display = 'none'; 
+        document.getElementById('loginPanel').style.display = 'block'; 
+    });
     document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
     document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
-    document.getElementById('tabLoginBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'block'; document.getElementById('cadastroPanel').style.display = 'none'; });
-    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; });
+    document.getElementById('tabLoginBtn')?.addEventListener('click', () => { 
+        document.getElementById('loginPanel').style.display = 'block'; 
+        document.getElementById('cadastroPanel').style.display = 'none'; 
+    });
+    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { 
+        document.getElementById('loginPanel').style.display = 'none'; 
+        document.getElementById('cadastroPanel').style.display = 'block'; 
+    });
     
     document.querySelectorAll('.admin-tab').forEach(btn => {
         btn.addEventListener('click', () => {
