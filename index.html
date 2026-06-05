@@ -765,6 +765,12 @@
             return;
         }
         
+        const jaAvaliou = avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id);
+        if (jaAvaliou) {
+            showToast("✅ Você já avaliou este produto! Obrigado pela contribuição.", 'info');
+            return;
+        }
+        
         clientePodeAvaliar(produtoId, usuarioLogado.id).then(validacao => {
             if (!validacao.pode) {
                 showToast(validacao.motivo, validacao.motivo.includes("precisa comprar") ? 'info' : 'warning');
@@ -839,6 +845,10 @@
     function renderizarEstrelas(produtoId) {
         const media = getMediaAvaliacoes(produtoId);
         const total = getTotalAvaliacoes(produtoId);
+        
+        const clienteJaAvaliou = usuarioLogado && avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id);
+        const avaliacaoDoCliente = clienteJaAvaliou ? avaliacoes.find(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id) : null;
+        
         let html = '';
         
         for (let i = 1; i <= 5; i++) {
@@ -853,9 +863,22 @@
         
         html += `<span class="avg-rating">(${total} ${total === 1 ? 'avaliação' : 'avaliações'})</span>`;
         
-        if (usuarioLogado) {
+        if (clienteJaAvaliou && avaliacaoDoCliente) {
+            const notaCliente = avaliacaoDoCliente.nota;
+            let estrelasCliente = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= notaCliente) {
+                    estrelasCliente += '★';
+                } else {
+                    estrelasCliente += '☆';
+                }
+            }
+            html += `<span style="margin-left: 10px; font-size: 0.7rem; background: #25d36620; padding: 2px 8px; border-radius: 20px;">✅ Você avaliou: ${estrelasCliente} (${notaCliente}/5)</span>`;
+        } 
+        else if (usuarioLogado) {
             html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId}, '${produtos.find(p=>p.id===produtoId)?.nome.replace(/'/g, "\\'")}')">⭐ Avaliar</button>`;
-        } else {
+        } 
+        else {
             html += `<button class="avaliar-btn" onclick="showToast('Faça login para avaliar!', 'warning'); document.getElementById('modalCliente').style.display='flex';">⭐ Avaliar</button>`;
         }
         
