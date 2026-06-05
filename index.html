@@ -271,11 +271,6 @@
         .cep-grupo-mini { display: flex; gap: 6px; align-items: center; }
         .cep-grupo-mini input { flex: 3; }
         .cep-grupo-mini button { width: auto; padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
-        
-        /* Indicador de compra para avaliação */
-        .avaliacao-bloqueada { opacity: 0.6; cursor: not-allowed; }
-        .avaliacao-liberada { cursor: pointer; }
-        .tooltip-comprar { font-size: 0.7rem; color: #f39c12; margin-left: 5px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -514,7 +509,6 @@
     let configs = { logo_nome: "Doces Di", logo_slogan: "A vida é mais doce quando compartilhada", delivery_ativo: "true", telefone_contato: "(21) 96578-3597", email_contato: "contato@docesdi.com" };
     let carrinho = [], metodoSelecionado = null, usuarioLogado = null;
     let slideIndex = 0;
-    let autoSlideInterval;
     let avaliacaoProdutoAtual = null;
     
     // Cache para avaliações e produtos comprados
@@ -603,7 +597,7 @@
         } catch (e) { showToast("Erro ao buscar CEP!", 'error'); }
     }
     
-    // ==================== AVALIAÇÕES OTIMIZADAS COM VALIDAÇÃO DE COMPRA ====================
+    // ==================== AVALIAÇÕES CORRIGIDAS ====================
     
     async function carregarAvaliacoes(forcarRecarga = false) {
         const agora = Date.now();
@@ -647,10 +641,11 @@
             if (error) throw error;
             
             produtosCompradosCache.clear();
+            
             pedidos?.forEach(pedido => {
                 if (pedido.itens && Array.isArray(pedido.itens)) {
                     pedido.itens.forEach(item => {
-                        if (item.id) produtosCompradosCache.add(item.id);
+                        if (item.id) produtosCompradosCache.add(parseInt(item.id));
                     });
                 }
             });
@@ -703,16 +698,25 @@
         btnSalvar.disabled = true;
         
         try {
-            const { data: pedidoItem, error: pedidoError } = await supabaseClient
+            let pedidoId = null;
+            
+            const { data: pedidos, error: pedidoError } = await supabaseClient
                 .from('pedidos')
                 .select('id, itens')
                 .eq('cliente_id', usuarioLogado.id)
-                .contains('itens', [{ id: produtoId }])
-                .eq('status', 'entregue')
-                .order('data_pedido', { ascending: false })
-                .limit(1);
-            
-            const pedidoId = pedidoItem && pedidoItem.length > 0 ? pedidoItem[0].id : null;
+                .eq('status', 'entregue');
+                
+            if (!pedidoError && pedidos && pedidos.length > 0) {
+                for (const pedido of pedidos) {
+                    if (pedido.itens && Array.isArray(pedido.itens)) {
+                        const encontrou = pedido.itens.some(item => parseInt(item.id) === produtoId);
+                        if (encontrou) {
+                            pedidoId = pedido.id;
+                            break;
+                        }
+                    }
+                }
+            }
             
             const { error } = await supabaseClient
                 .from('avaliacoes')
@@ -721,8 +725,7 @@
                     cliente_id: usuarioLogado.id,
                     pedido_id: pedidoId,
                     nota: nota, 
-                    comentario: comentario || null,
-                    comprovado: true
+                    comentario: comentario || null
                 }]);
             
             if (error) {
@@ -823,14 +826,14 @@
     }
     
     function getMediaAvaliacoes(produtoId) {
-        const avals = avaliacoes.filter(a => a.produto_id === produtoId && a.comprovado);
+        const avals = avaliacoes.filter(a => a.produto_id === produtoId);
         if (avals.length === 0) return 0;
         const soma = avals.reduce((s, a) => s + a.nota, 0);
         return Math.round((soma / avals.length) * 10) / 10;
     }
     
     function getTotalAvaliacoes(produtoId) {
-        return avaliacoes.filter(a => a.produto_id === produtoId && a.comprovado).length;
+        return avaliacoes.filter(a => a.produto_id === produtoId).length;
     }
     
     function renderizarEstrelas(produtoId) {
@@ -875,7 +878,7 @@
                 <div style="min-width:100px;">${cliente?.nome_social || cliente?.nome || 'Cliente'}</div>
                 <div style="font-size:0.7rem;">${new Date(a.created_at).toLocaleDateString()}</div>
                 <div style="flex:2; max-width:200px;">${a.comentario || '-'}</div>
-                <div style="font-size:0.7rem; ${a.comprovado ? 'color:#25d366' : 'color:#f39c12'}">${a.comprovado ? '✓ Compra verificada' : '⚠️ Pendente'}</div>
+                <div style="font-size:0.7rem; ${a.pedido_id ? 'color:#25d366' : 'color:#f39c12'}">${a.pedido_id ? '✓ Compra verificada' : '⚠️ Pendente'}</div>
             `;
             container.appendChild(div);
         });
@@ -1465,7 +1468,6 @@
     
     window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
     
-    // Contador de caracteres para observações
     document.getElementById('pedidoObservacao')?.addEventListener('input', function() {
         document.getElementById('contadorObs').innerText = this.value.length;
     });
