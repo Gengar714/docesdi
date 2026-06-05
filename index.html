@@ -35,6 +35,8 @@
             --btn-hover: #c49a6c;
             --accent-color: #d4a373;
             --border-radius: 20px;
+            --estoque-bg: #f0e4da;
+            --estoque-text: #4a3b32;
         }
         
         body.dark {
@@ -45,6 +47,8 @@
             --sidebar-bg: #16213e;
             --border-color: #2a3a5e;
             --input-bg: #1a1a2e;
+            --estoque-bg: #2a3a5e;
+            --estoque-text: #d4a373;
         }
         
         body {
@@ -366,7 +370,14 @@
             margin-top: 8px;
         }
         .card-preco { font-size: 1rem; font-weight: bold; color: var(--accent-color); }
-        .estoque-badge { font-size: 0.55rem; background: #f0e4da; padding: 2px 6px; border-radius: 20px; }
+        .estoque-badge { 
+            font-size: 0.6rem; 
+            background: var(--estoque-bg); 
+            padding: 3px 8px; 
+            border-radius: 20px; 
+            color: var(--estoque-text);
+            font-weight: bold;
+        }
         .btn-comprar {
             background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover));
             color: white;
@@ -474,7 +485,7 @@
             overflow-y: auto;
         }
         .modal-content h3 { color: var(--accent-color); margin-bottom: 15px; }
-        .modal-content input, .modal-content select {
+        .modal-content input, .modal-content select, .modal-content textarea {
             width: 100%;
             padding: 10px;
             margin: 8px 0;
@@ -498,7 +509,7 @@
         .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: var(--accent-color); color: white; }
         
-        /* Admin */
+        /* Admin - Tabs lado a lado */
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -507,34 +518,142 @@
             justify-content: center;
         }
         .admin-tab {
-            padding: 8px 16px;
+            padding: 10px 20px;
             background: var(--bg-color);
             border: none;
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
         .admin-tab.ativo { background: var(--accent-color); color: white; }
-        .admin-tab-content { display: none; }
+        .admin-tab-content { display: none; margin-top: 20px; }
         .admin-tab-content.ativo { display: block; }
         
+        /* Admin header com ícones pequenos */
         .admin-header-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: flex-end;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .btn-expand, .btn-new-window {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-expand:hover, .btn-new-window:hover { background: var(--accent-color); color: white; }
+        
+        /* Formulário de produto */
+        .form-produto {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .form-produto .field {
+            flex: 1;
+            min-width: 140px;
+        }
+        .form-produto .field.small { flex: 0.5; min-width: 80px; }
+        .form-produto label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 3px;
+        }
+        .form-produto input, .form-produto textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.85rem;
+        }
+        .form-produto textarea { resize: vertical; }
+        .upload-mini {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .upload-mini input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .upload-mini-label {
+            background: var(--accent-color);
+            color: white;
+            padding: 8px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .upload-mini-label:hover { opacity: 0.8; }
+        .btn-add-produto {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 8px 15px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-weight: bold;
         }
         
-        /* Filtro de data no dashboard */
+        /* Lista de produtos admin */
+        .produto-admin-item {
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .produto-admin-item input, .produto-admin-item textarea {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.75rem;
+        }
+        .produto-admin-item .edit-nome { width: 120px; }
+        .produto-admin-item .edit-desc { width: 180px; }
+        .produto-admin-item .edit-preco { width: 70px; }
+        .produto-admin-item .edit-estoque { width: 60px; }
+        .produto-admin-item .edit-imagem { width: 140px; }
+        .produto-admin-item button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .btn-salvar-produto { color: #27ae60; }
+        .btn-salvar-produto:hover { background: #27ae60; color: white; }
+        .btn-excluir-produto { color: #e74c3c; }
+        .btn-excluir-produto:hover { background: #e74c3c; color: white; }
+        
+        /* Dashboard */
         .date-filter {
             display: flex;
             flex-wrap: wrap;
@@ -567,9 +686,6 @@
         .chart-container h4 { font-size: 0.8rem; margin-bottom: 10px; color: var(--accent-color); }
         .top-produtos-list { display: flex; flex-direction: column; gap: 8px; }
         .top-produto-item { display: flex; justify-content: space-between; padding: 8px; background: var(--card-bg); border-radius: 10px; font-size: 0.8rem; }
-        
-        .produto-admin-item { background: var(--bg-color); padding: 8px; border-radius: var(--border-radius); margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-        .produto-admin-item input { padding: 6px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); font-size: 0.7rem; }
         
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 15px; margin-top: 40px; font-size: 0.7rem; }
         .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
@@ -756,10 +872,10 @@
 </div>
 
 <div id="modalAdmin" class="modal">
-    <div class="modal-content" style="max-width:95%; width:95%;">
+    <div class="modal-content" style="max-width:95%; width:95%; max-height:90vh;">
         <div class="admin-header-buttons">
-            <button class="btn-expand" id="btnExpandAdmin">📐 Expandir</button>
-            <button class="btn-new-window" id="btnNewWindowAdmin">🪟 Abrir em nova guia</button>
+            <button class="btn-expand" id="btnExpandAdmin" title="Expandir">📐</button>
+            <button class="btn-new-window" id="btnNewWindowAdmin" title="Abrir em nova guia">🪟</button>
         </div>
         <h3>🔧 Área Administrativa</h3>
         <div class="admin-tabs-container">
@@ -770,8 +886,23 @@
         </div>
         
         <div id="tabProdutos" class="admin-tab-content ativo">
+            <div class="form-produto">
+                <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
+                <div class="field"><label>Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição"></textarea></div>
+                <div class="field small"><label>Preço</label><input type="number" step="0.01" id="prodPreco" placeholder="18.90"></div>
+                <div class="field small"><label>Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
+                <div class="field"><label>URL Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div class="field small"><label>OU Upload</label>
+                    <div class="upload-mini">
+                        <div class="upload-mini-label">📎 Escolher imagem</div>
+                        <input type="file" id="uploadImagem" accept="image/jpeg,image/png">
+                    </div>
+                </div>
+                <div><button id="btnAddProdutoAdmin" class="btn-add-produto">➕ Adicionar</button></div>
+            </div>
+            <h4>📋 Produtos Cadastrados</h4>
             <div id="listaAdminProdutos"></div>
-            <button id="btnSalvarProdutos" style="background:#25d366; margin-top:20px;">💾 SALVAR PRODUTOS</button>
+            <button id="btnSalvarProdutos" style="background:#25d366; margin-top:20px; padding:10px 20px; border:none; border-radius:25px; color:white; cursor:pointer; font-weight:bold;">💾 SALVAR TODOS OS PRODUTOS</button>
         </div>
         
         <div id="tabDashboard" class="admin-tab-content">
@@ -790,7 +921,7 @@
                     <input type="date" id="dataInicio">
                     <span>até</span>
                     <input type="date" id="dataFim">
-                    <button id="btnAplicarData" style="background:var(--accent-color); padding:8px 15px;">Aplicar</button>
+                    <button id="btnAplicarData" style="background:var(--accent-color); padding:8px 15px; border:none; border-radius:25px; cursor:pointer;">Aplicar</button>
                 </div>
             </div>
             <div class="dashboard-stats" id="dashboardStats"></div>
@@ -806,7 +937,7 @@
             <div id="listaClientesAdmin"></div>
         </div>
         
-        <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px;">✖️ Fechar</button>
+        <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px; padding:10px; border:none; border-radius:25px; color:white; cursor:pointer; font-weight:bold;">✖️ Fechar</button>
     </div>
 </div>
 
@@ -871,7 +1002,7 @@
         document.getElementById('advancedFilters')?.classList.toggle('show');
     });
     
-    // Funções para abrir modais (corrigidas)
+    // Funções para abrir modais
     window.abrirModalCliente = function() {
         document.getElementById('modalCliente').style.display = 'flex';
     };
@@ -1190,7 +1321,7 @@
                     <div class="card-descricao">${p.descricao}</div>
                     <div class="card-footer">
                         <span class="card-preco">R$ ${p.preco.toFixed(2)}</span>
-                        <span class="estoque-badge">${p.estoque} un.</span>
+                        <span class="estoque-badge">📦 ${p.estoque}</span>
                     </div>
                     <button class="btn-comprar" ${p.estoque <= 0 ? 'disabled' : ''}>${p.estoque > 0 ? '🛒 Adicionar' : 'Esgotado'}</button>
                 </div>
@@ -1204,21 +1335,43 @@
     function renderizarAdminLista() {
         const container = document.getElementById('listaAdminProdutos');
         if (!container) return;
-        if (produtos.length === 0) { container.innerHTML = '<p>Nenhum produto</p>'; return; }
+        if (produtos.length === 0) { container.innerHTML = '<p>Nenhum produto cadastrado.</p>'; return; }
         container.innerHTML = '';
         produtos.forEach(p => {
             const div = document.createElement('div');
             div.className = 'produto-admin-item';
             div.innerHTML = `
-                <input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" style="width:130px;">
-                <input type="text" value="${p.descricao.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="descricao" style="width:160px;">
-                <input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" style="width:70px;">
-                <input type="number" value="${p.estoque}" data-id="${p.id}" data-field="estoque" style="width:60px;">
-                <input type="text" value="${p.imagem}" data-id="${p.id}" data-field="imagem" style="width:140px;">
-                <button onclick="editarProdutoLocal(${p.id})" style="background:#27ae60; color:white; border:none; padding:5px 10px; border-radius:20px;">💾</button>
-                <button onclick="excluirProdutoLocal(${p.id})" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:20px;">🗑️</button>
+                <input type="text" class="edit-nome" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" placeholder="Nome">
+                <input type="text" class="edit-desc" value="${p.descricao.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="descricao" placeholder="Descrição">
+                <input type="number" step="0.01" class="edit-preco" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço">
+                <input type="number" class="edit-estoque" value="${p.estoque}" data-id="${p.id}" data-field="estoque" placeholder="Estoque">
+                <input type="text" class="edit-imagem" value="${p.imagem}" data-id="${p.id}" data-field="imagem" placeholder="URL imagem">
+                <div class="upload-mini" style="width:100px;">
+                    <div class="upload-mini-label" style="font-size:0.65rem;">📁 Imagem</div>
+                    <input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png">
+                </div>
+                <button class="btn-salvar-produto" onclick="editarProdutoLocal(${p.id})" title="Salvar">💾</button>
+                <button class="btn-excluir-produto" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button>
             `;
             container.appendChild(div);
+        });
+        
+        // Adicionar evento de upload para cada produto
+        document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const id = parseInt(input.getAttribute('data-id'));
+                const file = e.target.files[0];
+                if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+                    const imagemBase64 = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
+                    const prod = produtos.find(p => p.id === id);
+                    if (prod) { 
+                        prod.imagem = imagemBase64; 
+                        renderizarAdminLista(); 
+                        renderizarProdutos(); 
+                        showToast("Imagem atualizada! Salve para confirmar.", 'info'); 
+                    }
+                } else showToast("Formato inválido! Use JPEG ou PNG.", 'error');
+            });
         });
     }
     
@@ -1229,28 +1382,57 @@
             p.descricao = document.querySelector(`[data-id="${id}"][data-field="descricao"]`).value;
             p.preco = parseFloat(document.querySelector(`[data-id="${id}"][data-field="preco"]`).value);
             p.estoque = parseInt(document.querySelector(`[data-id="${id}"][data-field="estoque"]`).value);
-            p.imagem = document.querySelector(`[data-id="${id}"][data-field="imagem"]`).value;
-            showToast(`✏️ "${p.nome}" atualizado!`);
+            const imgUrl = document.querySelector(`[data-id="${id}"][data-field="imagem"]`).value;
+            if (imgUrl) p.imagem = imgUrl;
+            showToast(`✏️ "${p.nome}" atualizado! Salve para confirmar.`);
             renderizarAdminLista();
             renderizarProdutos();
         }
     };
     
     window.excluirProdutoLocal = function(id) {
-        if (confirm("Excluir este produto?")) {
+        if (confirm("Excluir este produto permanentemente?")) {
             produtos = produtos.filter(p => p.id !== id);
             renderizarAdminLista();
             renderizarProdutos();
-            showToast(`🗑️ Produto removido!`);
+            showToast(`🗑️ Produto removido! Salve para confirmar.`);
         }
     };
     
+    async function adicionarProdutoAdmin() {
+        const nome = document.getElementById('prodNome').value.trim();
+        const desc = document.getElementById('prodDesc').value.trim();
+        const preco = parseFloat(document.getElementById('prodPreco').value);
+        const estoque = parseInt(document.getElementById('prodEstoque').value);
+        let imagem = document.getElementById('prodImagem').value.trim();
+        const file = document.getElementById('uploadImagem').files[0];
+        
+        if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+            imagem = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(file); });
+        }
+        if (!imagem) imagem = "https://placehold.co/600x400/f0e4da/d4a373?text=" + encodeURIComponent(nome);
+        if (!nome || isNaN(preco)) { showToast("Preencha nome e preço!", 'error'); return; }
+        
+        const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
+        produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
+        renderizarAdminLista();
+        renderizarProdutos();
+        showToast(`➕ "${nome}" adicionado! Salve para confirmar.`);
+        
+        document.getElementById('prodNome').value = '';
+        document.getElementById('prodDesc').value = '';
+        document.getElementById('prodPreco').value = '';
+        document.getElementById('prodEstoque').value = '';
+        document.getElementById('prodImagem').value = '';
+        document.getElementById('uploadImagem').value = '';
+    }
+    
     async function salvarProdutosNoBanco() {
-        showToast("💾 Salvando...");
+        showToast("💾 Salvando produtos no banco...");
         for (const p of produtos) {
             await supabaseClient.from('produtos').upsert(p, { onConflict: 'id' });
         }
-        showToast("✅ Produtos salvos!");
+        showToast("✅ Produtos salvos com sucesso!");
     }
     
     // ==================== CARROSSEL ====================
@@ -1424,7 +1606,7 @@
     function renderizarClientesAdmin() {
         const container = document.getElementById('listaClientesAdmin');
         if (!container) return;
-        if (clientes.length === 0) { container.innerHTML = '<p>Nenhum cliente.</p>'; return; }
+        if (clientes.length === 0) { container.innerHTML = '<p>Nenhum cliente cadastrado.</p>'; return; }
         container.innerHTML = '';
         clientes.forEach(c => {
             const div = document.createElement('div');
@@ -1437,7 +1619,7 @@
     function renderizarAvaliacoesAdmin() {
         const container = document.getElementById('listaAvaliacoesAdmin');
         if (!container) return;
-        if (avaliacoes.length === 0) { container.innerHTML = '<p>Nenhuma avaliação.</p>'; return; }
+        if (avaliacoes.length === 0) { container.innerHTML = '<p>Nenhuma avaliação ainda.</p>'; return; }
         container.innerHTML = '';
         avaliacoes.slice().reverse().forEach(a => {
             const produto = produtos.find(p => p.id === a.produto_id);
@@ -1606,6 +1788,7 @@
         });
         document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
         document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
+        document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
         
         // Botões expandir e nova guia
         document.getElementById('btnExpandAdmin')?.addEventListener('click', () => {
@@ -1613,6 +1796,8 @@
             if (modalContent) {
                 modalContent.style.width = '98%';
                 modalContent.style.maxWidth = '98%';
+                modalContent.style.height = '95vh';
+                modalContent.style.maxHeight = '95vh';
             }
         });
         document.getElementById('btnNewWindowAdmin')?.addEventListener('click', () => {
@@ -1623,7 +1808,7 @@
                 <html><head><title>Admin - Doces Di</title>
                 <style>${document.querySelector('style').innerHTML}</style>
                 </head>
-                <body>${adminContent.outerHTML}</body>
+                <body style="background:var(--bg-color);">${adminContent.outerHTML}</body>
                 </html>
             `);
             newWin.document.close();
@@ -1665,6 +1850,12 @@
                 senha,
                 document.getElementById('cadNomeSocial').value
             );
+            document.getElementById('cadNome').value = '';
+            document.getElementById('cadNomeSocial').value = '';
+            document.getElementById('cadEmail').value = '';
+            document.getElementById('cadSenha').value = '';
+            document.getElementById('cadConfirmarSenha').value = '';
+            document.getElementById('tabLoginBtn').click();
         });
         
         document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => {
