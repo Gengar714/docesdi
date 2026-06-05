@@ -17,6 +17,7 @@
             --shadow: 0 4px 15px rgba(0,0,0,0.05);
             --input-bg: white;
             --hero-overlay: rgba(0,0,0,0.4);
+            --dropdown-bg: white;
         }
         
         body.dark {
@@ -29,6 +30,7 @@
             --shadow: 0 4px 15px rgba(0,0,0,0.3);
             --input-bg: #1a1a2e;
             --hero-overlay: rgba(0,0,0,0.7);
+            --dropdown-bg: #16213e;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -43,7 +45,40 @@
         .btn-cliente:hover { transform: scale(1.05); }
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 10px 15px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 1.1rem; }
         .theme-toggle:hover { transform: scale(1.05); }
-        .usuario-info { background: var(--card-bg); padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
+        
+        /* Dropdown do usuário */
+        .usuario-dropdown { position: relative; display: inline-block; }
+        .usuario-info { background: var(--card-bg); padding: 8px 15px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s; }
+        .usuario-info:hover { background: var(--border-color); }
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            right: 0; 
+            top: 55px; 
+            background: var(--dropdown-bg); 
+            min-width: 320px; 
+            max-width: 400px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2); 
+            z-index: 1001; 
+            padding: 15px; 
+            border: 1px solid var(--border-color); 
+            max-height: 85vh; 
+            overflow-y: auto; 
+        }
+        .usuario-dropdown.show .dropdown-content { display: block; }
+        .dropdown-content h4 { color: #d4a373; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .dropdown-content .campo { margin-bottom: 12px; }
+        .dropdown-content .campo label { display: block; font-size: 0.7rem; font-weight: bold; color: #d4a373; margin-bottom: 3px; }
+        .dropdown-content .campo input, .dropdown-content .campo textarea { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.85rem; }
+        .dropdown-content .linha-2-col { display: flex; gap: 8px; }
+        .dropdown-content .linha-2-col > div { flex: 1; }
+        .dropdown-content button { background: #d4a373; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: all 0.2s; }
+        .dropdown-content button:hover { background: #c49a6c; transform: scale(1.02); }
+        .dropdown-content .btn-sair-dropdown { background: #e74c3c; margin-top: 5px; }
+        .dropdown-content .btn-sair-dropdown:hover { background: #c0392b; }
+        .close-dropdown { position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem; color: #8b7d77; }
+        
         .btn-sair { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
         .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
         .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
@@ -182,6 +217,16 @@
             .carrinho-sidebar { position: static; }
             .admin-tabs-container { flex-wrap: wrap; border-radius: 20px; }
             .admin-tab { flex: auto; min-width: 100px; }
+            .dropdown-content { 
+                position: fixed; 
+                top: 70px; 
+                right: 10px; 
+                left: 10px; 
+                width: auto; 
+                max-width: none;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
         }
         .loading { text-align: center; padding: 20px; color: #d4a373; font-size: 1.1rem; }
         .save-status { position: fixed; bottom: 80px; right: 20px; background: #25d366; color: white; padding: 10px 15px; border-radius: 30px; font-size: 0.8rem; z-index: 1000; display: none; font-weight: bold; }
@@ -221,6 +266,16 @@
         .toast-warning { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
         .toast-info { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
         .toast-close { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; opacity: 0.7; }
+        
+        /* CEP grupo dentro do dropdown */
+        .cep-grupo-mini { display: flex; gap: 6px; align-items: center; }
+        .cep-grupo-mini input { flex: 3; }
+        .cep-grupo-mini button { width: auto; padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
+        
+        /* Indicador de compra para avaliação */
+        .avaliacao-bloqueada { opacity: 0.6; cursor: not-allowed; }
+        .avaliacao-liberada { cursor: pointer; }
+        .tooltip-comprar { font-size: 0.7rem; color: #f39c12; margin-left: 5px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -270,16 +325,15 @@
 <footer id="mainFooter">
     <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
     <p id="footerContato"></p>
-    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">3.5.0</span></p>
+    <p style="font-size:0.7rem; opacity:0.7;">Versão <span id="versaoSistema">3.7.0</span></p>
 </footer>
 
-<!-- MODAL CLIENTE -->
+<!-- MODAL CLIENTE (apenas login/cadastro) -->
 <div id="modalCliente" class="modal">
     <div class="modal-content">
         <div class="tab-buttons">
             <button class="tab-btn ativo" id="tabLoginBtn">Entrar</button>
             <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
-            <button class="tab-btn" id="tabPerfilBtn" style="display:none;">Meu Perfil</button>
         </div>
         <div id="loginPanel">
             <h3>Login</h3>
@@ -304,23 +358,6 @@
             <input type="password" id="cadSenha" placeholder="Senha *">
             <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
             <button id="btnCadastrar">Cadastrar</button>
-        </div>
-        <div id="perfilPanel" style="display:none;">
-            <h3>Meu Perfil</h3>
-            <p style="color:#d4a373; margin-bottom:10px;">✏️ Você pode editar seus dados abaixo:</p>
-            <input type="text" id="perfilNome" placeholder="Nome completo">
-            <input type="text" id="perfilNomeSocial" placeholder="Como prefere que a gente te chame?">
-            <input type="date" id="perfilDataNasc">
-            <div class="cep-grupo"><input type="text" id="perfilCep" placeholder="CEP"><button type="button" id="buscarCepPerfil" class="buscar-cep">🔍 Buscar</button></div>
-            <input type="text" id="perfilEndereco" placeholder="Endereço">
-            <div class="linha-dois-campos"><div><input type="text" id="perfilNumero" placeholder="Número"></div><div><input type="text" id="perfilComplemento" placeholder="Complemento"></div></div>
-            <input type="text" id="perfilReferencia" placeholder="Referência">
-            <input type="text" id="perfilTelefone" placeholder="Telefone/WhatsApp">
-            <input type="email" id="perfilEmail" placeholder="E-mail">
-            <input type="password" id="perfilNovaSenha" placeholder="Nova senha (opcional)">
-            <div class="senha-requisitos">🔒 A senha deve ter: mínimo 8 caracteres, maiúscula, minúscula, número e caractere especial!</div>
-            <button id="btnAtualizarPerfil">Atualizar Dados</button>
-            <button id="btnSair" style="background:#e74c3c;">Sair da Conta</button>
         </div>
         <div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">📧 Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div>
         <div id="trocarSenhaPanel" style="display:none;"><h3>⚠️ Troca de Senha Obrigatória</h3><div class="aviso-trocar-senha"><p>⚠️ Por motivos de segurança, você precisa criar uma nova senha forte.</p></div><input type="password" id="trocarNovaSenha" placeholder="Nova senha *"><input type="password" id="trocarConfirmarSenha" placeholder="Confirmar nova senha *"><div class="senha-requisitos">🔒 A senha deve ter: mínimo 8 caracteres, maiúscula, minúscula, número e caractere especial!</div><button id="btnConfirmarTrocaSenha" style="background:#25d366;">✅ Confirmar</button></div>
@@ -462,7 +499,7 @@
     document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
     
     // ==================== CONFIGURAÇÕES ====================
-    const SISTEMA_VERSAO = "3.5.0";
+    const SISTEMA_VERSAO = "3.7.0";
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
@@ -480,99 +517,346 @@
     let autoSlideInterval;
     let avaliacaoProdutoAtual = null;
     
+    // Cache para avaliações e produtos comprados
+    let avaliacoesCache = null;
+    let ultimaBuscaAvaliacoes = 0;
+    let produtosCompradosCache = new Set();
+    let ultimaBuscaCompras = 0;
+    const TEMPO_CACHE = 300000; // 5 minutos
+    
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     function validarSenhaForte(s) { return s.length >= 8 && /[A-Z]/.test(s) && /[a-z]/.test(s) && /[0-9]/.test(s) && /[!@#$%^&*]/.test(s); }
     
-    // ==================== AVALIAÇÕES ====================
-    async function carregarAvaliacoes() {
-        const { data, error } = await supabaseClient.from('avaliacoes').select('*');
-        if (error) console.error("Erro ao carregar avaliações:", error);
-        if (data) avaliacoes = data;
+    // ==================== DROPDOWN DO USUÁRIO ====================
+    function toggleDropdown() {
+        const dropdown = document.getElementById('usuarioDropdown');
+        if (dropdown) dropdown.classList.toggle('show');
     }
     
-    function getMediaAvaliacoes(produtoId) {
-        const avals = avaliacoes.filter(a => a.produto_id === produtoId);
-        if (avals.length === 0) return 0;
-        return avals.reduce((s, a) => s + a.nota, 0) / avals.length;
+    function fecharDropdown() {
+        const dropdown = document.getElementById('usuarioDropdown');
+        if (dropdown) dropdown.classList.remove('show');
     }
     
-    function getTotalAvaliacoes(produtoId) {
-        return avaliacoes.filter(a => a.produto_id === produtoId).length;
+    function carregarPerfilNoDropdown() {
+        if (!usuarioLogado) return;
+        document.getElementById('perfilNomeDrop').value = usuarioLogado.nome || '';
+        document.getElementById('perfilNomeSocialDrop').value = usuarioLogado.nome_social || '';
+        document.getElementById('perfilDataNascDrop').value = usuarioLogado.data_nasc || '';
+        document.getElementById('perfilCepDrop').value = usuarioLogado.cep || '';
+        document.getElementById('perfilEnderecoDrop').value = usuarioLogado.endereco || '';
+        document.getElementById('perfilNumeroDrop').value = usuarioLogado.numero || '';
+        document.getElementById('perfilComplementoDrop').value = usuarioLogado.complemento || '';
+        document.getElementById('perfilReferenciaDrop').value = usuarioLogado.referencia || '';
+        document.getElementById('perfilTelefoneDrop').value = usuarioLogado.telefone || '';
+        document.getElementById('perfilEmailDrop').value = usuarioLogado.email || '';
     }
     
-    function renderizarEstrelas(produtoId, readonly = false) {
-        const media = getMediaAvaliacoes(produtoId);
-        const total = getTotalAvaliacoes(produtoId);
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= Math.floor(media)) html += '<span class="star active">★</span>';
-            else if (media % 1 >= 0.5 && i === Math.floor(media) + 1) html += '<span class="star half">★</span>';
-            else html += '<span class="star">★</span>';
+    async function atualizarPerfilDropdown() {
+        if (!usuarioLogado) return;
+        const updates = {
+            nome: document.getElementById('perfilNomeDrop').value,
+            nome_social: document.getElementById('perfilNomeSocialDrop').value,
+            data_nasc: document.getElementById('perfilDataNascDrop').value,
+            cep: document.getElementById('perfilCepDrop').value,
+            endereco: document.getElementById('perfilEnderecoDrop').value,
+            numero: document.getElementById('perfilNumeroDrop').value,
+            complemento: document.getElementById('perfilComplementoDrop').value,
+            referencia: document.getElementById('perfilReferenciaDrop').value,
+            telefone: document.getElementById('perfilTelefoneDrop').value,
+            email: document.getElementById('perfilEmailDrop').value
+        };
+        
+        const novaSenha = document.getElementById('perfilNovaSenhaDrop').value;
+        if (novaSenha) {
+            if (!validarSenhaForte(novaSenha)) {
+                showToast("Senha fraca! Use 8+ caracteres com maiúscula, minúscula, número e caractere especial.", 'warning');
+                return;
+            }
+            updates.senha = hashSenha(novaSenha);
         }
-        html += `<span class="avg-rating">(${total} avaliação${total !== 1 ? 'ões' : ''})</span>`;
-        if (!readonly && usuarioLogado) {
-            html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId}, '${produtos.find(p=>p.id===produtoId)?.nome}')">Avaliar</button>`;
+        
+        const { error } = await supabaseClient.from('clientes').update(updates).eq('id', usuarioLogado.id);
+        if (error) {
+            showToast("Erro ao atualizar perfil!", 'error');
+            return;
         }
-        return html;
+        
+        Object.assign(usuarioLogado, updates);
+        if (novaSenha) usuarioLogado.senha = updates.senha;
+        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
+        showToast("Perfil atualizado com sucesso!", 'success');
+        fecharDropdown();
+        atualizarBotaoCliente();
+    }
+    
+    async function buscarCepNoDropdown() {
+        const cep = document.getElementById('perfilCepDrop').value.replace(/\D/g, '');
+        if (cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+            if (data.erro) { showToast("CEP não encontrado!", 'error'); return; }
+            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+            document.getElementById('perfilEnderecoDrop').value = endereco;
+            showToast("Endereço encontrado!", 'success');
+        } catch (e) { showToast("Erro ao buscar CEP!", 'error'); }
+    }
+    
+    // ==================== AVALIAÇÕES OTIMIZADAS COM VALIDAÇÃO DE COMPRA ====================
+    
+    async function carregarAvaliacoes(forcarRecarga = false) {
+        const agora = Date.now();
+        if (!forcarRecarga && avaliacoesCache && (agora - ultimaBuscaAvaliacoes) < TEMPO_CACHE) {
+            avaliacoes = avaliacoesCache;
+            return;
+        }
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('avaliacoes')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) throw error;
+            
+            avaliacoesCache = data || [];
+            avaliacoes = avaliacoesCache;
+            ultimaBuscaAvaliacoes = agora;
+        } catch (error) {
+            console.error("Erro ao carregar avaliações:", error);
+            avaliacoes = avaliacoesCache || [];
+        }
+    }
+    
+    async function carregarProdutosCompradosPeloCliente(clienteId) {
+        if (!clienteId) return new Set();
+        
+        const agora = Date.now();
+        if (produtosCompradosCache.size > 0 && (agora - ultimaBuscaCompras) < TEMPO_CACHE) {
+            return produtosCompradosCache;
+        }
+        
+        try {
+            const { data: pedidos, error } = await supabaseClient
+                .from('pedidos')
+                .select('itens')
+                .eq('cliente_id', clienteId)
+                .eq('status', 'entregue');
+                
+            if (error) throw error;
+            
+            produtosCompradosCache.clear();
+            pedidos?.forEach(pedido => {
+                if (pedido.itens && Array.isArray(pedido.itens)) {
+                    pedido.itens.forEach(item => {
+                        if (item.id) produtosCompradosCache.add(item.id);
+                    });
+                }
+            });
+            
+            ultimaBuscaCompras = agora;
+            return produtosCompradosCache;
+            
+        } catch (error) {
+            console.error("Erro ao carregar produtos comprados:", error);
+            return new Set();
+        }
+    }
+    
+    async function clientePodeAvaliar(produtoId, clienteId) {
+        if (!clienteId) return { pode: false, motivo: "Faça login para avaliar!" };
+        
+        const jaAvaliou = avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === clienteId);
+        if (jaAvaliou) {
+            return { pode: false, motivo: "Você já avaliou este produto!" };
+        }
+        
+        const produtosComprados = await carregarProdutosCompradosPeloCliente(clienteId);
+        if (!produtosComprados.has(produtoId)) {
+            return { pode: false, motivo: "Você precisa comprar este produto antes de avaliar!" };
+        }
+        
+        return { pode: true, motivo: "" };
     }
     
     async function salvarAvaliacao(produtoId, nota, comentario) {
-        if (!usuarioLogado) { showToast("Faça login para avaliar!", 'warning'); return false; }
-        
-        // Verificar se o cliente já avaliou este produto
-        const jaAvaliou = avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id);
-        if (jaAvaliou) {
-            showToast("Você já avaliou este produto!", 'warning');
+        if (!usuarioLogado) {
+            showToast("🔒 Faça login para avaliar!", 'warning');
             return false;
         }
         
-        const { error } = await supabaseClient.from('avaliacoes').insert([{ 
-            produto_id: produtoId, 
-            cliente_id: usuarioLogado.id, 
-            nota: nota, 
-            comentario: comentario || null 
-        }]);
-        
-        if (error) { 
-            console.error("Erro ao salvar avaliação:", error);
-            showToast("Erro ao salvar avaliação!", 'error'); 
-            return false; 
+        if (nota < 1 || nota > 5) {
+            showToast("⭐ Escolha de 1 a 5 estrelas!", 'warning');
+            return false;
         }
         
-        showToast("⭐ Avaliação salva com sucesso!", 'success');
-        await carregarAvaliacoes();
-        renderizarProdutos();
-        renderizarAvaliacoesAdmin();
-        return true;
+        const validacao = await clientePodeAvaliar(produtoId, usuarioLogado.id);
+        if (!validacao.pode) {
+            showToast(validacao.motivo, 'warning');
+            return false;
+        }
+        
+        const btnSalvar = document.getElementById('btnSalvarAvaliacao');
+        const textoOriginal = btnSalvar.textContent;
+        btnSalvar.textContent = "💾 Salvando...";
+        btnSalvar.disabled = true;
+        
+        try {
+            const { data: pedidoItem, error: pedidoError } = await supabaseClient
+                .from('pedidos')
+                .select('id, itens')
+                .eq('cliente_id', usuarioLogado.id)
+                .contains('itens', [{ id: produtoId }])
+                .eq('status', 'entregue')
+                .order('data_pedido', { ascending: false })
+                .limit(1);
+            
+            const pedidoId = pedidoItem && pedidoItem.length > 0 ? pedidoItem[0].id : null;
+            
+            const { error } = await supabaseClient
+                .from('avaliacoes')
+                .insert([{ 
+                    produto_id: produtoId, 
+                    cliente_id: usuarioLogado.id,
+                    pedido_id: pedidoId,
+                    nota: nota, 
+                    comentario: comentario || null,
+                    comprovado: true
+                }]);
+            
+            if (error) {
+                if (error.code === '23505') {
+                    showToast("⚠️ Você já avaliou este produto!", 'warning');
+                } else {
+                    console.error("Erro ao salvar:", error);
+                    showToast("❌ Erro ao salvar avaliação. Tente novamente.", 'error');
+                }
+                return false;
+            }
+            
+            showToast("⭐ Avaliação salva com sucesso! Obrigado!", 'success');
+            
+            avaliacoesCache = null;
+            await carregarAvaliacoes(true);
+            
+            renderizarProdutos();
+            renderizarAvaliacoesAdmin();
+            
+            return true;
+            
+        } catch (error) {
+            console.error("Erro inesperado:", error);
+            showToast("❌ Erro inesperado. Tente novamente.", 'error');
+            return false;
+        } finally {
+            btnSalvar.textContent = textoOriginal;
+            btnSalvar.disabled = false;
+        }
     }
     
     function abrirModalAvaliacao(produtoId, produtoNome) {
-        avaliacaoProdutoAtual = produtoId;
-        document.getElementById('avaliacaoProdutoNome').innerHTML = `<strong>${produtoNome}</strong>`;
-        document.getElementById('avaliacaoComentario').value = '';
-        document.querySelectorAll('.star-select').forEach(s => s.classList.remove('selected'));
-        document.getElementById('modalAvaliacao').style.display = 'flex';
+        if (!usuarioLogado) {
+            showToast("🔒 Faça login para avaliar este produto!", 'warning');
+            document.getElementById('modalCliente').style.display = 'flex';
+            return;
+        }
         
-        let notaSelecionada = 0;
-        document.querySelectorAll('.star-select').forEach(star => {
-            star.onclick = () => {
-                notaSelecionada = parseInt(star.dataset.rating);
-                document.querySelectorAll('.star-select').forEach(s => {
-                    if (parseInt(s.dataset.rating) <= notaSelecionada) s.classList.add('selected');
-                    else s.classList.remove('selected');
-                });
+        clientePodeAvaliar(produtoId, usuarioLogado.id).then(validacao => {
+            if (!validacao.pode) {
+                showToast(validacao.motivo, validacao.motivo.includes("precisa comprar") ? 'info' : 'warning');
+                return;
+            }
+            
+            avaliacaoProdutoAtual = produtoId;
+            document.getElementById('avaliacaoProdutoNome').innerHTML = `<strong>${produtoNome}</strong>`;
+            document.getElementById('avaliacaoComentario').value = '';
+            
+            const stars = document.querySelectorAll('.star-select');
+            stars.forEach(s => s.classList.remove('selected'));
+            
+            let notaSelecionada = 0;
+            
+            stars.forEach((star, index) => {
+                star.onclick = () => {
+                    notaSelecionada = index + 1;
+                    stars.forEach((s, i) => {
+                        if (i < notaSelecionada) {
+                            s.classList.add('selected');
+                        } else {
+                            s.classList.remove('selected');
+                        }
+                    });
+                };
+                
+                star.onmouseenter = () => {
+                    stars.forEach((s, i) => {
+                        s.style.color = i <= index ? '#ffc107' : '#ddd';
+                    });
+                };
+                
+                star.onmouseleave = () => {
+                    stars.forEach((s, i) => {
+                        s.style.color = i < notaSelecionada ? '#ffc107' : '#ddd';
+                    });
+                };
+            });
+            
+            document.getElementById('modalAvaliacao').style.display = 'flex';
+            
+            document.getElementById('btnSalvarAvaliacao').onclick = async () => {
+                if (notaSelecionada === 0) {
+                    showToast("Selecione uma nota!", 'warning');
+                    return;
+                }
+                const comentario = document.getElementById('avaliacaoComentario').value;
+                const sucesso = await salvarAvaliacao(produtoId, notaSelecionada, comentario);
+                if (sucesso) {
+                    document.getElementById('modalAvaliacao').style.display = 'none';
+                }
+            };
+            
+            document.getElementById('btnCancelarAvaliacao').onclick = () => {
+                document.getElementById('modalAvaliacao').style.display = 'none';
             };
         });
+    }
+    
+    function getMediaAvaliacoes(produtoId) {
+        const avals = avaliacoes.filter(a => a.produto_id === produtoId && a.comprovado);
+        if (avals.length === 0) return 0;
+        const soma = avals.reduce((s, a) => s + a.nota, 0);
+        return Math.round((soma / avals.length) * 10) / 10;
+    }
+    
+    function getTotalAvaliacoes(produtoId) {
+        return avaliacoes.filter(a => a.produto_id === produtoId && a.comprovado).length;
+    }
+    
+    function renderizarEstrelas(produtoId) {
+        const media = getMediaAvaliacoes(produtoId);
+        const total = getTotalAvaliacoes(produtoId);
+        let html = '';
         
-        document.getElementById('btnSalvarAvaliacao').onclick = async () => {
-            if (notaSelecionada === 0) { showToast("Selecione uma nota!", 'warning'); return; }
-            const comentario = document.getElementById('avaliacaoComentario').value;
-            await salvarAvaliacao(produtoId, notaSelecionada, comentario);
-            document.getElementById('modalAvaliacao').style.display = 'none';
-        };
-        document.getElementById('btnCancelarAvaliacao').onclick = () => {
-            document.getElementById('modalAvaliacao').style.display = 'none';
-        };
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(media)) {
+                html += '<span class="star active">★</span>';
+            } else if (media % 1 >= 0.5 && i === Math.floor(media) + 1) {
+                html += '<span class="star half">★</span>';
+            } else {
+                html += '<span class="star">★</span>';
+            }
+        }
+        
+        html += `<span class="avg-rating">(${total} ${total === 1 ? 'avaliação' : 'avaliações'})</span>`;
+        
+        if (usuarioLogado) {
+            html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId}, '${produtos.find(p=>p.id===produtoId)?.nome.replace(/'/g, "\\'")}')">⭐ Avaliar</button>`;
+        } else {
+            html += `<button class="avaliar-btn" onclick="showToast('Faça login para avaliar!', 'warning'); document.getElementById('modalCliente').style.display='flex';">⭐ Avaliar</button>`;
+        }
+        
+        return html;
     }
     
     function renderizarAvaliacoesAdmin() {
@@ -591,6 +875,7 @@
                 <div style="min-width:100px;">${cliente?.nome_social || cliente?.nome || 'Cliente'}</div>
                 <div style="font-size:0.7rem;">${new Date(a.created_at).toLocaleDateString()}</div>
                 <div style="flex:2; max-width:200px;">${a.comentario || '-'}</div>
+                <div style="font-size:0.7rem; ${a.comprovado ? 'color:#25d366' : 'color:#f39c12'}">${a.comprovado ? '✓ Compra verificada' : '⚠️ Pendente'}</div>
             `;
             container.appendChild(div);
         });
@@ -675,6 +960,36 @@
     function selecionarMetodo(metodo) { metodoSelecionado = metodo; document.getElementById('detalhe-pix').style.display = metodo === 'pix' ? 'block' : 'none'; document.getElementById('detalhe-mercadopago').style.display = metodo === 'mercadopago' ? 'block' : 'none'; showToast(`💳 Pagamento: ${metodo === 'pix' ? 'PIX' : 'Mercado Pago'}`, 'info'); }
     function copiarChavePix() { navigator.clipboard.writeText("21965783597"); showToast("📋 Chave PIX copiada!", 'success'); }
     
+    async function salvarPedidoNoBanco(cliente, itens, total, metodoPagamento, opcaoEntrega, observacao = '') {
+        try {
+            const pedido = {
+                cliente_id: cliente.id || null,
+                cliente_nome: cliente.nome || cliente.pedidoNome,
+                cliente_telefone: cliente.telefone || cliente.pedidoTelefone,
+                total: total,
+                status: 'entregue',
+                itens: itens.map(item => ({ id: item.id, nome: item.nome, quantidade: item.quantidade, preco: item.preco })),
+                metodo_pagamento: metodoPagamento,
+                entrega_opcao: opcaoEntrega,
+                observacao: observacao
+            };
+            
+            const { error } = await supabaseClient.from('pedidos').insert([pedido]);
+            
+            if (error) {
+                console.error("Erro ao salvar pedido:", error);
+            } else {
+                console.log("Pedido salvo com sucesso!");
+                if (usuarioLogado) {
+                    produtosCompradosCache.clear();
+                    ultimaBuscaCompras = 0;
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao salvar pedido:", error);
+        }
+    }
+    
     function iniciarFinalizacaoPedido() {
         if (carrinho.length === 0) { showToast("Carrinho vazio!", 'warning'); return; }
         if (!metodoSelecionado) { showToast("Selecione pagamento!", 'warning'); return; }
@@ -686,14 +1001,25 @@
     
     function finalizarPedido(cliente, opcao) {
         const total = carrinho.reduce((s,i)=>s+i.preco*i.quantidade,0);
+        const observacao = document.getElementById('pedidoObservacao')?.value || document.getElementById('pedidoObservacaoLogado')?.value || '';
+        
+        salvarPedidoNoBanco(cliente, carrinho, total, metodoSelecionado, opcao, observacao);
+        
         let msg = `🧁 *PEDIDO - ${configs.logo_nome}* 🧁\n👤 ${cliente.nome || cliente.pedidoNome}\n📞 ${cliente.telefone || cliente.pedidoTelefone}\n📋 Itens:\n`;
         carrinho.forEach(i=>msg += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco*i.quantidade).toFixed(2).replace('.',',')}\n`);
         msg += `💰 Total: R$ ${total.toFixed(2).replace('.',',')}\n💳 Pagamento: ${metodoSelecionado === 'pix' ? 'PIX' : 'Mercado Pago'}\n`;
         msg += opcao === 'retirada' ? `🏪 RETIRADA NO LOCAL\n📍 Rua das Delícias, 123 - Centro, SP\n` : `🚚 DELIVERY\n📍 ${cliente.endereco || ''}\n`;
+        if (observacao) msg += `📝 Obs: ${observacao}\n`;
         msg += `✨ Aguardo confirmação!`;
         
-        for (let item of carrinho) { const prod = produtos.find(p=>p.id===item.id); if(prod) prod.estoque -= item.quantidade; }
-        carrinho = []; salvarCarrinho(); renderizarProdutos(); atualizarCarrinho();
+        for (let item of carrinho) { 
+            const prod = produtos.find(p=>p.id===item.id); 
+            if(prod) prod.estoque -= item.quantidade; 
+        }
+        carrinho = []; 
+        salvarCarrinho(); 
+        renderizarProdutos(); 
+        atualizarCarrinho();
         window.open(`https://api.whatsapp.com/send?phone=5521965783597&text=${encodeURIComponent(msg)}`, '_blank');
         showToast("📦 Pedido enviado!", 'success');
         metodoSelecionado = null;
@@ -750,8 +1076,8 @@
             const div = document.createElement('div');
             div.className = 'produto-admin-item';
             div.innerHTML = `
-                <input type="text" class="edit-field edit-nome" data-id="${p.id}" value="${p.nome}" placeholder="Nome" style="width:140px;">
-                <input type="text" class="edit-field edit-desc" data-id="${p.id}" value="${p.descricao}" placeholder="Descrição" style="width:200px;">
+                <input type="text" class="edit-field edit-nome" data-id="${p.id}" value="${p.nome.replace(/"/g, '&quot;')}" placeholder="Nome" style="width:140px;">
+                <input type="text" class="edit-field edit-desc" data-id="${p.id}" value="${p.descricao.replace(/"/g, '&quot;')}" placeholder="Descrição" style="width:200px;">
                 <input type="number" step="0.01" class="edit-field edit-preco" data-id="${p.id}" value="${p.preco}" placeholder="Preço" style="width:80px;">
                 <input type="number" class="edit-field edit-estoque" data-id="${p.id}" value="${p.estoque}" placeholder="Estoque" style="width:70px;">
                 <input type="text" class="edit-field edit-imagem" data-id="${p.id}" value="${p.imagem}" placeholder="URL imagem" style="width:180px;">
@@ -882,8 +1208,8 @@
             div.className = 'slide-admin-item';
             div.innerHTML = `
                 <img src="${slide.imagem}" class="slide-preview-img" onerror="this.src='https://placehold.co/60x60'">
-                <div><input type="text" class="edit-field" value="${slide.titulo || ''}" placeholder="Título" data-id="${slide.id}" data-field="titulo" style="width:150px;"></div>
-                <div><input type="text" class="edit-field" value="${slide.descricao || ''}" placeholder="Descrição" data-id="${slide.id}" data-field="descricao" style="width:200px;"></div>
+                <div><input type="text" class="edit-field" value="${(slide.titulo || '').replace(/"/g, '&quot;')}" placeholder="Título" data-id="${slide.id}" data-field="titulo" style="width:150px;"></div>
+                <div><input type="text" class="edit-field" value="${(slide.descricao || '').replace(/"/g, '&quot;')}" placeholder="Descrição" data-id="${slide.id}" data-field="descricao" style="width:200px;"></div>
                 <div><input type="text" class="edit-field" value="${slide.imagem}" placeholder="URL imagem" data-id="${slide.id}" data-field="imagem" style="width:180px;"></div>
                 <div class="slide-actions">
                     <button class="btn-slide-up" onclick="moverSlide(${slide.id}, 'up')">⬆️</button>
@@ -1016,34 +1342,70 @@
     async function solicitarRecuperacaoSenha(email) { const { data } = await supabaseClient.from('clientes').select('id, nome').eq('email', email); if (!data || !data.length) { showToast("Email não encontrado!", 'error'); return false; } const novaSenha = Math.random().toString(36).slice(-8); const senhaHash = hashSenha(novaSenha); await supabaseClient.from('clientes').update({ senha: senhaHash, force_password_change: true }).eq('email', email); showToast(`Sua nova senha é: ${novaSenha}`, 'success'); return true; }
     async function atualizarCliente(id, updates) { const { error } = await supabaseClient.from('clientes').update(updates).eq('id', id); if (error) { showToast("Erro ao atualizar!", 'error'); return false; } return true; }
     
-    async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g,''); if(cep.length!==8){ showToast("CEP inválido!", 'error'); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if(data.erro){ showToast("CEP não encontrado!", 'error'); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco; else if(tipo==='perfil') document.getElementById('perfilEndereco').value = endereco; showToast("Endereço encontrado!", 'success'); } catch(e){ showToast("Erro ao buscar CEP!", 'error'); } }
-    function buscarCepClick(tipo) { const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCep':'pedidoCep')).value; buscarCep(cep, tipo); }
+    async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g,''); if(cep.length!==8){ showToast("CEP inválido!", 'error'); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if(data.erro){ showToast("CEP não encontrado!", 'error'); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if(tipo==='cadastro') document.getElementById('cadEndereco').value = endereco; else if(tipo==='perfil') document.getElementById('perfilEnderecoDrop').value = endereco; showToast("Endereço encontrado!", 'success'); } catch(e){ showToast("Erro ao buscar CEP!", 'error'); } }
+    function buscarCepClick(tipo) { const cep = document.getElementById(tipo==='cadastro'?'cadCep':(tipo==='perfil'?'perfilCepDrop':null))?.value; if(cep) buscarCep(cep, tipo); }
     
     function atualizarBotaoCliente() {
         const area = document.getElementById('clienteButtonArea');
+        if (!area) return;
+        
         if (usuarioLogado) {
-            const nomeExibir = usuarioLogado.nome_social || usuarioLogado.nome.split(' ')[0];
-            area.innerHTML = `<div class="usuario-info"><span>👤 ${nomeExibir}</span><button class="btn-sair" id="btnSairRapido">Sair</button></div>`;
+            const nomeExibir = usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente');
+            area.innerHTML = `
+                <div class="usuario-dropdown" id="usuarioDropdown">
+                    <div class="usuario-info" onclick="toggleDropdown()">
+                        <span>👤 ${nomeExibir}</span>
+                        <span style="font-size:0.8rem;">▼</span>
+                    </div>
+                    <div class="dropdown-content">
+                        <span class="close-dropdown" onclick="fecharDropdown()">✕</span>
+                        <h4>✏️ Meus Dados</h4>
+                        <div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop"></div>
+                        <div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop" placeholder="Nome social"></div>
+                        <div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop"></div>
+                        <div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop" placeholder="CEP"><button onclick="buscarCepNoDropdown()">🔍 Buscar</button></div></div>
+                        <div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop"></div>
+                        <div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop"></div></div>
+                        <div class="campo"><label>Ponto de referência</label><input type="text" id="perfilReferenciaDrop"></div>
+                        <div class="campo"><label>Telefone/WhatsApp</label><input type="text" id="perfilTelefoneDrop"></div>
+                        <div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop"></div>
+                        <div class="campo"><label>Nova senha (opcional)</label><input type="password" id="perfilNovaSenhaDrop" placeholder="Deixe em branco para manter a atual"></div>
+                        <button onclick="atualizarPerfilDropdown()">💾 Salvar Alterações</button>
+                        <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>
+                    </div>
+                </div>
+            `;
+            carregarPerfilNoDropdown();
         } else {
             area.innerHTML = `<button class="btn-cliente" id="btnAbrirCliente">👤 Cliente</button>`;
+            const btnCliente = document.getElementById('btnAbrirCliente');
+            if (btnCliente) {
+                btnCliente.addEventListener('click', () => { 
+                    document.getElementById('loginEmail').value = ''; 
+                    document.getElementById('loginSenha').value = ''; 
+                    document.getElementById('modalCliente').style.display = 'flex'; 
+                });
+            }
         }
-        document.getElementById('btnAbrirCliente')?.addEventListener('click', () => { document.getElementById('loginEmail').value = ''; document.getElementById('loginSenha').value = ''; document.getElementById('modalCliente').style.display = 'flex'; });
-        document.getElementById('btnSairRapido')?.addEventListener('click', () => { usuarioLogado = null; localStorage.removeItem("docesdi_usuario_logado"); atualizarBotaoCliente(); showToast("Saiu da conta!", 'info'); });
     }
     
-    function carregarPerfilNoModal() {
-        if (!usuarioLogado) return;
-        document.getElementById('perfilNome').value = usuarioLogado.nome || '';
-        document.getElementById('perfilNomeSocial').value = usuarioLogado.nome_social || '';
-        document.getElementById('perfilDataNasc').value = usuarioLogado.data_nasc || '';
-        document.getElementById('perfilCep').value = usuarioLogado.cep || '';
-        document.getElementById('perfilEndereco').value = usuarioLogado.endereco || '';
-        document.getElementById('perfilNumero').value = usuarioLogado.numero || '';
-        document.getElementById('perfilComplemento').value = usuarioLogado.complemento || '';
-        document.getElementById('perfilReferencia').value = usuarioLogado.referencia || '';
-        document.getElementById('perfilTelefone').value = usuarioLogado.telefone || '';
-        document.getElementById('perfilEmail').value = usuarioLogado.email || '';
+    function fazerLogout() {
+        usuarioLogado = null;
+        localStorage.removeItem("docesdi_usuario_logado");
+        produtosCompradosCache.clear();
+        ultimaBuscaCompras = 0;
+        atualizarBotaoCliente();
+        fecharDropdown();
+        renderizarProdutos();
+        showToast("Saiu da conta!", 'info');
     }
+    
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('usuarioDropdown');
+        if (dropdown && !dropdown.contains(event.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
     
     // ==================== EVENTOS GERAIS ====================
     document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
@@ -1073,25 +1435,20 @@
         document.getElementById('slideDescricao').value = '';
         document.getElementById('uploadSlideImagem').value = '';
     });
-    document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
     document.getElementById('btnCancelarEntrega')?.addEventListener('click', () => document.getElementById('modalEntrega').style.display = 'none');
-    document.getElementById('btnConfirmarEntrega')?.addEventListener('click', () => { let opcao = null; const selected = document.querySelector('#modalEntrega .opcao-entrega.selecionado'); if(selected) opcao = selected.getAttribute('data-opcao'); if(!opcao){ showToast("Selecione uma opção!", 'warning'); return; } document.getElementById('modalEntrega').style.display = 'none'; finalizarPedido(usuarioLogado, opcao); });
+    document.getElementById('btnConfirmarEntrega')?.addEventListener('click', () => { let opcao = null; const selected = document.querySelector('#modalEntrega .opcao-entrega.selecionado'); if(selected) opcao = selected.getAttribute('data-opcao'); if(!opcao){ showToast("Selecione uma opção!", 'warning'); return; } const observacao = document.getElementById('pedidoObservacaoLogado').value; document.getElementById('modalEntrega').style.display = 'none'; finalizarPedido(usuarioLogado, opcao); });
     document.querySelectorAll('#modalEntrega .opcao-entrega').forEach(el => { el.addEventListener('click', () => { document.querySelectorAll('#modalEntrega .opcao-entrega').forEach(e=>e.classList.remove('selecionado')); el.classList.add('selecionado'); }); });
     document.getElementById('btnConfirmarDadosPedido')?.addEventListener('click', () => { const dados = { nome: document.getElementById('pedidoNome').value, telefone: document.getElementById('pedidoTelefone').value }; if(!dados.nome || !dados.telefone){ showToast("Preencha nome e telefone!", 'warning'); return; } const obs = document.getElementById('pedidoObservacao').value; document.getElementById('modalEnderecoPedido').style.display = 'none'; finalizarPedido(dados, 'retirada'); });
     document.getElementById('btnCancelarPedidoSemLogin')?.addEventListener('click', () => document.getElementById('modalEnderecoPedido').style.display = 'none');
-    document.getElementById('btnLogin')?.addEventListener('click', async () => { const email = document.getElementById('loginEmail').value; const senha = document.getElementById('loginSenha').value; const user = await fazerLogin(email, senha); if(user){ usuarioLogado = user; localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user)); atualizarBotaoCliente(); document.getElementById('modalCliente').style.display = 'none'; showToast(`Bem-vindo, ${user.nome_social || user.nome}!`, 'success'); } else showToast("Email ou senha incorretos!", 'error'); });
+    document.getElementById('btnLogin')?.addEventListener('click', async () => { const email = document.getElementById('loginEmail').value; const senha = document.getElementById('loginSenha').value; const user = await fazerLogin(email, senha); if(user){ usuarioLogado = user; localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user)); atualizarBotaoCliente(); document.getElementById('modalCliente').style.display = 'none'; renderizarProdutos(); showToast(`Bem-vindo, ${user.nome_social || user.nome}!`, 'success'); } else showToast("Email ou senha incorretos!", 'error'); });
     document.getElementById('btnCadastrar')?.addEventListener('click', async () => { const nome = document.getElementById('cadNome').value; const email = document.getElementById('cadEmail').value; const senha = document.getElementById('cadSenha').value; const conf = document.getElementById('cadConfirmarSenha').value; if(senha !== conf){ showToast("Senhas não conferem!", 'error'); return; } await cadastrarCliente(nome, email, senha, document.getElementById('cadNomeSocial').value, document.getElementById('cadDataNasc').value, document.getElementById('cadCep').value, document.getElementById('cadEndereco').value, document.getElementById('cadNumero').value, document.getElementById('cadComplemento').value, document.getElementById('cadReferencia').value, document.getElementById('cadTelefone').value); });
     document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('recuperarPanel').style.display = 'block'; });
     document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => { const email = document.getElementById('recuperarEmail').value; await solicitarRecuperacaoSenha(email); document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
     document.getElementById('btnVoltarLogin')?.addEventListener('click', () => { document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-    document.getElementById('btnAtualizarPerfil')?.addEventListener('click', async () => { if(!usuarioLogado) return; const novaSenha = document.getElementById('perfilNovaSenha').value; const updates = { nome: document.getElementById('perfilNome').value, nome_social: document.getElementById('perfilNomeSocial').value, data_nasc: document.getElementById('perfilDataNasc').value, cep: document.getElementById('perfilCep').value, endereco: document.getElementById('perfilEndereco').value, numero: document.getElementById('perfilNumero').value, complemento: document.getElementById('perfilComplemento').value, referencia: document.getElementById('perfilReferencia').value, telefone: document.getElementById('perfilTelefone').value, email: document.getElementById('perfilEmail').value }; if(novaSenha){ if(!validarSenhaForte(novaSenha)){ showToast("Senha fraca!", 'warning'); return; } updates.senha = hashSenha(novaSenha); } const sucesso = await atualizarCliente(usuarioLogado.id, updates); if(sucesso){ Object.assign(usuarioLogado, updates); localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado)); showToast("Perfil atualizado!", 'success'); } });
-    document.getElementById('btnSair')?.addEventListener('click', () => { usuarioLogado = null; localStorage.removeItem("docesdi_usuario_logado"); atualizarBotaoCliente(); document.getElementById('modalCliente').style.display = 'none'; showToast("Saiu da conta!", 'info'); });
     document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
     document.getElementById('buscarCepCadastro')?.addEventListener('click', () => buscarCepClick('cadastro'));
-    document.getElementById('buscarCepPerfil')?.addEventListener('click', () => buscarCepClick('perfil'));
-    document.getElementById('tabLoginBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'block'; document.getElementById('cadastroPanel').style.display = 'none'; document.getElementById('perfilPanel').style.display = 'none'; });
-    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; document.getElementById('perfilPanel').style.display = 'none'; });
-    document.getElementById('tabPerfilBtn')?.addEventListener('click', () => { if(usuarioLogado){ carregarPerfilNoModal(); document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'none'; document.getElementById('perfilPanel').style.display = 'block'; } else showToast("Faça login primeiro!", 'warning'); });
+    document.getElementById('tabLoginBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'block'; document.getElementById('cadastroPanel').style.display = 'none'; });
+    document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; });
     
     document.querySelectorAll('.admin-tab').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1107,6 +1464,14 @@
     });
     
     window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    
+    // Contador de caracteres para observações
+    document.getElementById('pedidoObservacao')?.addEventListener('input', function() {
+        document.getElementById('contadorObs').innerText = this.value.length;
+    });
+    document.getElementById('pedidoObservacaoLogado')?.addEventListener('input', function() {
+        document.getElementById('contadorObsLogado').innerText = this.value.length;
+    });
     
     async function inicializar() {
         initTheme();
