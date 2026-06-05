@@ -123,7 +123,6 @@
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
         .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
         
-        /* Skeleton loading */
         .skeleton-card {
             background: linear-gradient(90deg, var(--border-color) 25%, var(--card-bg) 50%, var(--border-color) 75%);
             background-size: 200% 100%;
@@ -137,7 +136,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Dropdown usuário */
         .usuario-dropdown { position: relative; display: inline-block; }
         .usuario-info {
             background: var(--card-bg);
@@ -197,11 +195,9 @@
         .btn-sair-dropdown { background: #e74c3c !important; }
         .close-dropdown { float: right; cursor: pointer; font-size: 1.2rem; color: #8b7d77; }
         
-        /* Admin button */
         .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
         .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.85rem; }
         
-        /* Search bar */
         .search-container {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -300,7 +296,6 @@
             .rating-stars { font-size: 0.7rem; }
         }
         
-        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -369,7 +364,6 @@
         }
         .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
         
-        /* Carrinho sidebar */
         .carrinho-sidebar {
             flex: 1;
             background: var(--sidebar-bg);
@@ -421,7 +415,6 @@
         .btn-qtd { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f0e4da; cursor: pointer; font-weight: bold; }
         .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; }
         
-        /* Carrossel */
         .carousel-container { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 40px; background: #1a1a2e; }
         @media (max-width: 768px) { .carousel-container { height: 180px; margin-bottom: 20px; } }
         .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; }
@@ -443,7 +436,6 @@
         .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
         .carousel-dot.active { background: var(--accent-color); transform: scale(1.2); }
         
-        /* Modais */
         .modal {
             display: none;
             position: fixed;
@@ -490,7 +482,6 @@
         .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: var(--accent-color); color: white; }
         
-        /* Favoritos */
         .favorito-item {
             display: flex;
             justify-content: space-between;
@@ -515,7 +506,6 @@
         }
         .btn-comprar-favorito:hover { transform: scale(1.05); background: var(--btn-hover); }
         
-        /* Admin */
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -664,7 +654,6 @@
             font-size: 0.85rem;
         }
         
-        /* Dashboard */
         .date-filter {
             display: flex;
             flex-wrap: wrap;
@@ -706,7 +695,6 @@
         .cep-grupo-mini input { flex: 3; }
         .cep-grupo-mini button { width: auto; padding: 6px 10px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
         
-        /* Loading spinner */
         .payment-loading {
             display: none;
             position: fixed;
@@ -761,7 +749,6 @@
     <p id="logoSlogan">A vida é mais doce quando compartilhada</p>
 </header>
 
-<!-- CARROSSEL -->
 <div class="carousel-container" id="carouselContainer">
     <div class="carousel-slides" id="carouselSlides"></div>
     <button class="carousel-btn prev" id="carouselPrev">❮</button>
@@ -843,7 +830,7 @@
     <p id="footerContato">(21) 96578-3597 | contato@docesdi.com</p>
 </footer>
 
-<!-- MODAL CLIENTE -->
+<!-- MODAIS -->
 <div id="modalCliente" class="modal">
     <div class="modal-content">
         <div class="tab-buttons">
@@ -1039,11 +1026,9 @@
     let pedidosData = [];
     let mp;
     
-    // Inicializar Mercado Pago
     function initMercadoPago() {
         if (typeof MercadoPago !== 'undefined') {
             mp = new MercadoPago(MP_PUBLIC_KEY);
-            console.log("Mercado Pago inicializado");
         }
     }
     
@@ -1067,10 +1052,16 @@
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
     }
     
+    // ==================== ATUALIZAR FRONT (CORREÇÃO IMPORTANTE) ====================
+    function atualizarFrontend() {
+        produtosFiltrados = [...produtos];
+        renderizarProdutos();
+        renderizarAdminLista();
+    }
+    
     // ==================== MERCADO PAGO ====================
     async function criarPreferenciaMercadoPago(valor, descricao, pedidoId, itens) {
         try {
-            // Criar preferência via API do Mercado Pago
             const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
                 method: 'POST',
                 headers: {
@@ -1093,9 +1084,7 @@
                     payer: {
                         name: usuarioLogado?.nome || 'Cliente',
                         email: usuarioLogado?.email || 'cliente@docesdi.com',
-                        phone: {
-                            number: usuarioLogado?.telefone || ''
-                        }
+                        phone: { number: usuarioLogado?.telefone || '' }
                     },
                     back_urls: {
                         success: window.location.href + '?payment=success',
@@ -1108,14 +1097,8 @@
                     external_reference: pedidoId.toString()
                 })
             });
-            
             const data = await response.json();
-            if (data.init_point) {
-                return data.init_point;
-            } else {
-                console.error("Erro ao criar preferência:", data);
-                return null;
-            }
+            return data.init_point || null;
         } catch (error) {
             console.error("Erro na API do Mercado Pago:", error);
             return null;
@@ -1132,7 +1115,6 @@
         const descricao = `Pedido Doces Di - ${new Date().toLocaleDateString()}`;
         const pedidoId = Date.now();
         
-        // Salvar pedido no banco
         const { error } = await supabaseClient.from('pedidos').insert([{ 
             cliente_id: usuarioLogado?.id || null, 
             cliente_nome: usuarioLogado?.nome || 'Cliente', 
@@ -1150,17 +1132,12 @@
         const loadingDiv = document.getElementById('paymentLoading');
         loadingDiv.classList.add('show');
         
-        // Criar preferência no Mercado Pago
         const checkoutUrl = await criarPreferenciaMercadoPago(total, descricao, pedidoId, carrinho);
         
         if (checkoutUrl) {
             loadingDiv.classList.remove('show');
             window.open(checkoutUrl, '_blank');
-            
-            // Verificar pagamento após redirecionamento
-            setTimeout(() => {
-                verificarPagamento(pedidoId);
-            }, 10000);
+            setTimeout(() => verificarPagamento(pedidoId), 10000);
         } else {
             loadingDiv.classList.remove('show');
             showToast("Erro ao processar pagamento. Tente novamente.", 'error');
@@ -1168,13 +1145,7 @@
     }
     
     async function verificarPagamento(pedidoId) {
-        // Verificar status do pedido no banco
-        const { data } = await supabaseClient
-            .from('pedidos')
-            .select('status')
-            .eq('id', pedidoId)
-            .single();
-        
+        const { data } = await supabaseClient.from('pedidos').select('status').eq('id', pedidoId).single();
         if (data && data.status === 'pago') {
             showToast("✅ Pagamento confirmado!", 'success');
             enviarPedidoWhatsApp();
@@ -1188,7 +1159,6 @@
             showToast("Carrinho vazio!", 'warning');
             return;
         }
-        
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
         const itensHtml = carrinho.map(item => `
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
@@ -1196,7 +1166,6 @@
                 <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
             </div>
         `).join('');
-        
         document.getElementById('resumoPedidoItens').innerHTML = itensHtml;
         document.getElementById('resumoTotal').innerText = `R$ ${total.toFixed(2)}`;
         document.getElementById('resumoObservacao').value = '';
@@ -1205,7 +1174,6 @@
     
     async function enviarPedidoWhatsApp() {
         const total = carrinho.reduce((s,i) => s + i.preco * i.quantidade, 0);
-        
         let msg = `🧁 *PEDIDO - Doces Di* 🧁\n`;
         msg += `👤 ${usuarioLogado?.nome_social || usuarioLogado?.nome || 'Cliente'}\n`;
         msg += `📞 ${usuarioLogado?.telefone || 'Não informado'}\n`;
@@ -1215,25 +1183,15 @@
         msg += `💳 Pagamento: Mercado Pago (PIX/Cartão)\n`;
         msg += `✨ Pedido confirmado! Aguardo preparo.`;
         
-        // Atualizar status do pedido
-        const { data: pedidos } = await supabaseClient
-            .from('pedidos')
-            .select('id')
-            .eq('status', 'aguardando_pagamento')
-            .order('data_pedido', { ascending: false })
-            .limit(1);
-            
+        const { data: pedidos } = await supabaseClient.from('pedidos').select('id').eq('status', 'aguardando_pagamento').order('data_pedido', { ascending: false }).limit(1);
         if (pedidos && pedidos[0]) {
             await supabaseClient.from('pedidos').update({ status: 'pago' }).eq('id', pedidos[0].id);
         }
         
-        // Limpar carrinho
         carrinho = [];
         salvarCarrinho();
         atualizarCarrinho();
-        renderizarProdutos();
         
-        // Abrir WhatsApp
         window.open(`https://wa.me/5521965783597?text=${encodeURIComponent(msg)}`, '_blank');
         showToast("📦 Pedido enviado para a loja!", 'success');
         trackEvent('purchase', { value: total, items: carrinho });
@@ -1274,13 +1232,9 @@
     window.alterarQuantidade = function(id, delta) {
         const item = carrinho.find(i => i.id === id);
         const prod = produtos.find(p => p.id === id);
-        if (item && delta === -1 && item.quantidade > 1) {
-            item.quantidade--;
-        } else if (item && delta === 1 && prod && item.quantidade + 1 <= prod.estoque) {
-            item.quantidade++;
-        } else if (delta === -1 && item.quantidade === 1) {
-            removerDoCarrinho(id);
-        }
+        if (item && delta === -1 && item.quantidade > 1) item.quantidade--;
+        else if (item && delta === 1 && prod && item.quantidade + 1 <= prod.estoque) item.quantidade++;
+        else if (delta === -1 && item.quantidade === 1) removerDoCarrinho(id);
         salvarCarrinho();
         atualizarCarrinho();
     };
@@ -1400,22 +1354,19 @@
     function renderizarEstrelas(produtoId) {
         const media = getMediaAvaliacoes(produtoId);
         const total = getTotalAvaliacoes(produtoId);
-        const jaAvaliou = usuarioLogado && avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id);
-        
         let html = '';
         for (let i = 1; i <= 5; i++) {
             if (i <= media) html += '<span class="star active">★</span>';
             else html += '<span class="star">★</span>';
         }
         html += `<span class="avg-rating">(${total})</span>`;
-        
-        if (!jaAvaliou && usuarioLogado) {
-            html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId}, '${produtos.find(p=>p.id===produtoId)?.nome}')">⭐</button>`;
+        if (usuarioLogado) {
+            html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId})">⭐</button>`;
         }
         return html;
     }
     
-    window.abrirModalAvaliacao = function(produtoId, produtoNome) {
+    window.abrirModalAvaliacao = function(produtoId) {
         if (!usuarioLogado) {
             showToast("Faça login para avaliar!");
             document.getElementById('modalCliente').style.display = 'flex';
@@ -1539,6 +1490,7 @@
     window.excluirProdutoLocal = function(id) {
         if (confirm("Excluir este produto permanentemente?")) {
             produtos = produtos.filter(p => p.id !== id);
+            produtosFiltrados = [...produtos];
             renderizarAdminLista();
             renderizarProdutos();
             showToast(`🗑️ Produto removido! Salve para confirmar.`);
@@ -1561,8 +1513,12 @@
         
         const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
         produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
-        renderizarAdminLista();
+        
+        // CORREÇÃO: Atualizar produtosFiltrados e re-renderizar
+        produtosFiltrados = [...produtos];
         renderizarProdutos();
+        renderizarAdminLista();
+        
         showToast(`➕ "${nome}" adicionado! Salve para confirmar.`);
         
         document.getElementById('prodNome').value = '';
@@ -1672,20 +1628,9 @@
     // ==================== LOGIN E PERFIL ====================
     async function fazerLogin(email, senha) {
         const senhaHash = hashSenha(senha);
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('*')
-            .eq('email', email);
-        
-        if (error) {
-            console.error("Erro na busca:", error);
-            showToast("Erro ao conectar com o banco de dados!", 'error');
-            return null;
-        }
-        
-        if (data && data.length > 0 && data[0].senha === senhaHash) {
-            return data[0];
-        }
+        const { data, error } = await supabaseClient.from('clientes').select('*').eq('email', email);
+        if (error) { showToast("Erro ao conectar!", 'error'); return null; }
+        if (data && data.length > 0 && data[0].senha === senhaHash) return data[0];
         return null;
     }
     
@@ -1694,42 +1639,20 @@
             showToast("Senha fraca! Use 8+ caracteres com maiúscula, minúscula, número e caractere especial.", 'warning');
             return false;
         }
-        
-        const { data: existing, error: checkError } = await supabaseClient
-            .from('clientes')
-            .select('id')
-            .eq('email', email);
-        
-        if (checkError) {
-            showToast("Erro ao verificar email!", 'error');
-            return false;
-        }
-        
-        if (existing && existing.length) {
-            showToast("Email já cadastrado!", 'error');
-            return false;
-        }
-        
+        const { data: existing } = await supabaseClient.from('clientes').select('id').eq('email', email);
+        if (existing && existing.length) { showToast("Email já cadastrado!", 'error'); return false; }
         const { error } = await supabaseClient.from('clientes').insert([{ 
             nome, email, senha: hashSenha(senha), nome_social: nomeSocial, data_nasc: dataNasc,
             cep, endereco, numero, complemento, referencia, telefone
         }]);
-        
-        if (error) { 
-            showToast("Erro ao cadastrar: " + error.message, 'error'); 
-            return false; 
-        }
-        
+        if (error) { showToast("Erro ao cadastrar!", 'error'); return false; }
         showToast("Cadastro realizado! Faça login.", 'success');
         return true;
     }
     
     async function solicitarRecuperacaoSenha(email) {
         const { data } = await supabaseClient.from('clientes').select('id').eq('email', email);
-        if (!data || !data.length) { 
-            showToast("Email não encontrado!", 'error'); 
-            return false; 
-        }
+        if (!data || !data.length) { showToast("Email não encontrado!", 'error'); return false; }
         const novaSenha = Math.random().toString(36).slice(-8);
         await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email);
         showToast(`Sua nova senha é: ${novaSenha}`, 'success');
@@ -1764,22 +1687,16 @@
             telefone: document.getElementById('perfilTelefoneDrop').value,
             email: document.getElementById('perfilEmailDrop').value
         };
-        
         const novaSenha = document.getElementById('perfilNovaSenhaDrop').value;
         if (novaSenha) {
             if (!validarSenhaForte(novaSenha)) {
-                showToast("Senha fraca! Use 8+ caracteres com maiúscula, minúscula, número e caractere especial.", 'warning');
+                showToast("Senha fraca!", 'warning');
                 return;
             }
             updates.senha = hashSenha(novaSenha);
         }
-        
         const { error } = await supabaseClient.from('clientes').update(updates).eq('id', usuarioLogado.id);
-        if (error) {
-            showToast("Erro ao atualizar perfil!", 'error');
-            return;
-        }
-        
+        if (error) { showToast("Erro ao atualizar perfil!", 'error'); return; }
         Object.assign(usuarioLogado, updates);
         if (novaSenha) usuarioLogado.senha = updates.senha;
         localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
@@ -1872,7 +1789,7 @@
         if (dropdown) dropdown.classList.remove('show');
     }
     
-    // ==================== CLIENTES E DASHBOARD ADMIN ====================
+    // ==================== CLIENTES E DASHBOARD ====================
     async function carregarClientes() {
         const { data } = await supabaseClient.from('clientes').select('*');
         clientes = data || [];
@@ -1910,17 +1827,14 @@
     async function carregarDashboard() {
         const { data: pedidos } = await supabaseClient.from('pedidos').select('*');
         if (!pedidos) return;
-        
         const totalVendas = pedidos.reduce((s,p) => s + (p.total || 0), 0);
         const ticketMedio = totalVendas / (pedidos.length || 1);
-        
         document.getElementById('dashboardStats').innerHTML = `
             <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${totalVendas.toFixed(2)}</div></div>
             <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
             <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticketMedio.toFixed(2)}</div></div>
             <div class="stat-card"><h4>👥 Clientes</h4><div class="value">${clientes.length}</div></div>
         `;
-        
         const vendasPorDia = {};
         pedidos.forEach(p => {
             const dia = new Date(p.data_pedido).toLocaleDateString();
@@ -1928,7 +1842,6 @@
         });
         const dias = Object.keys(vendasPorDia).slice(-7);
         const valores = dias.map(d => vendasPorDia[d]);
-        
         const ctxVendas = document.getElementById('vendasChart')?.getContext('2d');
         if (ctxVendas) {
             if (vendasChart) vendasChart.destroy();
@@ -1937,7 +1850,6 @@
                 data: { labels: dias, datasets: [{ label: 'Vendas (R$)', data: valores, borderColor: '#d4a373', tension: 0.3 }] }
             });
         }
-        
         const vendasProdutos = {};
         pedidos.forEach(p => {
             (p.itens || []).forEach(i => {
@@ -1950,7 +1862,6 @@
             '<p>Nenhuma venda registrada.</p>';
     }
     
-    // ==================== BUSCA CEP ====================
     async function buscarCep(cep, tipo) {
         cep = cep.replace(/\D/g, '');
         if (cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
@@ -1966,7 +1877,6 @@
     
     // ==================== INICIALIZAÇÃO ====================
     async function inicializar() {
-        // Tema
         const savedTheme = localStorage.getItem('docesdi_theme');
         if (savedTheme === 'dark') document.body.classList.add('dark');
         document.getElementById('themeToggle')?.addEventListener('click', () => {
@@ -1974,10 +1884,8 @@
             localStorage.setItem('docesdi_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         });
         
-        // Inicializar Mercado Pago
         initMercadoPago();
         
-        // Carregar dados
         await carregarProdutos();
         await carregarAvaliacoes();
         await carregarClientes();
@@ -1985,7 +1893,6 @@
         await carregarFavoritos();
         carregarCarrinho();
         
-        // Usuário logado
         const savedUser = localStorage.getItem("docesdi_usuario_logado");
         if (savedUser) usuarioLogado = JSON.parse(savedUser);
         
@@ -1994,11 +1901,8 @@
         
         document.getElementById('anoAtual').innerText = new Date().getFullYear();
         
-        // Eventos carrossel
         document.getElementById('carouselPrev')?.addEventListener('click', () => mudarSlide(-1));
         document.getElementById('carouselNext')?.addEventListener('click', () => mudarSlide(1));
-        
-        // Eventos busca
         document.getElementById('btnBuscar')?.addEventListener('click', buscarProdutos);
         document.getElementById('searchInput')?.addEventListener('keyup', (e) => { if(e.key === 'Enter') buscarProdutos(); });
         document.getElementById('btnAplicarFiltros')?.addEventListener('click', buscarProdutos);
@@ -2006,20 +1910,15 @@
         document.getElementById('btnToggleFilters')?.addEventListener('click', () => {
             document.getElementById('advancedFilters')?.classList.toggle('show');
         });
-        
-        // Eventos pagamento
         document.getElementById('btnMercadoPago')?.addEventListener('click', iniciarPagamentoMercadoPago);
         document.getElementById('btn-finalizar')?.addEventListener('click', mostrarResumoPedido);
         document.getElementById('btnConfirmarPagamento')?.addEventListener('click', iniciarPagamentoMercadoPago);
         document.getElementById('btnCancelarResumo')?.addEventListener('click', fecharModal);
-        
-        // Eventos favoritos/historico
         document.getElementById('btnFavoritos')?.addEventListener('click', () => abrirFavoritos());
         document.getElementById('btnHistorico')?.addEventListener('click', () => abrirHistorico());
         document.getElementById('btnFecharFavoritos')?.addEventListener('click', fecharModal);
         document.getElementById('btnFecharHistorico')?.addEventListener('click', fecharModal);
         
-        // Admin
         document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
         document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
             if (hashSenha(document.getElementById('adminSenha').value) === hashSenha("admin123")) {
@@ -2035,7 +1934,6 @@
         document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
         document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
         
-        // Botões expandir e nova guia
         document.getElementById('btnExpandAdmin')?.addEventListener('click', () => {
             const modalContent = document.querySelector('#modalAdmin .modal-content');
             if (modalContent) {
@@ -2059,7 +1957,6 @@
             newWin.document.close();
         });
         
-        // Filtro de data
         document.getElementById('periodoFiltro')?.addEventListener('change', (e) => {
             const dateRange = document.getElementById('dateRange');
             if (e.target.value === 'personalizado') {
@@ -2071,17 +1968,8 @@
         });
         document.getElementById('btnAplicarData')?.addEventListener('click', () => carregarDashboard());
         
-        // Login
         document.getElementById('btnLogin')?.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
-            
-            if (!email || !senha) {
-                showToast("Preencha email e senha!", 'warning');
-                return;
-            }
-            
-            const user = await fazerLogin(email, senha);
+            const user = await fazerLogin(document.getElementById('loginEmail').value, document.getElementById('loginSenha').value);
             if (user) {
                 usuarioLogado = user;
                 localStorage.setItem("docesdi_usuario_logado", JSON.stringify(user));
@@ -2090,31 +1978,16 @@
                 await carregarFavoritos();
                 renderizarProdutos();
                 showToast(`Bem-vindo, ${user.nome_social || user.nome}!`, 'success');
-                trackEvent('login', { method: 'email' });
-            } else {
-                showToast("Email ou senha incorretos!", 'error');
-            }
+            } else showToast("Email ou senha incorretos!", 'error');
         });
         
         document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
-            const nome = document.getElementById('cadNome').value;
-            const email = document.getElementById('cadEmail').value;
             const senha = document.getElementById('cadSenha').value;
             const conf = document.getElementById('cadConfirmarSenha').value;
-            
-            if (!nome || !email || !senha) {
-                showToast("Preencha todos os campos obrigatórios!", 'warning');
-                return;
-            }
-            
-            if (senha !== conf) {
-                showToast("Senhas não conferem!", 'error');
-                return;
-            }
-            
+            if (senha !== conf) { showToast("Senhas não conferem!", 'error'); return; }
             await cadastrarCliente(
-                nome,
-                email,
+                document.getElementById('cadNome').value,
+                document.getElementById('cadEmail').value,
                 senha,
                 document.getElementById('cadNomeSocial').value,
                 document.getElementById('cadDataNasc').value,
@@ -2125,22 +1998,6 @@
                 document.getElementById('cadReferencia').value,
                 document.getElementById('cadTelefone').value
             );
-            
-            // Limpar formulário
-            document.getElementById('cadNome').value = '';
-            document.getElementById('cadNomeSocial').value = '';
-            document.getElementById('cadDataNasc').value = '';
-            document.getElementById('cadCep').value = '';
-            document.getElementById('cadEndereco').value = '';
-            document.getElementById('cadNumero').value = '';
-            document.getElementById('cadComplemento').value = '';
-            document.getElementById('cadReferencia').value = '';
-            document.getElementById('cadTelefone').value = '';
-            document.getElementById('cadEmail').value = '';
-            document.getElementById('cadSenha').value = '';
-            document.getElementById('cadConfirmarSenha').value = '';
-            
-            // Voltar para aba de login
             document.getElementById('tabLoginBtn').click();
         });
         
@@ -2148,36 +2005,29 @@
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('recuperarPanel').style.display = 'block';
         });
-        
         document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => {
             await solicitarRecuperacaoSenha(document.getElementById('recuperarEmail').value);
             document.getElementById('recuperarPanel').style.display = 'none';
             document.getElementById('loginPanel').style.display = 'block';
         });
-        
         document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
             document.getElementById('recuperarPanel').style.display = 'none';
             document.getElementById('loginPanel').style.display = 'block';
         });
-        
         document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
-        
         document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
             document.getElementById('loginPanel').style.display = 'block';
             document.getElementById('cadastroPanel').style.display = 'none';
         });
-        
         document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('cadastroPanel').style.display = 'block';
         });
-        
         document.getElementById('buscarCepCadastro')?.addEventListener('click', () => {
             const cep = document.getElementById('cadCep').value;
             if (cep) buscarCep(cep, 'cadastro');
         });
         
-        // Tabs admin
         document.querySelectorAll('.admin-tab').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('ativo'));
@@ -2192,7 +2042,6 @@
             });
         });
         
-        // Fechar modais
         window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('usuarioDropdown');
