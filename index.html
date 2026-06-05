@@ -506,6 +506,7 @@
         }
         .btn-comprar-favorito:hover { transform: scale(1.05); background: var(--btn-hover); }
         
+        /* Admin Tabs */
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -546,6 +547,77 @@
         }
         .btn-expand:hover, .btn-new-window:hover { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
+        /* Estoque */
+        .estoque-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .estoque-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card-estoque {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--btn-hover) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        .stat-card-estoque h4 { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
+        .stat-card-estoque .value { font-size: 1.5rem; font-weight: bold; }
+        
+        .movimentacao-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .movimentacao-item.entrada { border-left-color: #25d366; }
+        .movimentacao-item.saida { border-left-color: #ffc107; }
+        .movimentacao-item.desperdicio { border-left-color: #e74c3c; }
+        
+        .form-estoque {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        .form-estoque .field { flex: 1; min-width: 120px; }
+        .form-estoque label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-estoque input, .form-estoque select { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); }
+        
+        .btn-estoque { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .btn-estoque:hover { transform: scale(1.02); }
+        
+        .tabela-estoque {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabela-estoque th, .tabela-estoque td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tabela-estoque th { background: var(--accent-color); color: white; }
+        
+        .alerta-estoque {
+            background: #f39c12;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        
+        /* Formulário de produto */
         .form-produto {
             background: var(--bg-color);
             padding: 15px;
@@ -654,6 +726,7 @@
             font-size: 0.85rem;
         }
         
+        /* Dashboard */
         .date-filter {
             display: flex;
             flex-wrap: wrap;
@@ -932,6 +1005,7 @@
         </div>
         <div class="admin-tabs-container">
             <button class="admin-tab ativo" data-tab="produtos">🍰 Produtos</button>
+            <button class="admin-tab" data-tab="estoque">📦 Estoque</button>
             <button class="admin-tab" data-tab="dashboard">📊 Dashboard</button>
             <button class="admin-tab" data-tab="avaliacoes">⭐ Avaliações</button>
             <button class="admin-tab" data-tab="clientes">👥 Clientes</button>
@@ -957,6 +1031,38 @@
             <button id="btnSalvarProdutos" class="btn-salvar-todos">💾 SALVAR TODOS OS PRODUTOS</button>
         </div>
         
+        <div id="tabEstoque" class="admin-tab-content">
+            <div class="estoque-stats" id="estoqueStats"></div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn-estoque" onclick="mostrarFormulario('entrada')">📥 Nova Entrada</button>
+                <button class="btn-estoque" onclick="mostrarFormulario('saida')">📤 Nova Saída</button>
+                <button class="btn-estoque" onclick="mostrarFormulario('desperdicio')">⚠️ Novo Desperdício</button>
+                <button class="btn-estoque" onclick="mostrarMateriais()">📋 Materiais</button>
+                <button class="btn-estoque" onclick="carregarMovimentacoes()">📜 Movimentações</button>
+                <button class="btn-estoque" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
+            </div>
+            
+            <div id="formularioEstoque" style="display: none;"></div>
+            
+            <div id="listaMateriais" style="display: none;">
+                <h4>📦 Materiais em Estoque</h4>
+                <div style="overflow-x: auto;">
+                    <table class="tabela-estoque" id="tabelaMateriais">
+                        <thead>
+                            <tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="listaMovimentacoes" style="display: none;">
+                <h4>📜 Últimas Movimentações</h4>
+                <div id="movimentacoesLista"></div>
+            </div>
+        </div>
+        
         <div id="tabDashboard" class="admin-tab-content">
             <div class="date-filter">
                 <select id="periodoFiltro">
@@ -977,8 +1083,10 @@
                 </div>
             </div>
             <div class="dashboard-stats" id="dashboardStats"></div>
+            <div class="dashboard-stats" id="financeiroStats"></div>
             <div class="chart-container"><h4>📈 Vendas por Dia</h4><canvas id="vendasChart"></canvas></div>
             <div class="chart-container"><h4>🏆 Produtos Mais Vendidos</h4><div id="topProdutos" class="top-produtos-list"></div></div>
+            <div class="chart-container"><h4>💰 Custos por Produto</h4><div id="custosProdutos" class="top-produtos-list"></div></div>
         </div>
         
         <div id="tabAvaliacoes" class="admin-tab-content">
@@ -1007,7 +1115,6 @@
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     
-    // Credenciais do Mercado Pago
     const MP_PUBLIC_KEY = "APP_USR-d01d8748-97f4-4faa-aeab-a2c680b00aec";
     const MP_ACCESS_TOKEN = "APP_USR-1933805346076765-060518-a3897c3f665f241d93d34054d01a4803-278308794";
     
@@ -1025,6 +1132,10 @@
     let vendasChart = null;
     let pedidosData = [];
     let mp;
+    
+    // Variáveis do estoque
+    let materiais = [];
+    let movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     
     function initMercadoPago() {
         if (typeof MercadoPago !== 'undefined') {
@@ -1052,13 +1163,6 @@
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
     }
     
-    // ==================== ATUALIZAR FRONT (CORREÇÃO IMPORTANTE) ====================
-    function atualizarFrontend() {
-        produtosFiltrados = [...produtos];
-        renderizarProdutos();
-        renderizarAdminLista();
-    }
-    
     // ==================== MERCADO PAGO ====================
     async function criarPreferenciaMercadoPago(valor, descricao, pedidoId, itens) {
         try {
@@ -1069,31 +1173,19 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    items: [
-                        {
-                            id: pedidoId.toString(),
-                            title: descricao,
-                            description: `Pedido ${pedidoId} - Doces Di`,
-                            quantity: 1,
-                            currency_id: 'BRL',
-                            unit_price: parseFloat(valor),
-                            picture_url: 'https://docesdi.com.br/logo.png',
-                            category_id: 'food'
-                        }
-                    ],
-                    payer: {
-                        name: usuarioLogado?.nome || 'Cliente',
-                        email: usuarioLogado?.email || 'cliente@docesdi.com',
-                        phone: { number: usuarioLogado?.telefone || '' }
-                    },
+                    items: [{
+                        id: pedidoId.toString(),
+                        title: descricao,
+                        quantity: 1,
+                        currency_id: 'BRL',
+                        unit_price: parseFloat(valor)
+                    }],
                     back_urls: {
                         success: window.location.href + '?payment=success',
                         failure: window.location.href + '?payment=failure',
                         pending: window.location.href + '?payment=pending'
                     },
                     auto_return: 'approved',
-                    notification_url: window.location.href + '/webhook',
-                    statement_descriptor: 'DOCESDI',
                     external_reference: pedidoId.toString()
                 })
             });
@@ -1514,7 +1606,6 @@
         const novoId = produtos.length ? Math.max(...produtos.map(p => p.id)) + 1 : 4;
         produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, imagem });
         
-        // CORREÇÃO: Atualizar produtosFiltrados e re-renderizar
         produtosFiltrados = [...produtos];
         renderizarProdutos();
         renderizarAdminLista();
@@ -1535,6 +1626,254 @@
             await supabaseClient.from('produtos').upsert(p, { onConflict: 'id' });
         }
         showToast("✅ Produtos salvos com sucesso!");
+    }
+    
+    // ==================== GESTÃO DE ESTOQUE ====================
+    
+    async function carregarMateriais() {
+        const { data } = await supabaseClient.from('materiais').select('*').order('nome');
+        materiais = data || [];
+        atualizarTabelaMateriais();
+        atualizarCardsEstoque();
+        return materiais;
+    }
+    
+    function atualizarCardsEstoque() {
+        const totalMateriais = materiais.length;
+        const valorTotalEstoque = materiais.reduce((s, m) => s + (m.estoque_atual * m.preco_unitario), 0);
+        const alertaBaixo = materiais.filter(m => m.estoque_atual < 10).length;
+        
+        document.getElementById('estoqueStats').innerHTML = `
+            <div class="stat-card-estoque"><h4>📦 Materiais</h4><div class="value">${totalMateriais}</div></div>
+            <div class="stat-card-estoque"><h4>💰 Valor em Estoque</h4><div class="value">R$ ${valorTotalEstoque.toFixed(2)}</div></div>
+            <div class="stat-card-estoque"><h4>⚠️ Estoque Baixo</h4><div class="value">${alertaBaixo}</div></div>
+        `;
+    }
+    
+    function atualizarTabelaMateriais() {
+        const tbody = document.querySelector('#tabelaMateriais tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        materiais.forEach(m => {
+            const alerta = m.estoque_atual < 10 ? '<span class="alerta-estoque">⚠️ Baixo</span>' : '';
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${m.nome}</td>
+                <td>${m.unidade}</td>
+                <td>R$ ${parseFloat(m.preco_unitario).toFixed(4)}</td>
+                <td>${m.estoque_atual.toFixed(2)} ${m.unidade} ${alerta}</td>
+                <td>R$ ${(m.estoque_atual * m.preco_unitario).toFixed(2)}</td>
+                <td><button onclick="editarMaterial(${m.id})" class="btn-estoque" style="padding:4px 8px;">✏️</button></td>
+            `;
+        });
+    }
+    
+    function mostrarFormulario(tipo) {
+        const container = document.getElementById('formularioEstoque');
+        const tipos = { entrada: 'Entrada de Estoque', saida: 'Saída de Estoque', desperdicio: 'Desperdício' };
+        
+        container.innerHTML = `
+            <div class="form-estoque">
+                <div class="field"><label>Material</label>
+                    <select id="materialSelect">
+                        <option value="">Selecione...</option>
+                        ${materiais.map(m => `<option value="${m.id}" data-preco="${m.preco_unitario}" data-unidade="${m.unidade}">${m.nome} (${m.unidade})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="field"><label>Quantidade</label><input type="number" id="quantidade" step="0.001" placeholder="Quantidade"></div>
+                <div class="field"><label>Peso (opcional)</label><input type="number" id="peso" step="0.001" placeholder="Peso em kg"></div>
+                <div class="field"><label>Valor Unitário</label><input type="number" id="valorUnitario" step="0.01" placeholder="R$"></div>
+                <div class="field"><label>Valor Total</label><input type="text" id="valorTotal" readonly style="background:#f0f0f0;"></div>
+                ${tipo === 'saida' ? `<div class="field"><label>Produto Fabricado</label><input type="text" id="produtoFabricado" placeholder="Qual produto?"></div>
+                <div class="field"><label>Qtd Produzida</label><input type="number" id="qtdProduzida" placeholder="Unidades"></div>` : ''}
+                ${tipo === 'desperdicio' ? `<div class="field"><label>Motivo</label><input type="text" id="motivo" placeholder="Ex: Quebrou, Venceu..."></div>` : ''}
+                <div class="field"><label>Data</label><input type="date" id="dataMovimento" value="${new Date().toISOString().slice(0,10)}"></div>
+                <div class="field"><label>Observação</label><input type="text" id="observacao" placeholder="Opcional"></div>
+                <div><button class="btn-estoque" onclick="salvarMovimentacao('${tipo}')">✅ Salvar</button>
+                <button class="btn-estoque" onclick="fecharFormularioEstoque()">❌ Cancelar</button></div>
+            </div>
+        `;
+        
+        const qtdInput = document.getElementById('quantidade');
+        const pesoInput = document.getElementById('peso');
+        const valorUnitarioInput = document.getElementById('valorUnitario');
+        const valorTotalInput = document.getElementById('valorTotal');
+        
+        const calcularTotal = () => {
+            const qtd = parseFloat(qtdInput.value) || 0;
+            const peso = parseFloat(pesoInput.value) || 0;
+            const valorUnit = parseFloat(valorUnitarioInput.value) || 0;
+            const totalBase = peso > 0 ? qtd * peso : qtd;
+            valorTotalInput.value = `R$ ${(totalBase * valorUnit).toFixed(2)}`;
+        };
+        
+        qtdInput.addEventListener('input', calcularTotal);
+        pesoInput.addEventListener('input', calcularTotal);
+        valorUnitarioInput.addEventListener('input', calcularTotal);
+        
+        document.getElementById('materialSelect').addEventListener('change', (e) => {
+            const selected = e.target.options[e.target.selectedIndex];
+            const preco = selected.dataset.preco;
+            if (preco) valorUnitarioInput.value = preco;
+        });
+        
+        container.style.display = 'block';
+        document.getElementById('listaMateriais').style.display = 'none';
+        document.getElementById('listaMovimentacoes').style.display = 'none';
+    }
+    
+    function fecharFormularioEstoque() {
+        document.getElementById('formularioEstoque').style.display = 'none';
+    }
+    
+    async function salvarMovimentacao(tipo) {
+        const materialId = document.getElementById('materialSelect').value;
+        if (!materialId) { showToast("Selecione um material!", 'error'); return; }
+        
+        const quantidade = parseFloat(document.getElementById('quantidade').value) || 0;
+        if (quantidade <= 0 && tipo !== 'saida') { showToast("Informe a quantidade!", 'error'); return; }
+        
+        const peso = parseFloat(document.getElementById('peso').value) || 0;
+        const valorUnitario = parseFloat(document.getElementById('valorUnitario').value) || 0;
+        const totalBase = peso > 0 ? quantidade * peso : quantidade;
+        const valorTotal = totalBase * valorUnitario;
+        
+        const movimento = {
+            material_id: parseInt(materialId),
+            quantidade: quantidade,
+            peso: peso || null,
+            valor_unitario: valorUnitario,
+            valor_total: valorTotal,
+            data: document.getElementById('dataMovimento').value,
+            observacao: document.getElementById('observacao').value || null
+        };
+        
+        if (tipo === 'saida') {
+            movimento.produto_fabricado = document.getElementById('produtoFabricado')?.value || null;
+            movimento.quantidade_produzida = parseInt(document.getElementById('qtdProduzida')?.value) || null;
+        }
+        if (tipo === 'desperdicio') {
+            movimento.motivo = document.getElementById('motivo')?.value || null;
+        }
+        
+        const { error } = await supabaseClient.from(`${tipo}_estoque`).insert([movimento]);
+        if (error) { showToast("Erro ao salvar!", 'error'); return; }
+        
+        showToast(`${tipo === 'entrada' ? 'Entrada' : tipo === 'saida' ? 'Saída' : 'Desperdício'} registrado!`, 'success');
+        fecharFormularioEstoque();
+        await carregarMateriais();
+        await carregarMovimentacoes();
+        if (tipo === 'entrada') atualizarCardsEstoque();
+        await carregarDashboardFinanceiro();
+    }
+    
+    async function carregarMovimentacoes() {
+        const tipos = ['entrada', 'saida', 'desperdicio'];
+        for (const tipo of tipos) {
+            const { data } = await supabaseClient.from(`${tipo}_estoque`).select('*').order('created_at', { ascending: false }).limit(20);
+            movimentacoes[tipo] = data || [];
+        }
+        
+        const container = document.getElementById('movimentacoesLista');
+        const todas = [...movimentacoes.entrada.map(m => ({ ...m, tipo: 'entrada' })),
+                       ...movimentacoes.saida.map(m => ({ ...m, tipo: 'saida' })),
+                       ...movimentacoes.desperdicio.map(m => ({ ...m, tipo: 'desperdicio' }))];
+        todas.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        container.innerHTML = todas.slice(0,30).map(m => {
+            const material = materiais.find(mat => mat.id === m.material_id);
+            const tipoText = { entrada: '📥 Entrada', saida: '📤 Saída', desperdicio: '⚠️ Desperdício' }[m.tipo];
+            const classe = { entrada: 'entrada', saida: 'saida', desperdicio: 'desperdicio' }[m.tipo];
+            const detalhes = m.tipo === 'saida' ? `<br>🎯 Produto: ${m.produto_fabricado || '-'}` : '';
+            return `
+                <div class="movimentacao-item ${classe}">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${tipoText}</strong>
+                        <small>${new Date(m.created_at).toLocaleString()}</small>
+                    </div>
+                    <div>📦 ${material?.nome || 'Material'} - ${m.quantidade} ${material?.unidade} ${m.peso ? `(${m.peso}kg)` : ''}</div>
+                    <div>💰 R$ ${m.valor_total?.toFixed(2) || 0}</div>
+                    ${detalhes}
+                    ${m.observacao ? `<div>📝 ${m.observacao}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('listaMovimentacoes').style.display = 'block';
+        document.getElementById('listaMateriais').style.display = 'none';
+        document.getElementById('formularioEstoque').style.display = 'none';
+    }
+    
+    function mostrarMateriais() {
+        document.getElementById('listaMateriais').style.display = 'block';
+        document.getElementById('listaMovimentacoes').style.display = 'none';
+        document.getElementById('formularioEstoque').style.display = 'none';
+        atualizarTabelaMateriais();
+    }
+    
+    function mostrarNovoMaterial() {
+        const nome = prompt("Nome do material:");
+        if (!nome) return;
+        const unidade = prompt("Unidade (kg, un, L, g):", "kg");
+        const preco = parseFloat(prompt("Preço unitário:"));
+        if (isNaN(preco)) return;
+        
+        supabaseClient.from('materiais').insert([{ nome, unidade: unidade || 'kg', preco_unitario: preco, estoque_atual: 0 }])
+            .then(() => { carregarMateriais(); showToast("Material adicionado!", 'success'); });
+    }
+    
+    async function editarMaterial(id) {
+        const material = materiais.find(m => m.id === id);
+        const novoNome = prompt("Novo nome:", material.nome);
+        if (novoNome && novoNome !== material.nome) {
+            await supabaseClient.from('materiais').update({ nome: novoNome }).eq('id', id);
+            await carregarMateriais();
+            mostrarMateriais();
+            showToast("Material atualizado!", 'success');
+        }
+    }
+    
+    // ==================== DASHBOARD FINANCEIRO ====================
+    async function carregarDashboardFinanceiro() {
+        const { data: entradas } = await supabaseClient.from('entrada_estoque').select('*');
+        const { data: saidas } = await supabaseClient.from('saida_estoque').select('*');
+        const { data: desperdicios } = await supabaseClient.from('desperdicio_estoque').select('*');
+        
+        const totalGasto = (entradas || []).reduce((s, e) => s + e.valor_total, 0);
+        const totalCustoProducao = (saidas || []).reduce((s, e) => s + e.valor_total, 0);
+        const totalDesperdicio = (desperdicios || []).reduce((s, e) => s + e.valor_total, 0);
+        const valorEstoqueAtual = materiais.reduce((s,m) => s + m.estoque_atual * m.preco_unitario, 0);
+        
+        const financeiroStats = document.getElementById('financeiroStats');
+        if (financeiroStats) {
+            financeiroStats.innerHTML = `
+                <div class="stat-card"><h4>💰 Total Gasto</h4><div class="value">R$ ${totalGasto.toFixed(2)}</div></div>
+                <div class="stat-card"><h4>🏭 Custo Produção</h4><div class="value">R$ ${totalCustoProducao.toFixed(2)}</div></div>
+                <div class="stat-card"><h4>⚠️ Desperdício</h4><div class="value">R$ ${totalDesperdicio.toFixed(2)}</div></div>
+                <div class="stat-card"><h4>📦 Estoque Atual</h4><div class="value">R$ ${valorEstoqueAtual.toFixed(2)}</div></div>
+            `;
+        }
+        
+        const custoPorProduto = {};
+        (saidas || []).forEach(s => {
+            if (s.produto_fabricado && s.quantidade_produzida) {
+                if (!custoPorProduto[s.produto_fabricado]) {
+                    custoPorProduto[s.produto_fabricado] = { total: 0, quantidade: 0 };
+                }
+                custoPorProduto[s.produto_fabricado].total += s.valor_total;
+                custoPorProduto[s.produto_fabricado].quantidade += s.quantidade_produzida;
+            }
+        });
+        
+        const custosContainer = document.getElementById('custosProdutos');
+        if (custosContainer) {
+            let html = '';
+            for (const [produto, dados] of Object.entries(custoPorProduto)) {
+                const custoUnitario = dados.total / dados.quantidade;
+                html += `<div class="top-produto-item"><span>${produto}</span><span>R$ ${custoUnitario.toFixed(2)} / unidade</span></div>`;
+            }
+            custosContainer.innerHTML = html || '<p>Nenhum dado de produção registrado.</p>';
+        }
     }
     
     // ==================== CARROSSEL ====================
@@ -1860,6 +2199,7 @@
         document.getElementById('topProdutos').innerHTML = topProdutos.length ? 
             topProdutos.map(([nome, qtd]) => `<div class="top-produto-item"><span>${nome}</span><span>${qtd} vendidos</span></div>`).join('') : 
             '<p>Nenhuma venda registrada.</p>';
+        await carregarDashboardFinanceiro();
     }
     
     async function buscarCep(cep, tipo) {
@@ -1920,11 +2260,13 @@
         document.getElementById('btnFecharHistorico')?.addEventListener('click', fecharModal);
         
         document.getElementById('btnAdminAcesso')?.addEventListener('click', () => document.getElementById('modalAdminSenha').style.display = 'flex');
-        document.getElementById('btnVerificarAdmin')?.addEventListener('click', () => {
+        document.getElementById('btnVerificarAdmin')?.addEventListener('click', async () => {
             if (hashSenha(document.getElementById('adminSenha').value) === hashSenha("admin123")) {
                 document.getElementById('modalAdminSenha').style.display = 'none';
                 document.getElementById('modalAdmin').style.display = 'flex';
-                carregarDashboard();
+                await carregarMateriais();
+                mostrarMateriais();
+                await carregarDashboard();
                 renderizarAvaliacoesAdmin();
                 renderizarClientesAdmin();
                 renderizarAdminLista();
@@ -2039,6 +2381,10 @@
                 if (btn.dataset.tab === 'avaliacoes') renderizarAvaliacoesAdmin();
                 if (btn.dataset.tab === 'clientes') renderizarClientesAdmin();
                 if (btn.dataset.tab === 'produtos') renderizarAdminLista();
+                if (btn.dataset.tab === 'estoque') {
+                    carregarMateriais();
+                    mostrarMateriais();
+                }
             });
         });
         
