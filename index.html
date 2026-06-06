@@ -21,11 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
             --bg-color: #fcf8f5;
@@ -73,9 +69,7 @@
             z-index: 90;
         }
         
-        @media (max-width: 768px) {
-            header { padding: 70px 15px 15px 15px; }
-        }
+        @media (max-width: 768px) { header { padding: 70px 15px 15px 15px; } }
         
         header h1 {
             color: var(--accent-color);
@@ -125,7 +119,7 @@
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
         .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
         
-        /* Admin Tabs - LADO A LADO COM DRAG & DROP */
+        /* Admin Tabs */
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -178,72 +172,275 @@
             border-color: var(--accent-color); 
         }
         
-        /* Skeleton */
-        .skeleton-card {
-            background: linear-gradient(90deg, var(--border-color) 25%, var(--card-bg) 50%, var(--border-color) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: var(--border-radius);
-            height: 280px;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Dropdown usuário */
-        .usuario-dropdown { position: relative; display: inline-block; }
-        .usuario-info {
-            background: var(--card-bg);
-            padding: 8px 15px;
-            border-radius: 30px;
+        /* Filtro de data para avaliações */
+        .filter-date {
             display: flex;
-            align-items: center;
             gap: 10px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-        }
-        .usuario-info:hover { background: var(--border-color); }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 45px;
-            background: var(--card-bg);
-            min-width: 320px;
-            max-width: 400px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--bg-color);
             border-radius: var(--border-radius);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 1001;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            max-height: 85vh;
-            overflow-y: auto;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        .usuario-dropdown.show .dropdown-content { display: block; }
-        .dropdown-content h4 { color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-        .dropdown-content .campo { margin-bottom: 12px; }
-        .dropdown-content .campo label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
-        .dropdown-content .campo input { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.85rem; }
-        .dropdown-content .linha-2-col { display: flex; gap: 8px; }
-        .dropdown-content button {
-            background: var(--btn-bg);
+        .filter-date select, .filter-date input {
+            padding: 8px 12px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+        .date-range-group { display: none; gap: 8px; align-items: center; }
+        .date-range-group.show { display: flex; }
+        
+        /* Estrelas de avaliação */
+        .estrelas-container {
+            display: inline-flex;
+            gap: 2px;
+        }
+        .estrela-preenchida { color: #ffc107; }
+        .estrela-vazia { color: #ddd; }
+        
+        /* Botões lado a lado */
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .btn-estoque {
+            background: var(--accent-color);
             color: white;
             border: none;
-            padding: 8px;
+            padding: 8px 16px;
             border-radius: 25px;
-            width: 100%;
-            margin-top: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.2s;
         }
-        .btn-sair-dropdown { background: #e74c3c !important; }
-        .close-dropdown { float: right; cursor: pointer; font-size: 1.2rem; }
+        .btn-estoque:hover { transform: scale(1.02); opacity: 0.9; }
         
-        .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
-        .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .estoque-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+        }
+        .estoque-tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            cursor: grab;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .estoque-tab:active { cursor: grabbing; }
+        .estoque-tab.dragging { opacity: 0.5; }
+        .estoque-tab:hover, .estoque-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
-        /* Search */
+        .estoque-panel { display: none; margin-top: 15px; }
+        .estoque-panel.ativo { display: block; }
+        
+        .estoque-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card-estoque {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--btn-hover) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        .stat-card-estoque h4 { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
+        .stat-card-estoque .value { font-size: 1.5rem; font-weight: bold; }
+        
+        .movimentacao-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .movimentacao-item.entrada { border-left-color: #25d366; }
+        .movimentacao-item.saida { border-left-color: #ffc107; }
+        .movimentacao-item.desperdicio { border-left-color: #e74c3c; }
+        
+        .form-estoque {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        .form-estoque .field { flex: 1; min-width: 120px; }
+        .form-estoque label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-estoque input, .form-estoque select { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); }
+        
+        .tabela-estoque { width: 100%; border-collapse: collapse; }
+        .tabela-estoque th, .tabela-estoque td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .tabela-estoque th { background: var(--accent-color); color: white; font-size: 0.8rem; }
+        .tabela-estoque td { font-size: 0.8rem; }
+        
+        .alerta-estoque { background: #f39c12; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        
+        /* Produtos Admin - OTIMIZADO */
+        .form-produto {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .form-produto .field { flex: 1; min-width: 120px; }
+        .form-produto .field.small { flex: 0.5; min-width: 80px; }
+        .form-produto label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-produto input, .form-produto textarea { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.8rem; }
+        .form-produto textarea { resize: vertical; height: 60px; }
+        .upload-mini { position: relative; display: inline-block; width: 100%; }
+        .upload-mini input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .upload-mini-label { background: var(--accent-color); color: white; padding: 8px; border-radius: 20px; cursor: pointer; text-align: center; font-size: 0.7rem; }
+        .btn-add-produto { background: #25d366; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        
+        .produto-admin-item {
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .produto-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-desc { flex: 3; min-width: 200px; }
+        .produto-admin-item .campo-preco { width: 80px; }
+        .produto-admin-item .campo-estoque { width: 70px; }
+        .produto-admin-item .campo-imagem { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-upload { width: 80px; }
+        .produto-admin-item .campo-acoes { display: flex; gap: 5px; width: auto; }
+        .produto-admin-item input, .produto-admin-item textarea {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.75rem;
+            width: 100%;
+        }
+        .produto-admin-item textarea { resize: vertical; height: 50px; }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px 8px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .btn-salvar-produto { color: #27ae60; }
+        .btn-salvar-produto:hover { background: #27ae60; color: white; }
+        .btn-excluir-produto { color: #e74c3c; }
+        .btn-excluir-produto:hover { background: #e74c3c; color: white; }
+        .btn-salvar-todos {
+            background: #25d366;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        /* Dashboard */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        .stat-card h4 { font-size: 0.7rem; color: var(--accent-color); margin-bottom: 8px; }
+        .stat-card .value { font-size: 1.2rem; font-weight: bold; }
+        
+        .chart-container {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        .chart-container h4 { font-size: 0.85rem; margin-bottom: 15px; color: var(--accent-color); }
+        
+        .avaliacao-item {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+        .avaliacao-item.nota-1 { border-left-color: #e74c3c; }
+        .avaliacao-item.nota-2 { border-left-color: #f39c12; }
+        .avaliacao-item.nota-3 { border-left-color: #f1c40f; }
+        .avaliacao-item.nota-4 { border-left-color: #2ecc71; }
+        .avaliacao-item.nota-5 { border-left-color: #27ae60; }
+        
+        .top-produtos-list { display: flex; flex-direction: column; gap: 8px; }
+        .top-produto-item { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--card-bg); border-radius: 10px; font-size: 0.8rem; }
+        
+        footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 15px; margin-top: 40px; font-size: 0.7rem; }
+        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
+        .toast { background: #25d366; color: white; padding: 8px 16px; border-radius: 50px; margin-top: 8px; animation: fadeInUp 0.3s ease; font-size: 0.8rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .loading { text-align: center; padding: 40px; font-size: 0.9rem; color: var(--accent-color); }
+        
+        .cep-grupo-mini { display: flex; gap: 6px; align-items: center; }
+        .payment-loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .payment-loading.show { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #d4a373;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         .search-container {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -262,15 +459,7 @@
             border-radius: 50px;
             padding: 5px 15px;
         }
-        .search-box input {
-            flex: 1;
-            padding: 10px 0;
-            border: none;
-            background: none;
-            color: var(--text-color);
-            font-size: 0.9rem;
-            outline: none;
-        }
+        .search-box input { flex: 1; padding: 10px 0; border: none; background: none; color: var(--text-color); font-size: 0.9rem; outline: none; }
         .search-box button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 5px; }
         .btn-filter-advanced {
             background: var(--accent-color);
@@ -296,15 +485,7 @@
         .advanced-filters.show { display: flex; }
         .filter-group { flex: 1; min-width: 120px; }
         .filter-group label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
-        .filter-group input, .filter-group select {
-            width: 100%;
-            padding: 8px;
-            border-radius: 25px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-color);
-            font-size: 0.8rem;
-        }
+        .filter-group input, .filter-group select { width: 100%; padding: 8px; border-radius: 25px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.8rem; }
         
         .section-title {
             margin-bottom: 30px;
@@ -317,30 +498,17 @@
             gap: 10px;
         }
         
-        .main-layout {
-            display: flex;
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 15px;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
+        .main-layout { display: flex; max-width: 1200px; margin: 40px auto; padding: 0 15px; gap: 30px; flex-wrap: wrap; }
         .vitrine { flex: 2; min-width: 250px; }
-        .grid-produtos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
         @media (max-width: 768px) {
             .grid-produtos { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
             .card-info { padding: 8px; }
             .card-nome { font-size: 0.85rem; }
             .card-descricao { font-size: 0.65rem; }
-            .card-preco { font-size: 0.9rem; }
         }
         
-        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -434,7 +602,6 @@
             gap: 8px;
         }
         
-        /* Carrossel */
         .carousel-container { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 40px; background: #1a1a2e; }
         @media (max-width: 768px) { .carousel-container { height: 180px; margin-bottom: 20px; } }
         .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; }
@@ -455,7 +622,6 @@
         .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
         .carousel-dot.active { background: var(--accent-color); transform: scale(1.2); }
         
-        /* Modais */
         .modal {
             display: none;
             position: fixed;
@@ -502,7 +668,6 @@
         .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: var(--accent-color); color: white; }
         
-        /* Itens carrinho */
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); flex-wrap: wrap; gap: 6px; }
         .item-info { flex: 2; }
         .item-info strong { font-size: 0.8rem; }
@@ -510,7 +675,6 @@
         .btn-qtd { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f0e4da; cursor: pointer; font-weight: bold; }
         .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; }
         
-        /* Favoritos */
         .favorito-item {
             display: flex;
             justify-content: space-between;
@@ -533,216 +697,60 @@
             font-weight: bold;
         }
         
-        /* Estoque - DRAG & DROP */
-        .estoque-tabs-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: var(--bg-color);
-            border-radius: var(--border-radius);
-        }
-        .estoque-tab {
-            padding: 8px 16px;
+        .usuario-dropdown { position: relative; display: inline-block; }
+        .usuario-info {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            cursor: grab;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-        }
-        .estoque-tab:active { cursor: grabbing; }
-        .estoque-tab.dragging { opacity: 0.5; }
-        .estoque-tab:hover, .estoque-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
-        
-        .estoque-panel { display: none; margin-top: 15px; }
-        .estoque-panel.ativo { display: block; }
-        
-        .estoque-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .stat-card-estoque {
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--btn-hover) 100%);
-            color: white;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            text-align: center;
-        }
-        .stat-card-estoque h4 { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
-        .stat-card-estoque .value { font-size: 1.5rem; font-weight: bold; }
-        
-        .movimentacao-item {
-            background: var(--bg-color);
-            padding: 12px;
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            border-left: 4px solid var(--accent-color);
-        }
-        .movimentacao-item.entrada { border-left-color: #25d366; }
-        .movimentacao-item.saida { border-left-color: #ffc107; }
-        .movimentacao-item.desperdicio { border-left-color: #e74c3c; }
-        
-        .form-estoque {
+            padding: 8px 15px;
+            border-radius: 30px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: var(--bg-color);
-            padding: 15px;
-            border-radius: var(--border-radius);
-        }
-        .form-estoque .field { flex: 1; min-width: 120px; }
-        .form-estoque label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
-        .form-estoque input, .form-estoque select { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); }
-        
-        .btn-estoque { background: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.75rem; }
-        
-        .tabela-estoque { width: 100%; border-collapse: collapse; }
-        .tabela-estoque th, .tabela-estoque td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .tabela-estoque th { background: var(--accent-color); color: white; font-size: 0.8rem; }
-        .tabela-estoque td { font-size: 0.8rem; }
-        
-        .alerta-estoque { background: #f39c12; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
-        
-        /* Produtos Admin - OTIMIZADO */
-        .form-produto {
-            background: var(--bg-color);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        .form-produto .field { flex: 1; min-width: 120px; }
-        .form-produto .field.small { flex: 0.5; min-width: 80px; }
-        .form-produto label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
-        .form-produto input, .form-produto textarea { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.8rem; }
-        .form-produto textarea { resize: vertical; height: 60px; }
-        .upload-mini { position: relative; display: inline-block; width: 100%; }
-        .upload-mini input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-        .upload-mini-label { background: var(--accent-color); color: white; padding: 8px; border-radius: 20px; cursor: pointer; text-align: center; font-size: 0.7rem; }
-        .btn-add-produto { background: #25d366; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        
-        /* Produtos listados - OTIMIZADO: mais espaço para nome/descrição, ícones pequenos */
-        .produto-admin-item {
-            background: var(--bg-color);
-            padding: 10px;
-            border-radius: var(--border-radius);
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
             align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
         }
-        .produto-admin-item .campo-nome { flex: 2; min-width: 150px; }
-        .produto-admin-item .campo-desc { flex: 3; min-width: 200px; }
-        .produto-admin-item .campo-preco { width: 80px; }
-        .produto-admin-item .campo-estoque { width: 70px; }
-        .produto-admin-item .campo-imagem { flex: 2; min-width: 150px; }
-        .produto-admin-item .campo-upload { width: 80px; }
-        .produto-admin-item .campo-acoes { display: flex; gap: 5px; width: auto; }
-        
-        .produto-admin-item input, .produto-admin-item textarea {
-            padding: 6px 10px;
-            border-radius: 20px;
+        .usuario-info:hover { background: var(--border-color); }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 45px;
+            background: var(--card-bg);
+            min-width: 320px;
+            max-width: 400px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 1001;
+            padding: 15px;
             border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-color);
-            font-size: 0.75rem;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .usuario-dropdown.show .dropdown-content { display: block; }
+        .dropdown-content h4 { color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .dropdown-content .campo { margin-bottom: 12px; }
+        .dropdown-content .campo label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .dropdown-content .campo input { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.85rem; }
+        .dropdown-content .linha-2-col { display: flex; gap: 8px; }
+        .dropdown-content button {
+            background: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 25px;
             width: 100%;
-        }
-        .produto-admin-item textarea { resize: vertical; height: 50px; }
-        
-        .btn-icon {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 5px 8px;
-            border-radius: 20px;
-            transition: all 0.2s;
-        }
-        .btn-salvar-produto { color: #27ae60; }
-        .btn-salvar-produto:hover { background: #27ae60; color: white; }
-        .btn-excluir-produto { color: #e74c3c; }
-        .btn-excluir-produto:hover { background: #e74c3c; color: white; }
-        
-        .btn-salvar-todos {
-            background: #25d366;
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            color: white;
+            margin-top: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.85rem;
         }
+        .btn-sair-dropdown { background: #e74c3c !important; }
+        .close-dropdown { float: right; cursor: pointer; font-size: 1.2rem; }
         
-        /* Dashboard */
-        .date-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: var(--bg-color);
-            border-radius: var(--border-radius);
-            align-items: center;
-        }
+        .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .date-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; padding: 12px; background: var(--bg-color); border-radius: var(--border-radius); align-items: center; }
         .date-range { display: none; gap: 8px; align-items: center; }
         .date-range.show { display: flex; }
-        
-        .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .stat-card { background: var(--bg-color); padding: 10px; border-radius: var(--border-radius); text-align: center; }
-        .stat-card h4 { font-size: 0.6rem; color: var(--accent-color); margin-bottom: 5px; }
-        .stat-card .value { font-size: 1rem; font-weight: bold; }
-        .chart-container { background: var(--bg-color); padding: 12px; border-radius: var(--border-radius); margin-bottom: 20px; }
-        .chart-container h4 { font-size: 0.75rem; margin-bottom: 10px; color: var(--accent-color); }
-        .top-produtos-list { display: flex; flex-direction: column; gap: 6px; }
-        .top-produto-item { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--card-bg); border-radius: 10px; font-size: 0.75rem; }
-        
-        footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 15px; margin-top: 40px; font-size: 0.7rem; }
-        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
-        .toast { background: #25d366; color: white; padding: 8px 16px; border-radius: 50px; margin-top: 8px; animation: fadeInUp 0.3s ease; font-size: 0.8rem; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .loading { text-align: center; padding: 40px; font-size: 0.9rem; color: var(--accent-color); }
-        .cep-grupo-mini { display: flex; gap: 6px; align-items: center; }
-        .cep-grupo-mini button { width: auto; padding: 6px 10px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
-        
-        .payment-loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .payment-loading.show { display: flex; }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d4a373;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .payment-loading p { color: white; font-size: 1rem; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -838,7 +846,6 @@
             </div>
         </div>
         
-        <!-- Abas principais lado a lado -->
         <div class="admin-tabs-container" id="adminTabsContainer">
             <div class="admin-tab ativo" data-tab="produtos">🍰 Produtos</div>
             <div class="admin-tab" data-tab="estoque">📦 Estoque</div>
@@ -863,12 +870,10 @@
             <button id="btnSalvarProdutos" class="btn-salvar-todos">💾 SALVAR TODOS OS PRODUTOS</button>
         </div>
         
-        <!-- TAB ESTOQUE COM DRAG & DROP -->
+        <!-- TAB ESTOQUE -->
         <div id="tabEstoque" class="admin-tab-content">
-            <!-- Cards de resumo -->
             <div class="estoque-stats" id="estoqueStats"></div>
             
-            <!-- Sub-abas do estoque com drag & drop -->
             <div class="estoque-tabs-container" id="estoqueTabsContainer">
                 <div class="estoque-tab ativo" data-estoque-panel="resumo">📊 Resumo</div>
                 <div class="estoque-tab" data-estoque-panel="entrada">📥 Entrada</div>
@@ -878,51 +883,23 @@
                 <div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div>
             </div>
             
-            <!-- Painel Resumo -->
             <div id="estoquePanelResumo" class="estoque-panel ativo">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                <div class="buttons-row">
                     <button class="btn-estoque" onclick="mostrarFormulario('entrada')">📥 Nova Entrada</button>
                     <button class="btn-estoque" onclick="mostrarFormulario('saida')">📤 Nova Saída</button>
                     <button class="btn-estoque" onclick="mostrarFormulario('desperdicio')">⚠️ Novo Desperdício</button>
-                    <button class="btn-estoque" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
                 </div>
                 <div id="formularioEstoque" style="display: none;"></div>
             </div>
             
-            <!-- Painel Entrada -->
-            <div id="estoquePanelEntrada" class="estoque-panel">
-                <h4>📥 Histórico de Entradas</h4>
-                <div id="listaEntradas"></div>
-            </div>
-            
-            <!-- Painel Saída -->
-            <div id="estoquePanelSaida" class="estoque-panel">
-                <h4>📤 Histórico de Saídas</h4>
-                <div id="listaSaidas"></div>
-            </div>
-            
-            <!-- Painel Desperdício -->
-            <div id="estoquePanelDesperdicio" class="estoque-panel">
-                <h4>⚠️ Histórico de Desperdícios</h4>
-                <div id="listaDesperdicios"></div>
-            </div>
-            
-            <!-- Painel Materiais -->
+            <div id="estoquePanelEntrada" class="estoque-panel"><div id="listaEntradas"></div></div>
+            <div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div>
+            <div id="estoquePanelDesperdicio" class="estoque-panel"><div id="listaDesperdicios"></div></div>
             <div id="estoquePanelMateriais" class="estoque-panel">
-                <h4>📦 Materiais em Estoque</h4>
-                <div style="overflow-x: auto;">
-                    <table class="tabela-estoque" id="tabelaMateriais">
-                        <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                <div class="buttons-row"><button class="btn-estoque" onclick="mostrarNovoMaterial()">➕ Novo Material</button></div>
+                <div style="overflow-x: auto;"><table class="tabela-estoque" id="tabelaMateriais"><thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
             </div>
-            
-            <!-- Painel Movimentações -->
-            <div id="estoquePanelMovimentacoes" class="estoque-panel">
-                <h4>📜 Últimas Movimentações</h4>
-                <div id="movimentacoesLista"></div>
-            </div>
+            <div id="estoquePanelMovimentacoes" class="estoque-panel"><div id="movimentacoesLista"></div></div>
         </div>
         
         <!-- TAB DASHBOARD -->
@@ -934,12 +911,29 @@
             <div class="dashboard-stats" id="dashboardStats"></div>
             <div class="dashboard-stats" id="financeiroStats"></div>
             <div class="chart-container"><h4>📈 Vendas por Dia</h4><canvas id="vendasChart"></canvas></div>
+            <div class="chart-container"><h4>⭐ Satisfação do Cliente (Últimos 7 dias)</h4><canvas id="satisfacaoChart"></canvas></div>
             <div class="chart-container"><h4>🏆 Produtos Mais Vendidos</h4><div id="topProdutos" class="top-produtos-list"></div></div>
             <div class="chart-container"><h4>💰 Custos por Produto</h4><div id="custosProdutos" class="top-produtos-list"></div></div>
         </div>
         
         <!-- TAB AVALIAÇÕES -->
-        <div id="tabAvaliacoes" class="admin-tab-content"><div id="listaAvaliacoesAdmin"></div></div>
+        <div id="tabAvaliacoes" class="admin-tab-content">
+            <div class="filter-date">
+                <select id="avaliacaoPeriodo">
+                    <option value="3dias">📅 Últimos 3 dias</option>
+                    <option value="semana">📅 Última semana</option>
+                    <option value="mes">📅 Último mês</option>
+                    <option value="personalizado">📅 Personalizado</option>
+                </select>
+                <div id="avaliacaoDateRange" class="date-range-group">
+                    <input type="date" id="avaliacaoDataInicio">
+                    <span>até</span>
+                    <input type="date" id="avaliacaoDataFim">
+                    <button id="btnAplicarDataAvaliacao" class="btn-estoque" style="padding:6px 12px;">Aplicar</button>
+                </div>
+            </div>
+            <div id="listaAvaliacoesAdmin"></div>
+        </div>
         
         <!-- TAB CLIENTES -->
         <div id="tabClientes" class="admin-tab-content"><div id="listaClientesAdmin"></div></div>
@@ -958,7 +952,7 @@
     const MP_ACCESS_TOKEN = "APP_USR-1933805346076765-060518-a3897c3f665f241d93d34054d01a4803-278308794";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    let produtos = [], avaliacoes = [], clientes = [], slides = [], carrinho = [], usuarioLogado = null, favoritos = new Set(), slideIndex = 0, produtosFiltrados = [], vendasChart = null;
+    let produtos = [], avaliacoes = [], clientes = [], slides = [], carrinho = [], usuarioLogado = null, favoritos = new Set(), slideIndex = 0, produtosFiltrados = [], vendasChart = null, satisfacaoChart = null;
     let materiais = [], movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     let sortableInstance = null, sortableEstoqueInstance = null;
     
@@ -968,20 +962,19 @@
     function trackEvent(eventName, eventParams) { if (typeof gtag !== 'undefined') gtag('event', eventName, eventParams); }
     function fecharModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     
-    // ==================== DRAG & DROP DAS ABAS PRINCIPAIS ====================
+    // ==================== DRAG & DROP ====================
     function initDragDropTabs() {
         const container = document.getElementById('adminTabsContainer');
         if (!container) return;
         if (sortableInstance) sortableInstance.destroy();
-        sortableInstance = new Sortable(container, { animation: 300, handle: '.admin-tab', ghostClass: 'dragging', onEnd: function() { salvarOrdemAbas(); } });
+        sortableInstance = new Sortable(container, { animation: 300, handle: '.admin-tab', ghostClass: 'dragging', onEnd: () => salvarOrdemAbas() });
     }
     
-    // ==================== DRAG & DROP DAS ABAS DO ESTOQUE ====================
     function initDragDropEstoqueTabs() {
         const container = document.getElementById('estoqueTabsContainer');
         if (!container) return;
         if (sortableEstoqueInstance) sortableEstoqueInstance.destroy();
-        sortableEstoqueInstance = new Sortable(container, { animation: 300, handle: '.estoque-tab', ghostClass: 'dragging', onEnd: function() { salvarOrdemEstoqueAbas(); } });
+        sortableEstoqueInstance = new Sortable(container, { animation: 300, handle: '.estoque-tab', ghostClass: 'dragging', onEnd: () => salvarOrdemEstoqueAbas() });
     }
     
     async function salvarOrdemAbas() {
@@ -1001,18 +994,13 @@
     
     async function carregarOrdemAbas() {
         let ordem = localStorage.getItem('admin_tabs_order');
-        if (!ordem) {
-            try { const { data } = await supabaseClient.from('config').select('valor').eq('chave', 'admin_tabs_order').single(); if (data && data.valor) ordem = data.valor; } catch(e) {}
-        }
+        if (!ordem) { try { const { data } = await supabaseClient.from('config').select('valor').eq('chave', 'admin_tabs_order').single(); if (data && data.valor) ordem = data.valor; } catch(e) {} }
         if (ordem) {
             const ordemArray = JSON.parse(ordem);
             const container = document.getElementById('adminTabsContainer');
             const tabs = Array.from(container.children);
             ordemArray.sort((a,b) => a.ordem - b.ordem);
-            for (const item of ordemArray) {
-                const tab = tabs.find(t => t.dataset.tab === item.id);
-                if (tab) container.appendChild(tab);
-            }
+            for (const item of ordemArray) { const tab = tabs.find(t => t.dataset.tab === item.id); if (tab) container.appendChild(tab); }
         }
     }
     
@@ -1023,14 +1011,11 @@
             const container = document.getElementById('estoqueTabsContainer');
             const tabs = Array.from(container.children);
             ordemArray.sort((a,b) => a.ordem - b.ordem);
-            for (const item of ordemArray) {
-                const tab = tabs.find(t => t.dataset.estoquePanel === item.id);
-                if (tab) container.appendChild(tab);
-            }
+            for (const item of ordemArray) { const tab = tabs.find(t => t.dataset.estoquePanel === item.id); if (tab) container.appendChild(tab); }
         }
     }
     
-    // ==================== FUNÇÕES DAS ABAS PRINCIPAIS ====================
+    // ==================== FUNÇÕES DAS ABAS ====================
     function initTabs() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
@@ -1045,14 +1030,13 @@
                 if (targetContent) targetContent.classList.add('ativo');
                 if (tabId === 'estoque') { carregarMateriais(); atualizarTabelaMateriais(); carregarMovimentacoes(); }
                 if (tabId === 'dashboard') carregarDashboard();
-                if (tabId === 'avaliacoes') renderizarAvaliacoesAdmin();
+                if (tabId === 'avaliacoes') carregarAvaliacoesAdmin();
                 if (tabId === 'clientes') renderizarClientesAdmin();
                 if (tabId === 'produtos') renderizarAdminLista();
             });
         });
     }
     
-    // ==================== FUNÇÕES DAS SUB-ABAS DO ESTOQUE ====================
     function initEstoqueTabs() {
         const tabs = document.querySelectorAll('.estoque-tab');
         const panels = document.querySelectorAll('.estoque-panel');
@@ -1088,6 +1072,100 @@
                         ${item.observacao ? `<div>📝 ${item.observacao}</div>` : ''}
                     </div>`;
         }).join('');
+    }
+    
+    // ==================== AVALIAÇÕES ADMIN ====================
+    async function carregarAvaliacoesAdmin() {
+        const periodo = document.getElementById('avaliacaoPeriodo').value;
+        const hoje = new Date();
+        let dataInicio = new Date();
+        
+        if (periodo === '3dias') { dataInicio.setDate(hoje.getDate() - 3); }
+        else if (periodo === 'semana') { dataInicio.setDate(hoje.getDate() - 7); }
+        else if (periodo === 'mes') { dataInicio.setMonth(hoje.getMonth() - 1); }
+        else if (periodo === 'personalizado') {
+            dataInicio = new Date(document.getElementById('avaliacaoDataInicio').value);
+            const dataFim = new Date(document.getElementById('avaliacaoDataFim').value);
+            if (!dataInicio || !dataFim) return;
+        }
+        
+        const { data } = await supabaseClient.from('avaliacoes').select('*').order('created_at', { ascending: false });
+        if (!data) return;
+        
+        let filtered = data;
+        if (periodo !== 'personalizado') {
+            filtered = data.filter(a => new Date(a.created_at) >= dataInicio);
+        } else {
+            const inicio = new Date(document.getElementById('avaliacaoDataInicio').value);
+            const fim = new Date(document.getElementById('avaliacaoDataFim').value);
+            filtered = data.filter(a => new Date(a.created_at) >= inicio && new Date(a.created_at) <= fim);
+        }
+        
+        const container = document.getElementById('listaAvaliacoesAdmin');
+        if (!container) return;
+        if (filtered.length === 0) { container.innerHTML = '<p>Nenhuma avaliação encontrada.</p>'; return; }
+        
+        // Ordenar da menor nota para a maior (insatisfação primeiro)
+        filtered.sort((a, b) => a.nota - b.nota);
+        
+        container.innerHTML = filtered.map(a => {
+            const produto = produtos.find(p => p.id === a.produto_id);
+            const cliente = clientes.find(c => c.id === a.cliente_id);
+            const notaClass = `nota-${a.nota}`;
+            let estrelasHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                estrelasHtml += i <= a.nota ? '<span class="estrela-preenchida">★</span>' : '<span class="estrela-vazia">★</span>';
+            }
+            return `<div class="avaliacao-item ${notaClass}">
+                        <div><strong>📅 ${new Date(a.created_at).toLocaleDateString()}</strong></div>
+                        <div><strong>🍰 Produto:</strong> ${produto?.nome || 'Produto'}</div>
+                        <div><strong>👤 Cliente:</strong> ${cliente?.nome_social || cliente?.nome || 'Cliente'}</div>
+                        <div><strong>⭐ Avaliação:</strong> <span class="estrelas-container">${estrelasHtml}</span> (${a.nota}/5)</div>
+                        ${a.comentario ? `<div><strong>💬 Comentário:</strong> ${a.comentario}</div>` : ''}
+                    </div>`;
+        }).join('');
+    }
+    
+    // ==================== DASHBOARD SATISFAÇÃO ====================
+    async function carregarSatisfacaoChart() {
+        const hoje = new Date();
+        const dias = [];
+        const datas = [];
+        for (let i = 6; i >= 0; i--) {
+            const data = new Date(hoje);
+            data.setDate(hoje.getDate() - i);
+            dias.push(data.toLocaleDateString());
+            datas.push(data);
+        }
+        
+        const { data: avaliacoesData } = await supabaseClient.from('avaliacoes').select('*');
+        if (!avaliacoesData) return;
+        
+        // Média por dia
+        const mediasPorDia = [];
+        for (let i = 0; i < datas.length; i++) {
+            const dataInicio = new Date(datas[i]);
+            dataInicio.setHours(0, 0, 0, 0);
+            const dataFim = new Date(datas[i]);
+            dataFim.setHours(23, 59, 59, 999);
+            const avalsDoDia = avaliacoesData.filter(a => new Date(a.created_at) >= dataInicio && new Date(a.created_at) <= dataFim);
+            if (avalsDoDia.length === 0) mediasPorDia.push(0);
+            else mediasPorDia.push(avalsDoDia.reduce((s, a) => s + a.nota, 0) / avalsDoDia.length);
+        }
+        
+        // Distribuição de notas
+        const notas = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        avaliacoesData.forEach(a => { notas[a.nota] = (notas[a.nota] || 0) + 1; });
+        
+        const ctx = document.getElementById('satisfacaoChart')?.getContext('2d');
+        if (ctx) {
+            if (satisfacaoChart) satisfacaoChart.destroy();
+            satisfacaoChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: dias, datasets: [{ label: 'Média de Satisfação (1-5)', data: mediasPorDia, borderColor: '#ffc107', backgroundColor: 'rgba(255,193,7,0.1)', fill: true, tension: 0.3 }] },
+                options: { responsive: true, scales: { y: { min: 1, max: 5, title: { display: true, text: 'Nota Média' } } } }
+            });
+        }
     }
     
     // ==================== MERCADO PAGO ====================
@@ -1186,7 +1264,7 @@
         document.getElementById('modalHistorico').style.display = 'flex';
     };
     
-    // ==================== AVALIAÇÕES ====================
+    // ==================== AVALIAÇÕES FRONT ====================
     async function carregarAvaliacoes() { const { data } = await supabaseClient.from('avaliacoes').select('*'); avaliacoes = data || []; }
     function getMediaAvaliacoes(produtoId) { const avals = avaliacoes.filter(a => a.produto_id === produtoId); return avals.length ? avals.reduce((s,a) => s + a.nota, 0) / avals.length : 0; }
     function getTotalAvaliacoes(produtoId) { return avaliacoes.filter(a => a.produto_id === produtoId).length; }
@@ -1196,7 +1274,7 @@
         let html = '';
         for (let i = 1; i <= 5; i++) html += i <= media ? '<span class="star active">★</span>' : '<span class="star">★</span>';
         html += `<span class="avg-rating">(${total})</span>`;
-        if (usuarioLogado) html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId})">⭐</button>`;
+        if (usuarioLogado && !avaliacoes.some(a => a.produto_id === produtoId && a.cliente_id === usuarioLogado.id)) html += `<button class="avaliar-btn" onclick="abrirModalAvaliacao(${produtoId})">⭐</button>`;
         return html;
     }
     window.abrirModalAvaliacao = function(produtoId) {
@@ -1205,7 +1283,7 @@
         if (nota && nota >= 1 && nota <= 5) showToast(`⭐ Avaliação ${nota} estrelas salva! Obrigado!`);
     };
     
-    // ==================== PRODUTOS - OTIMIZADO ====================
+    // ==================== PRODUTOS ====================
     async function carregarProdutos() {
         const { data } = await supabaseClient.from('produtos').select('*').order('id');
         produtos = data || [{ id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=600" },
@@ -1257,14 +1335,8 @@
                 <div class="campo-preco"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
                 <div class="campo-estoque"><input type="number" value="${p.estoque}" data-id="${p.id}" data-field="estoque" placeholder="Estoque"></div>
                 <div class="campo-imagem"><input type="text" value="${p.imagem}" data-id="${p.id}" data-field="imagem" placeholder="URL imagem"></div>
-                <div class="campo-upload">
-                    <div class="upload-mini"><div class="upload-mini-label">📁</div><input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png"></div>
-                </div>
-                <div class="campo-acoes">
-                    <button class="btn-icon btn-salvar-produto" onclick="editarProdutoLocal(${p.id})" title="Salvar">💾</button>
-                    <button class="btn-icon btn-excluir-produto" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button>
-                </div>
-            `;
+                <div class="campo-upload"><div class="upload-mini"><div class="upload-mini-label">📁</div><input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png"></div></div>
+                <div class="campo-acoes"><button class="btn-icon btn-salvar-produto" onclick="editarProdutoLocal(${p.id})" title="Salvar">💾</button><button class="btn-icon btn-excluir-produto" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button></div>`;
             container.appendChild(div);
         });
         
@@ -1339,7 +1411,6 @@
         });
     }
     function mostrarFormulario(tipo) {
-        const tipos = { entrada: 'Entrada de Estoque', saida: 'Saída de Estoque', desperdicio: 'Desperdício' };
         document.getElementById('formularioEstoque').innerHTML = `<div class="form-estoque"><div class="field"><label>Material</label><select id="materialSelect"><option value="">Selecione...</option>${materiais.map(m => `<option value="${m.id}" data-preco="${m.preco_unitario}" data-unidade="${m.unidade}">${m.nome} (${m.unidade})</option>`).join('')}</select></div><div class="field"><label>Quantidade</label><input type="number" id="quantidade" step="0.001" placeholder="Quantidade"></div><div class="field"><label>Peso (opcional)</label><input type="number" id="peso" step="0.001" placeholder="Peso em kg"></div><div class="field"><label>Valor Unitário</label><input type="number" id="valorUnitario" step="0.01" placeholder="R$"></div><div class="field"><label>Valor Total</label><input type="text" id="valorTotal" readonly style="background:#f0f0f0;"></div>${tipo === 'saida' ? `<div class="field"><label>Produto Fabricado</label><input type="text" id="produtoFabricado" placeholder="Qual produto?"></div><div class="field"><label>Qtd Produzida</label><input type="number" id="qtdProduzida" placeholder="Unidades"></div>` : ''}${tipo === 'desperdicio' ? `<div class="field"><label>Motivo</label><input type="text" id="motivo" placeholder="Ex: Quebrou, Venceu..."></div>` : ''}<div class="field"><label>Data</label><input type="date" id="dataMovimento" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Observação</label><input type="text" id="observacao" placeholder="Opcional"></div><div><button class="btn-estoque" onclick="salvarMovimentacao('${tipo}')">✅ Salvar</button><button class="btn-estoque" onclick="fecharFormularioEstoque()">❌ Cancelar</button></div></div>`;
         const qtdInput = document.getElementById('quantidade'), pesoInput = document.getElementById('peso'), valorUnitarioInput = document.getElementById('valorUnitario'), valorTotalInput = document.getElementById('valorTotal');
         const calcularTotal = () => { const qtd = parseFloat(qtdInput.value) || 0; const peso = parseFloat(pesoInput.value) || 0; const valorUnit = parseFloat(valorUnitarioInput.value) || 0; const totalBase = peso > 0 ? qtd * peso : qtd; valorTotalInput.value = `R$ ${(totalBase * valorUnit).toFixed(2)}`; };
@@ -1405,6 +1476,7 @@
         const topProdutos = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0,5);
         document.getElementById('topProdutos').innerHTML = topProdutos.length ? topProdutos.map(([nome, qtd]) => `<div class="top-produto-item"><span>${nome}</span><span>${qtd} vendidos</span></div>`).join('') : '<p>Nenhuma venda registrada.</p>';
         await carregarDashboardFinanceiro();
+        await carregarSatisfacaoChart();
     }
     async function carregarDashboardFinanceiro() {
         const { data: entradas } = await supabaseClient.from('entrada_estoque').select('*');
@@ -1509,13 +1581,6 @@
         container.innerHTML = '';
         clientes.forEach(c => { const div = document.createElement('div'); div.className = 'produto-admin-item'; div.innerHTML = `<div><strong>${c.nome}</strong></div><div>${c.email}</div><div>${c.nome_social ? `(${c.nome_social})` : ''}</div><div>${c.telefone || '-'}</div>`; container.appendChild(div); });
     }
-    function renderizarAvaliacoesAdmin() {
-        const container = document.getElementById('listaAvaliacoesAdmin');
-        if (!container) return;
-        if (avaliacoes.length === 0) { container.innerHTML = '<p>Nenhuma avaliação ainda.</p>'; return; }
-        container.innerHTML = '';
-        avaliacoes.slice().reverse().forEach(a => { const produto = produtos.find(p => p.id === a.produto_id); const cliente = clientes.find(c => c.id === a.cliente_id); const div = document.createElement('div'); div.className = 'produto-admin-item'; div.innerHTML = `<div><strong>${produto?.nome || 'Produto'}</strong></div><div>⭐ ${'★'.repeat(a.nota)}${'☆'.repeat(5-a.nota)}</div><div>${cliente?.nome_social || cliente?.nome || '-'}</div><div>${a.comentario || '-'}</div>`; container.appendChild(div); });
-    }
     async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g, ''); if (cep.length !== 8) { showToast("CEP inválido!"); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if (data.erro) { showToast("CEP não encontrado!"); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco; showToast("Endereço encontrado!"); } catch(e) { showToast("Erro ao buscar CEP!"); } }
     
     // ==================== INICIALIZAÇÃO ====================
@@ -1563,7 +1628,7 @@
                 await carregarMateriais();
                 await carregarMovimentacoes();
                 await carregarDashboard();
-                renderizarAvaliacoesAdmin();
+                await carregarAvaliacoesAdmin();
                 renderizarClientesAdmin();
                 renderizarAdminLista();
                 initDragDropTabs();
@@ -1584,6 +1649,13 @@
         
         document.getElementById('periodoFiltro')?.addEventListener('change', (e) => { const dateRange = document.getElementById('dateRange'); if (e.target.value === 'personalizado') dateRange.classList.add('show'); else { dateRange.classList.remove('show'); carregarDashboard(); } });
         document.getElementById('btnAplicarData')?.addEventListener('click', () => carregarDashboard());
+        
+        document.getElementById('avaliacaoPeriodo')?.addEventListener('change', (e) => {
+            const dateRange = document.getElementById('avaliacaoDateRange');
+            if (e.target.value === 'personalizado') dateRange.classList.add('show');
+            else { dateRange.classList.remove('show'); carregarAvaliacoesAdmin(); }
+        });
+        document.getElementById('btnAplicarDataAvaliacao')?.addEventListener('click', () => carregarAvaliacoesAdmin());
         
         document.getElementById('btnLogin')?.addEventListener('click', async () => {
             const user = await fazerLogin(document.getElementById('loginEmail').value, document.getElementById('loginSenha').value);
