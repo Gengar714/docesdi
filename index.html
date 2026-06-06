@@ -120,9 +120,6 @@
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
         .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
         
-        /* Admin button (escondido, agora integrado ao login) */
-        .admin-btn-container { display: none; }
-        
         /* Dropdown usuário */
         .usuario-dropdown { position: relative; display: inline-block; }
         .usuario-info {
@@ -854,7 +851,44 @@
 </footer>
 
 <!-- MODAIS -->
-<div id="modalCliente" class="modal"><div class="modal-content"><div class="tab-buttons"><button class="tab-btn ativo" id="tabLoginBtn">Entrar</button><button class="tab-btn" id="tabCadastroBtn">Cadastrar</button></div><div id="loginPanel"><h3>Login</h3><input type="text" id="loginEmail" placeholder="E-mail"><input type="password" id="loginSenha" placeholder="Senha"><button id="btnLogin">Entrar</button><button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button><hr><button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button></div><div id="cadastroPanel" style="display:none;"><h3>Cadastro</h3><input type="text" id="cadNome" placeholder="Nome completo *"><input type="text" id="cadNomeSocial" placeholder="Como prefere que a gente te chame?"><input type="date" id="cadDataNasc"><div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP"><button type="button" id="buscarCepCadastro">🔍 Buscar</button></div><input type="text" id="cadEndereco" placeholder="Endereço"><div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div><input type="text" id="cadReferencia" placeholder="Ponto referência"><input type="text" id="cadTelefone" placeholder="Telefone/WhatsApp"><input type="email" id="cadEmail" placeholder="E-mail *"><input type="password" id="cadSenha" placeholder="Senha *"><input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *"><button id="btnCadastrar">Cadastrar</button></div><div id="recuperarPanel" style="display:none;"><h3>Recuperar Senha</h3><input type="email" id="recuperarEmail" placeholder="Seu e-mail"><button id="btnEnviarRecuperacao">📧 Enviar nova senha</button><button id="btnVoltarLogin" style="background:#999;">Voltar</button></div></div></div>
+<div id="modalCliente" class="modal">
+    <div class="modal-content">
+        <div class="tab-buttons">
+            <button class="tab-btn ativo" id="tabLoginBtn">Entrar</button>
+            <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
+        </div>
+        <div id="loginPanel">
+            <h3>Login</h3>
+            <input type="text" id="loginEmail" placeholder="E-mail / Admin">
+            <input type="password" id="loginSenha" placeholder="Senha">
+            <button id="btnLogin">Entrar</button>
+            <button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button>
+            <hr>
+            <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
+        </div>
+        <div id="cadastroPanel" style="display:none;">
+            <h3>Cadastro</h3>
+            <input type="text" id="cadNome" placeholder="Nome completo *">
+            <input type="text" id="cadNomeSocial" placeholder="Como prefere que a gente te chame?">
+            <input type="date" id="cadDataNasc">
+            <div class="cep-grupo"><input type="text" id="cadCep" placeholder="CEP"><button type="button" id="buscarCepCadastro">🔍 Buscar</button></div>
+            <input type="text" id="cadEndereco" placeholder="Endereço">
+            <div class="linha-dois-campos"><div><input type="text" id="cadNumero" placeholder="Número"></div><div><input type="text" id="cadComplemento" placeholder="Complemento"></div></div>
+            <input type="text" id="cadReferencia" placeholder="Ponto referência">
+            <input type="text" id="cadTelefone" placeholder="Telefone/WhatsApp">
+            <input type="email" id="cadEmail" placeholder="E-mail *">
+            <input type="password" id="cadSenha" placeholder="Senha *">
+            <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
+            <button id="btnCadastrar">Cadastrar</button>
+        </div>
+        <div id="recuperarPanel" style="display:none;">
+            <h3>Recuperar Senha</h3>
+            <input type="email" id="recuperarEmail" placeholder="Seu e-mail">
+            <button id="btnEnviarRecuperacao">📧 Enviar nova senha</button>
+            <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
+        </div>
+    </div>
+</div>
 
 <div id="modalAvaliacao" class="modal"><div class="modal-content"><h3>⭐ Avaliar Produto</h3><p id="avaliacaoProdutoNome"></p><div class="rating-select" style="display:flex; gap:10px; justify-content:center; margin:15px 0;"><span class="star-select" data-rating="1" style="font-size:2rem; cursor:pointer; color:#ddd;">★</span><span class="star-select" data-rating="2" style="font-size:2rem; cursor:pointer; color:#ddd;">★</span><span class="star-select" data-rating="3" style="font-size:2rem; cursor:pointer; color:#ddd;">★</span><span class="star-select" data-rating="4" style="font-size:2rem; cursor:pointer; color:#ddd;">★</span><span class="star-select" data-rating="5" style="font-size:2rem; cursor:pointer; color:#ddd;">★</span></div><textarea id="avaliacaoComentario" rows="3" placeholder="Deixe um comentário (opcional)"></textarea><button id="btnSalvarAvaliacao">Enviar Avaliação</button><button id="btnCancelarAvaliacao" style="background:#999;">Cancelar</button></div></div>
 
@@ -945,7 +979,7 @@
                     <h4>📈 Vendas por Dia</h4>
                     <button class="btn-minimize" id="btnMinimizeVendas">−</button>
                 </div>
-                <div class="chart-body" id="chartBodyVendas"><canvas id="vendasChart"></canvas></div>
+                <div class="chart-body" id="chartBodyVendasChart"><canvas id="vendasChart"></canvas></div>
             </div>
             
             <div class="chart-card" id="chartSatisfacaoCard">
@@ -953,7 +987,7 @@
                     <h4>⭐ Satisfação do Cliente (Últimos 7 dias)</h4>
                     <button class="btn-minimize" id="btnMinimizeSatisfacao">−</button>
                 </div>
-                <div class="chart-body" id="chartBodySatisfacao"><canvas id="satisfacaoChart"></canvas></div>
+                <div class="chart-body" id="chartBodySatisfacaoChart"><canvas id="satisfacaoChart"></canvas></div>
             </div>
             
             <div class="chart-card" id="chartTopProdutosCard">
@@ -969,7 +1003,7 @@
                     <h4>💰 Custos por Produto</h4>
                     <button class="btn-minimize" id="btnMinimizeCustos">−</button>
                 </div>
-                <div class="chart-body" id="chartBodyCustos"><div id="custosProdutos" class="top-produtos-list"></div></div>
+                <div class="chart-body" id="chartBodyCustosProdutos"><div id="custosProdutos" class="top-produtos-list"></div></div>
             </div>
         </div>
         
@@ -1541,269 +1575,4 @@
         if (!pedidos) return;
         const totalVendas = pedidos.reduce((s,p) => s + (p.total || 0), 0);
         const ticketMedio = totalVendas / (pedidos.length || 1);
-        document.getElementById('dashboardStats').innerHTML = `<div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${totalVendas.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div><div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticketMedio.toFixed(2)}</div></div><div class="stat-card"><h4>👥 Clientes</h4><div class="value">${clientes.length}</div></div>`;
-        const vendasPorDia = {};
-        pedidos.forEach(p => { const dia = new Date(p.data_pedido).toLocaleDateString(); vendasPorDia[dia] = (vendasPorDia[dia] || 0) + p.total; });
-        const dias = Object.keys(vendasPorDia).slice(-7);
-        const valores = dias.map(d => vendasPorDia[d]);
-        const ctxVendas = document.getElementById('vendasChart')?.getContext('2d');
-        if (ctxVendas) { if (vendasChart) vendasChart.destroy(); vendasChart = new Chart(ctxVendas, { type: 'line', data: { labels: dias, datasets: [{ label: 'Vendas (R$)', data: valores, borderColor: '#d4a373', tension: 0.3 }] } }); }
-        const vendasProdutos = {};
-        pedidos.forEach(p => { (p.itens || []).forEach(i => { vendasProdutos[i.nome] = (vendasProdutos[i.nome] || 0) + (i.quantidade || 1); }); });
-        const topProdutos = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0,5);
-        document.getElementById('topProdutos').innerHTML = topProdutos.length ? topProdutos.map(([nome, qtd]) => `<div class="top-produto-item"><span>${nome}</span><span>${qtd} vendidos</span></div>`).join('') : '<p>Nenhuma venda registrada.</p>';
-        await carregarDashboardFinanceiro();
-        await carregarSatisfacaoChart();
-    }
-    async function carregarDashboardFinanceiro() {
-        const { data: entradas } = await supabaseClient.from('entrada_estoque').select('*');
-        const { data: saidas } = await supabaseClient.from('saida_estoque').select('*');
-        const totalGasto = (entradas || []).reduce((s, e) => s + e.valor_total, 0);
-        const totalCustoProducao = (saidas || []).reduce((s, e) => s + e.valor_total, 0);
-        const valorEstoqueAtual = materiais.reduce((s,m) => s + m.estoque_atual * m.preco_unitario, 0);
-        document.getElementById('financeiroStats').innerHTML = `<div class="stat-card"><h4>💰 Total Gasto</h4><div class="value">R$ ${totalGasto.toFixed(2)}</div></div><div class="stat-card"><h4>🏭 Custo Produção</h4><div class="value">R$ ${totalCustoProducao.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Estoque Atual</h4><div class="value">R$ ${valorEstoqueAtual.toFixed(2)}</div></div>`;
-        const custoPorProduto = {};
-        (saidas || []).forEach(s => { if (s.produto_fabricado && s.quantidade_produzida) { if (!custoPorProduto[s.produto_fabricado]) custoPorProduto[s.produto_fabricado] = { total: 0, quantidade: 0 }; custoPorProduto[s.produto_fabricado].total += s.valor_total; custoPorProduto[s.produto_fabricado].quantidade += s.quantidade_produzida; } });
-        document.getElementById('custosProdutos').innerHTML = Object.entries(custoPorProduto).length ? Object.entries(custoPorProduto).map(([produto, dados]) => `<div class="top-produto-item"><span>${produto}</span><span>R$ ${(dados.total / dados.quantidade).toFixed(2)} / unidade</span></div>`).join('') : '<p>Nenhum dado de produção registrado.</p>';
-    }
-    
-    // ==================== CARROSSEL ====================
-    async function carregarSlides() {
-        const { data } = await supabaseClient.from('slides').select('*').order('ordem');
-        slides = data || [{ id: 1, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200", titulo: "Mousse de Maracujá", descricao: "O mais pedido!", ordem: 1 }, { id: 2, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200", titulo: "Cheesecake", descricao: "Irresistível!", ordem: 2 }, { id: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?w=1200", titulo: "Petit Gâteau", descricao: "Quentinho!", ordem: 3 }];
-        const container = document.getElementById('carouselSlides');
-        const dotsContainer = document.getElementById('carouselDots');
-        if (!container) return;
-        container.innerHTML = '';
-        slides.forEach(slide => { const slideDiv = document.createElement('div'); slideDiv.className = 'carousel-slide'; slideDiv.innerHTML = `<img src="${slide.imagem}" onerror="this.src='https://placehold.co/1200x400'"><div class="carousel-caption"><h3>${slide.titulo || ''}</h3><p>${slide.descricao || ''}</p></div>`; container.appendChild(slideDiv); });
-        dotsContainer.innerHTML = '';
-        slides.forEach((_, idx) => { const dot = document.createElement('div'); dot.className = 'carousel-dot'; if (idx === slideIndex) dot.classList.add('active'); dot.addEventListener('click', () => { slideIndex = idx; atualizarCarrosselPosicao(); }); dotsContainer.appendChild(dot); });
-        atualizarCarrosselPosicao();
-        if (window.carrosselInterval) clearInterval(window.carrosselInterval);
-        window.carrosselInterval = setInterval(() => { if (slides.length > 0) { slideIndex = (slideIndex + 1) % slides.length; atualizarCarrosselPosicao(); } }, 5000);
-    }
-    function atualizarCarrosselPosicao() { const container = document.getElementById('carouselSlides'); if (container) container.style.transform = `translateX(-${slideIndex * 100}%)`; document.querySelectorAll('.carousel-dot').forEach((dot, idx) => dot.classList.toggle('active', idx === slideIndex)); }
-    function mudarSlide(direction) { if (slides.length === 0) return; slideIndex = (slideIndex + direction + slides.length) % slides.length; atualizarCarrosselPosicao(); }
-    
-    // ==================== BUSCA ====================
-    function buscarProdutos() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-        const minRating = parseFloat(document.getElementById('minRating').value) || 0;
-        const sortBy = document.getElementById('sortBy').value;
-        produtosFiltrados = produtos.filter(p => {
-            const matchesSearch = p.nome.toLowerCase().includes(searchTerm) || p.descricao.toLowerCase().includes(searchTerm);
-            const matchesPrice = p.preco >= minPrice && p.preco <= maxPrice;
-            const matchesRating = getMediaAvaliacoes(p.id) >= minRating;
-            return matchesSearch && matchesPrice && matchesRating;
-        });
-        if (sortBy === 'nome') produtosFiltrados.sort((a,b) => a.nome.localeCompare(b.nome));
-        else if (sortBy === 'preco_asc') produtosFiltrados.sort((a,b) => a.preco - b.preco);
-        else if (sortBy === 'preco_desc') produtosFiltrados.sort((a,b) => b.preco - a.preco);
-        else if (sortBy === 'avaliacao') produtosFiltrados.sort((a,b) => getMediaAvaliacoes(b.id) - getMediaAvaliacoes(a.id));
-        document.getElementById('resultCount').innerHTML = `${produtosFiltrados.length} produtos`;
-        renderizarProdutos();
-    }
-    function resetarBusca() {
-        document.getElementById('searchInput').value = ''; document.getElementById('minPrice').value = ''; document.getElementById('maxPrice').value = ''; document.getElementById('minRating').value = '0'; document.getElementById('sortBy').value = 'nome';
-        produtosFiltrados = [...produtos]; document.getElementById('resultCount').innerHTML = ''; renderizarProdutos();
-    }
-    
-    // ==================== CLIENTES ADMIN ====================
-    async function carregarClientes() { const { data } = await supabaseClient.from('clientes').select('*'); clientes = data || []; renderizarClientesAdmin(); }
-    function renderizarClientesAdmin() {
-        const container = document.getElementById('listaClientesAdmin');
-        if (!container) return;
-        if (clientes.length === 0) { container.innerHTML = '<p>Nenhum cliente cadastrado.</p>'; return; }
-        container.innerHTML = '';
-        clientes.forEach(c => { const div = document.createElement('div'); div.className = 'produto-admin-item'; div.innerHTML = `<div><strong>${c.nome}</strong></div><div>${c.email}</div><div>${c.nome_social ? `(${c.nome_social})` : ''}</div><div>${c.telefone || '-'}</div>`; container.appendChild(div); });
-    }
-    async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g, ''); if (cep.length !== 8) { showToast("CEP inválido!"); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if (data.erro) { showToast("CEP não encontrado!"); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco; showToast("Endereço encontrado!"); } catch(e) { showToast("Erro ao buscar CEP!"); } }
-    
-    // ==================== ATUALIZAR BOTÃO DE LOGIN ====================
-    function atualizarBotaoCliente() {
-        const area = document.getElementById('clienteButtonArea');
-        if (!area) return;
-        area.innerHTML = '';
-        
-        if (usuarioLogado) {
-            const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente'));
-            area.innerHTML = `<div class="usuario-dropdown" id="usuarioDropdown"><div class="usuario-info" onclick="toggleDropdown()"><span>👤 ${nomeExibir}</span><span>▼</span></div><div class="dropdown-content"><span class="close-dropdown" onclick="fecharDropdown()">✕</span><h4>✏️ Meus Dados</h4>${usuarioTipo === 'admin' ? '<p style="text-align:center; color:var(--accent-color);">👑 Administrador</p><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>' : `<div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop" value="${(usuarioLogado.nome || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop" value="${(usuarioLogado.nome_social || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop" value="${usuarioLogado.data_nasc || ''}"></div><div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop" value="${(usuarioLogado.cep || '').replace(/"/g, '&quot;')}"><button onclick="buscarCepNoDropdown()">🔍</button></div></div><div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop" value="${(usuarioLogado.endereco || '').replace(/"/g, '&quot;')}"></div><div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop" value="${(usuarioLogado.numero || '').replace(/"/g, '&quot;')}"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop" value="${(usuarioLogado.complemento || '').replace(/"/g, '&quot;')}"></div></div><div class="campo"><label>Ponto de referência</label><input type="text" id="perfilReferenciaDrop" value="${(usuarioLogado.referencia || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Telefone/WhatsApp</label><input type="text" id="perfilTelefoneDrop" value="${(usuarioLogado.telefone || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop" value="${(usuarioLogado.email || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Nova senha (opcional)</label><input type="password" id="perfilNovaSenhaDrop" placeholder="Deixe em branco para manter"></div><button onclick="atualizarPerfilDropdown()">💾 Salvar Alterações</button><button onclick="abrirHistorico()">📦 Meus Pedidos</button><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>`}</div></div>`;
-            if (usuarioTipo === 'cliente') carregarPerfilNoDropdown();
-        } else {
-            area.innerHTML = `<button class="btn-login" id="btnAbrirLogin">🔐 Login</button>`;
-            document.getElementById('btnAbrirLogin')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
-        }
-        
-        const btnFav = document.getElementById('btnFavoritos'), btnHist = document.getElementById('btnHistorico');
-        if (usuarioLogado && usuarioTipo === 'cliente') { btnFav?.classList.remove('hidden'); btnHist?.classList.remove('hidden'); } 
-        else { btnFav?.classList.add('hidden'); btnHist?.classList.add('hidden'); }
-    }
-    
-    function carregarPerfilNoDropdown() { if (!usuarioLogado || usuarioTipo !== 'cliente') return; document.getElementById('perfilNomeDrop').value = usuarioLogado.nome || ''; document.getElementById('perfilNomeSocialDrop').value = usuarioLogado.nome_social || ''; document.getElementById('perfilDataNascDrop').value = usuarioLogado.data_nasc || ''; document.getElementById('perfilCepDrop').value = usuarioLogado.cep || ''; document.getElementById('perfilEnderecoDrop').value = usuarioLogado.endereco || ''; document.getElementById('perfilNumeroDrop').value = usuarioLogado.numero || ''; document.getElementById('perfilComplementoDrop').value = usuarioLogado.complemento || ''; document.getElementById('perfilReferenciaDrop').value = usuarioLogado.referencia || ''; document.getElementById('perfilTelefoneDrop').value = usuarioLogado.telefone || ''; document.getElementById('perfilEmailDrop').value = usuarioLogado.email || ''; }
-    
-    async function atualizarPerfilDropdown() {
-        if (!usuarioLogado || usuarioTipo !== 'cliente') return;
-        const updates = { nome: document.getElementById('perfilNomeDrop').value, nome_social: document.getElementById('perfilNomeSocialDrop').value, data_nasc: document.getElementById('perfilDataNascDrop').value, cep: document.getElementById('perfilCepDrop').value, endereco: document.getElementById('perfilEnderecoDrop').value, numero: document.getElementById('perfilNumeroDrop').value, complemento: document.getElementById('perfilComplementoDrop').value, referencia: document.getElementById('perfilReferenciaDrop').value, telefone: document.getElementById('perfilTelefoneDrop').value, email: document.getElementById('perfilEmailDrop').value };
-        const novaSenha = document.getElementById('perfilNovaSenhaDrop').value;
-        if (novaSenha) { if (!validarSenhaForte(novaSenha)) { showToast("Senha fraca!"); return; } updates.senha = hashSenha(novaSenha); }
-        const { error } = await supabaseClient.from('clientes').update(updates).eq('id', usuarioLogado.id);
-        if (error) { showToast("Erro ao atualizar perfil!"); return; }
-        Object.assign(usuarioLogado, updates); if (novaSenha) usuarioLogado.senha = updates.senha;
-        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-        localStorage.setItem("docesdi_usuario_tipo", usuarioTipo);
-        showToast("Perfil atualizado com sucesso!"); fecharDropdown(); atualizarBotaoCliente();
-    }
-    
-    async function buscarCepNoDropdown() { const cep = document.getElementById('perfilCepDrop').value.replace(/\D/g, ''); if (cep.length !== 8) { showToast("CEP inválido!"); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if (data.erro) { showToast("CEP não encontrado!"); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; document.getElementById('perfilEnderecoDrop').value = endereco; showToast("Endereço encontrado!"); } catch(e) { showToast("Erro ao buscar CEP!"); } }
-    
-    function fazerLogout() { 
-        usuarioLogado = null; 
-        usuarioTipo = null;
-        localStorage.removeItem("docesdi_usuario_logado");
-        localStorage.removeItem("docesdi_usuario_tipo");
-        favoritos.clear(); 
-        atualizarBotaoCliente(); 
-        fecharDropdown(); 
-        renderizarProdutos(); 
-        showToast("Saiu da conta!"); 
-        document.getElementById('modalAdmin').style.display = 'none';
-    }
-    
-    function toggleDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.toggle('show'); }
-    function fecharDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.remove('show'); }
-    
-    // ==================== INICIALIZAÇÃO ====================
-    async function inicializar() {
-        const savedTheme = localStorage.getItem('docesdi_theme');
-        if (savedTheme === 'dark') document.body.classList.add('dark');
-        document.getElementById('themeToggle')?.addEventListener('click', () => { document.body.classList.toggle('dark'); localStorage.setItem('docesdi_theme', document.body.classList.contains('dark') ? 'dark' : 'light'); });
-        
-        await carregarProdutos();
-        await carregarAvaliacoes();
-        await carregarClientes();
-        await carregarSlides();
-        carregarCarrinho();
-        
-        const savedUser = localStorage.getItem("docesdi_usuario_logado");
-        const savedTipo = localStorage.getItem("docesdi_usuario_tipo");
-        if (savedUser && savedTipo) {
-            usuarioLogado = JSON.parse(savedUser);
-            usuarioTipo = savedTipo;
-            if (usuarioTipo === 'cliente') await carregarFavoritos();
-        }
-        
-        atualizarCarrinho();
-        atualizarBotaoCliente();
-        
-        document.getElementById('anoAtual').innerText = new Date().getFullYear();
-        
-        document.getElementById('carouselPrev')?.addEventListener('click', () => mudarSlide(-1));
-        document.getElementById('carouselNext')?.addEventListener('click', () => mudarSlide(1));
-        document.getElementById('btnBuscar')?.addEventListener('click', buscarProdutos);
-        document.getElementById('searchInput')?.addEventListener('keyup', (e) => { if(e.key === 'Enter') buscarProdutos(); });
-        document.getElementById('btnAplicarFiltros')?.addEventListener('click', buscarProdutos);
-        document.getElementById('btnResetarFiltros')?.addEventListener('click', resetarBusca);
-        document.getElementById('btnToggleFilters')?.addEventListener('click', () => { document.getElementById('advancedFilters')?.classList.toggle('show'); });
-        document.getElementById('btnMercadoPago')?.addEventListener('click', iniciarPagamentoMercadoPago);
-        document.getElementById('btn-finalizar')?.addEventListener('click', mostrarResumoPedido);
-        document.getElementById('btnConfirmarPagamento')?.addEventListener('click', iniciarPagamentoMercadoPago);
-        document.getElementById('btnCancelarResumo')?.addEventListener('click', fecharModal);
-        document.getElementById('btnFavoritos')?.addEventListener('click', () => abrirFavoritos());
-        document.getElementById('btnHistorico')?.addEventListener('click', () => abrirHistorico());
-        document.getElementById('btnFecharFavoritos')?.addEventListener('click', fecharModal);
-        document.getElementById('btnFecharHistorico')?.addEventListener('click', fecharModal);
-        
-        // Admin - agora integrado ao login unificado
-        document.getElementById('btnVerificarAdmin')?.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
-            
-            const resultado = await fazerLogin(email, senha);
-            if (resultado) {
-                usuarioLogado = resultado.dados;
-                usuarioTipo = resultado.tipo;
-                localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-                localStorage.setItem("docesdi_usuario_tipo", usuarioTipo);
-                atualizarBotaoCliente();
-                document.getElementById('modalCliente').style.display = 'none';
-                
-                if (usuarioTipo === 'cliente') {
-                    await carregarFavoritos();
-                    renderizarProdutos();
-                    showToast(`Bem-vindo, ${usuarioLogado.nome_social || usuarioLogado.nome}!`);
-                } else if (usuarioTipo === 'admin') {
-                    showToast("👑 Bem-vindo, Administrador!");
-                    document.getElementById('modalAdmin').style.display = 'flex';
-                    await carregarMateriais();
-                    await carregarMovimentacoes();
-                    await carregarDashboard();
-                    await carregarAvaliacoesAdmin();
-                    renderizarClientesAdmin();
-                    renderizarAdminLista();
-                    initDragDropTabs();
-                    initDragDropEstoqueTabs();
-                    await carregarOrdemAbas();
-                    await carregarOrdemEstoqueAbas();
-                    initTabs();
-                    initEstoqueTabs();
-                }
-            } else {
-                showToast("Email ou senha incorretos!");
-            }
-        });
-        
-        document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
-            const senha = document.getElementById('cadSenha').value, conf = document.getElementById('cadConfirmarSenha').value;
-            if (senha !== conf) { showToast("Senhas não conferem!"); return; }
-            await cadastrarCliente(document.getElementById('cadNome').value, document.getElementById('cadEmail').value, senha, document.getElementById('cadNomeSocial').value, document.getElementById('cadDataNasc').value, document.getElementById('cadCep').value, document.getElementById('cadEndereco').value, document.getElementById('cadNumero').value, document.getElementById('cadComplemento').value, document.getElementById('cadReferencia').value, document.getElementById('cadTelefone').value);
-            document.getElementById('tabLoginBtn').click();
-        });
-        
-        document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('recuperarPanel').style.display = 'block'; });
-        document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => { await solicitarRecuperacaoSenha(document.getElementById('recuperarEmail').value); document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-        document.getElementById('btnVoltarLogin')?.addEventListener('click', () => { document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-        document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
-        document.getElementById('tabLoginBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'block'; document.getElementById('cadastroPanel').style.display = 'none'; });
-        document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; });
-        document.getElementById('buscarCepCadastro')?.addEventListener('click', () => { const cep = document.getElementById('cadCep').value; if (cep) buscarCep(cep, 'cadastro'); });
-        
-        document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
-        document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
-        document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
-        document.getElementById('btnSaveOrder')?.addEventListener('click', salvarOrdemAbas);
-        
-        document.getElementById('btnExpandAdmin')?.addEventListener('click', () => { const modalContent = document.querySelector('#modalAdmin .modal-content'); if (modalContent) { modalContent.style.width = '98%'; modalContent.style.maxWidth = '98%'; modalContent.style.height = '95vh'; modalContent.style.maxHeight = '95vh'; } });
-        document.getElementById('btnNewWindowAdmin')?.addEventListener('click', () => { const adminContent = document.getElementById('modalAdmin').cloneNode(true); const newWin = window.open('', '_blank'); newWin.document.write(`<!DOCTYPE html><html><head><title>Admin - Doces Di</title><style>${document.querySelector('style').innerHTML}</style></head><body style="background:var(--bg-color);">${adminContent.outerHTML}</body></html>`); newWin.document.close(); });
-        
-        document.getElementById('periodoFiltro')?.addEventListener('change', (e) => { const dateRange = document.getElementById('dateRange'); if (e.target.value === 'personalizado') dateRange.classList.add('show'); else { dateRange.classList.remove('show'); carregarDashboard(); } });
-        document.getElementById('btnAplicarData')?.addEventListener('click', () => carregarDashboard());
-        
-        document.getElementById('avaliacaoPeriodo')?.addEventListener('change', (e) => {
-            const dateRange = document.getElementById('avaliacaoDateRange');
-            if (e.target.value === 'personalizado') dateRange.classList.add('show');
-            else { dateRange.classList.remove('show'); carregarAvaliacoesAdmin(); }
-        });
-        document.getElementById('btnAplicarDataAvaliacao')?.addEventListener('click', () => carregarAvaliacoesAdmin());
-        
-        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-        document.addEventListener('click', function(event) { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown && !dropdown.contains(event.target)) dropdown.classList.remove('show'); });
-    }
-    
-    // Funções auxiliares que faltavam
-    async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
-        if (!validarSenhaForte(senha)) { showToast("Senha fraca!"); return false; }
-        const { data: existing } = await supabaseClient.from('clientes').select('id').eq('email', email);
-        if (existing && existing.length) { showToast("Email já cadastrado!"); return false; }
-        const { error } = await supabaseClient.from('clientes').insert([{ nome, email, senha: hashSenha(senha), nome_social: nomeSocial, data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone }]);
-        if (error) { showToast("Erro ao cadastrar!"); return false; }
-        showToast("Cadastro realizado! Faça login."); return true;
-    }
-    
-    async function solicitarRecuperacaoSenha(email) { const { data } = await supabaseClient.from('clientes').select('id').eq('email', email); if (!data || !data.length) { showToast("Email não encontrado!"); return false; } const novaSenha = Math.random().toString(36).slice(-8); await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email); showToast(`Sua nova senha é: ${novaSenha}`); return true; }
-    
-    inicializar();
-</script>
-</body>
-</html>
+        document.getElementById('dashboardStats').innerHTML = `<div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${totalVendas.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Pedidos</h4><div class
