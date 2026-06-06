@@ -342,7 +342,7 @@
             categoriaAtiva = categorias[0].id;
             carregarProdutosPorCategoria();
         }
-        inicializarSwiper(); // Garantir Swiper após produtos
+        inicializarSwiper(); 
     }
     
     function carregarProdutosPorCategoria() {
@@ -482,7 +482,7 @@
         if (categoriaAtiva === categoriaId) carregarProdutosPorCategoria();
     }
     
-    // ===== AVALIAÇÕES, CLIENTES, SLIDES, MATERIAIS (resumido para brevidade, mantendo funcional) =====
+    // ===== AVALIAÇÕES, CLIENTES, SLIDES, MATERIAIS =====
     async function carregarAvaliacoes() {
         try { const { data } = await supabaseClient.from('avaliacoes').select('*'); avaliacoes = data || []; } catch(e){ avaliacoes = []; }
         renderizarAvaliacoesAdmin();
@@ -612,7 +612,6 @@
         });
     }
     window.abrirModalMaterial = function(id=null){
-        const modal = document.getElementById('modalMaterial');
         const titulo = document.getElementById('modalMaterialTitulo');
         const nome = document.getElementById('materialNome');
         const unidade = document.getElementById('materialUnidade');
