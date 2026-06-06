@@ -97,10 +97,10 @@
         
         @media (max-width: 768px) {
             .login-btn-container { top: 5px; right: 5px; gap: 5px; }
-            .btn-login, .theme-toggle, .btn-favoritos, .btn-historico { padding: 6px 12px; font-size: 0.7rem; }
+            .btn-login, .theme-toggle, .btn-favoritos, .btn-historico, .btn-admin-header { padding: 6px 12px; font-size: 0.7rem; }
         }
         
-        .btn-login, .theme-toggle, .btn-favoritos, .btn-historico {
+        .btn-login, .theme-toggle, .btn-favoritos, .btn-historico, .btn-admin-header {
             background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover));
             color: white;
             border: none;
@@ -113,11 +113,12 @@
             font-size: 0.85rem;
         }
         
+        .btn-admin-header { background: linear-gradient(135deg, #654321, #4a3b32); }
         .btn-favoritos { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .btn-historico { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .btn-login:hover, .theme-toggle:hover, .btn-favoritos:hover, .btn-historico:hover { transform: scale(1.05); }
+        .btn-login:hover, .theme-toggle:hover, .btn-favoritos:hover, .btn-historico:hover, .btn-admin-header:hover { transform: scale(1.05); }
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
-        .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
+        .btn-favoritos.hidden, .btn-historico.hidden, .btn-admin-header.hidden { display: none; }
         
         .usuario-dropdown { position: relative; display: inline-block; }
         .usuario-info {
@@ -167,25 +168,7 @@
         .btn-sair-dropdown { background: #e74c3c !important; }
         .close-dropdown { float: right; cursor: pointer; font-size: 1.2rem; }
         
-        /* Admin */
-        .admin-btn-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        .btn-admin-float {
-            background: linear-gradient(135deg, #654321, #4a3b32);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-size: 0.85rem;
-        }
-        
+        /* Admin Tabs */
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -268,7 +251,6 @@
         .chart-body { padding: 15px; transition: all 0.3s; }
         .chart-body.minimized { display: none; }
         
-        /* Filtro de data */
         .filter-date {
             display: flex;
             gap: 10px;
@@ -800,6 +782,12 @@
             margin: 10px 0;
         }
         .checkbox-label input { width: auto; margin: 0; }
+        
+        /* Admin button no header (só aparece quando logado como admin) */
+        .btn-admin-header {
+            background: linear-gradient(135deg, #654321, #4a3b32);
+        }
+        .btn-admin-header.hidden { display: none; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -819,9 +807,9 @@
     <button class="theme-toggle" id="themeToggle">🌙</button>
     <button class="btn-favoritos hidden" id="btnFavoritos">❤️ Favoritos</button>
     <button class="btn-historico hidden" id="btnHistorico">📦 Histórico</button>
+    <button class="btn-admin-header hidden" id="btnAdminHeader">🔧 Admin</button>
     <div id="clienteButtonArea"></div>
 </div>
-<div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
 
 <header>
     <h1 id="logoNome">Doces Di</h1>
@@ -883,7 +871,7 @@
         </div>
         <div id="loginPanel">
             <h3>Login</h3>
-            <input type="text" id="loginEmail" placeholder="E-mail / Admin">
+            <input type="text" id="loginEmail" placeholder="E-mail">
             <input type="password" id="loginSenha" placeholder="Senha">
             <button id="btnLogin">Entrar</button>
             <button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button>
@@ -1054,7 +1042,6 @@
     let materiais = [], movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     let sortableInstance = null, sortableEstoqueInstance = null;
     let paymentCheckInterval = null;
-    let adminModalAberto = false;
     let dadosAdminCarregados = false;
     
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
@@ -1067,15 +1054,11 @@
     function abrirAdmin() {
         const modal = document.getElementById('modalAdmin');
         if (!modal) return;
-        
         modal.style.display = 'flex';
-        adminModalAberto = true;
         
-        if (dadosAdminCarregados) {
-            return;
+        if (!dadosAdminCarregados) {
+            carregarDadosAdmin();
         }
-        
-        carregarDadosAdmin();
     }
     
     function fecharAdmin() {
@@ -1083,19 +1066,16 @@
         if (modal) {
             modal.style.display = 'none';
         }
-        adminModalAberto = false;
     }
     
     async function carregarDadosAdmin() {
         showToast("🔄 Carregando dados do administrador...", 'info');
-        
         await carregarMateriais();
         await carregarMovimentacoes();
         await carregarDashboard();
         await carregarAvaliacoesAdmin();
         renderizarClientesAdmin();
         renderizarAdminLista();
-        
         dadosAdminCarregados = true;
         showToast("✅ Dados carregados!", 'success');
     }
@@ -1325,7 +1305,7 @@
         }
     }
     
-    // ==================== MERCADO PAGO COM VALIDAÇÃO ====================
+    // ==================== MERCADO PAGO ====================
     async function criarPreferenciaMercadoPago(valor, descricao, pedidoId) {
         try {
             const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
@@ -1706,340 +1686,4 @@
         materiais.forEach(m => {
             const alerta = m.estoque_atual < 10 ? '<span class="alerta-estoque">⚠️ Baixo</span>' : '';
             const row = tbody.insertRow();
-            row.innerHTML = `<td>${m.nome}</td><td>${m.unidade}</td><td>R$ ${parseFloat(m.preco_unitario).toFixed(4)}</td><td>${m.estoque_atual.toFixed(2)} ${m.unidade} ${alerta}</td><td>R$ ${(m.estoque_atual * m.preco_unitario).toFixed(2)}</td><td><button onclick="editarMaterial(${m.id})" class="btn-estoque" style="padding:4px 8px;">✏️</button></td>`;
-        });
-    }
-    function mostrarFormulario(tipo) {
-        document.getElementById('formularioEstoque').innerHTML = `<div class="form-estoque"><div class="field"><label>Material</label><select id="materialSelect"><option value="">Selecione...</option>${materiais.map(m => `<option value="${m.id}" data-preco="${m.preco_unitario}" data-unidade="${m.unidade}">${m.nome} (${m.unidade})</option>`).join('')}</select></div><div class="field"><label>Quantidade</label><input type="number" id="quantidade" step="0.001" placeholder="Quantidade"></div><div class="field"><label>Peso (opcional)</label><input type="number" id="peso" step="0.001" placeholder="Peso em kg"></div><div class="field"><label>Valor Unitário</label><input type="number" id="valorUnitario" step="0.01" placeholder="R$"></div><div class="field"><label>Valor Total</label><input type="text" id="valorTotal" readonly style="background:#f0f0f0;"></div>${tipo === 'saida' ? `<div class="field"><label>Produto Fabricado</label><input type="text" id="produtoFabricado" placeholder="Qual produto?"></div><div class="field"><label>Qtd Produzida</label><input type="number" id="qtdProduzida" placeholder="Unidades"></div>` : ''}${tipo === 'desperdicio' ? `<div class="field"><label>Motivo</label><input type="text" id="motivo" placeholder="Ex: Quebrou, Venceu..."></div>` : ''}<div class="field"><label>Data</label><input type="date" id="dataMovimento" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Observação</label><input type="text" id="observacao" placeholder="Opcional"></div><div><button class="btn-estoque" onclick="salvarMovimentacao('${tipo}')">✅ Salvar</button><button class="btn-estoque" onclick="fecharFormularioEstoque()">❌ Cancelar</button></div></div>`;
-        const qtdInput = document.getElementById('quantidade'), pesoInput = document.getElementById('peso'), valorUnitarioInput = document.getElementById('valorUnitario'), valorTotalInput = document.getElementById('valorTotal');
-        const calcularTotal = () => { const qtd = parseFloat(qtdInput.value) || 0; const peso = parseFloat(pesoInput.value) || 0; const valorUnit = parseFloat(valorUnitarioInput.value) || 0; const totalBase = peso > 0 ? qtd * peso : qtd; valorTotalInput.value = `R$ ${(totalBase * valorUnit).toFixed(2)}`; };
-        qtdInput.addEventListener('input', calcularTotal); pesoInput.addEventListener('input', calcularTotal); valorUnitarioInput.addEventListener('input', calcularTotal);
-        document.getElementById('materialSelect').addEventListener('change', (e) => { const selected = e.target.options[e.target.selectedIndex]; const preco = selected.dataset.preco; if (preco) valorUnitarioInput.value = preco; });
-        document.getElementById('formularioEstoque').style.display = 'block';
-    }
-    function fecharFormularioEstoque() { document.getElementById('formularioEstoque').style.display = 'none'; }
-    async function salvarMovimentacao(tipo) {
-        const materialId = document.getElementById('materialSelect').value;
-        if (!materialId) { showToast("Selecione um material!", 'error'); return; }
-        const quantidade = parseFloat(document.getElementById('quantidade').value) || 0;
-        if (quantidade <= 0 && tipo !== 'saida') { showToast("Informe a quantidade!", 'error'); return; }
-        const peso = parseFloat(document.getElementById('peso').value) || 0;
-        const valorUnitario = parseFloat(document.getElementById('valorUnitario').value) || 0;
-        const totalBase = peso > 0 ? quantidade * peso : quantidade;
-        const valorTotal = totalBase * valorUnitario;
-        const movimento = { material_id: parseInt(materialId), quantidade: quantidade, peso: peso || null, valor_unitario: valorUnitario, valor_total: valorTotal, data: document.getElementById('dataMovimento').value, observacao: document.getElementById('observacao').value || null };
-        if (tipo === 'saida') { movimento.produto_fabricado = document.getElementById('produtoFabricado')?.value || null; movimento.quantidade_produzida = parseInt(document.getElementById('qtdProduzida')?.value) || null; }
-        if (tipo === 'desperdicio') { movimento.motivo = document.getElementById('motivo')?.value || null; }
-        const { error } = await supabaseClient.from(`${tipo}_estoque`).insert([movimento]);
-        if (error) { showToast("Erro ao salvar!", 'error'); return; }
-        showToast(`${tipo === 'entrada' ? 'Entrada' : tipo === 'saida' ? 'Saída' : 'Desperdício'} registrado!`, 'success');
-        fecharFormularioEstoque();
-        await carregarMateriais();
-        await carregarMovimentacoes();
-        await carregarDashboardFinanceiro();
-        if (tipo === 'entrada') carregarListaTipo('entrada');
-        if (tipo === 'saida') carregarListaTipo('saida');
-        if (tipo === 'desperdicio') carregarListaTipo('desperdicio');
-    }
-    async function carregarMovimentacoes() {
-        const tipos = ['entrada', 'saida', 'desperdicio'];
-        for (const tipo of tipos) { const { data } = await supabaseClient.from(`${tipo}_estoque`).select('*').order('created_at', { ascending: false }).limit(20); movimentacoes[tipo] = data || []; }
-        const todas = [...movimentacoes.entrada.map(m => ({ ...m, tipo: 'entrada' })), ...movimentacoes.saida.map(m => ({ ...m, tipo: 'saida' })), ...movimentacoes.desperdicio.map(m => ({ ...m, tipo: 'desperdicio' }))];
-        todas.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        document.getElementById('movimentacoesLista').innerHTML = todas.slice(0,30).map(m => { const material = materiais.find(mat => mat.id === m.material_id); const tipoText = { entrada: '📥 Entrada', saida: '📤 Saída', desperdicio: '⚠️ Desperdício' }[m.tipo]; const classe = { entrada: 'entrada', saida: 'saida', desperdicio: 'desperdicio' }[m.tipo]; const detalhes = m.tipo === 'saida' ? `<br>🎯 Produto: ${m.produto_fabricado || '-'}` : ''; return `<div class="movimentacao-item ${classe}"><div style="display:flex; justify-content:space-between;"><strong>${tipoText}</strong><small>${new Date(m.created_at).toLocaleString()}</small></div><div>📦 ${material?.nome || 'Material'} - ${m.quantidade} ${material?.unidade} ${m.peso ? `(${m.peso}kg)` : ''}</div><div>💰 R$ ${m.valor_total?.toFixed(2) || 0}</div>${detalhes}${m.observacao ? `<div>📝 ${m.observacao}</div>` : ''}</div>`; }).join('');
-    }
-    function mostrarNovoMaterial() {
-        const nome = prompt("Nome do material:"); if (!nome) return;
-        const unidade = prompt("Unidade (kg, un, L, g):", "kg");
-        const preco = parseFloat(prompt("Preço unitário:"));
-        if (isNaN(preco)) return;
-        supabaseClient.from('materiais').insert([{ nome, unidade: unidade || 'kg', preco_unitario: preco, estoque_atual: 0 }]).then(() => { carregarMateriais(); showToast("Material adicionado!", 'success'); });
-    }
-    async function editarMaterial(id) { const material = materiais.find(m => m.id === id); const novoNome = prompt("Novo nome:", material.nome); if (novoNome && novoNome !== material.nome) { await supabaseClient.from('materiais').update({ nome: novoNome }).eq('id', id); await carregarMateriais(); showToast("Material atualizado!", 'success'); } }
-    
-    // ==================== DASHBOARD ====================
-    async function carregarDashboard() {
-        const { data: pedidos } = await supabaseClient.from('pedidos').select('*');
-        if (!pedidos) return;
-        const totalVendas = pedidos.reduce((s,p) => s + (p.total || 0), 0);
-        const ticketMedio = totalVendas / (pedidos.length || 1);
-        document.getElementById('dashboardStats').innerHTML = `<div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${totalVendas.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div><div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticketMedio.toFixed(2)}</div></div><div class="stat-card"><h4>👥 Clientes</h4><div class="value">${clientes.length}</div></div>`;
-        const vendasPorDia = {};
-        pedidos.forEach(p => { const dia = new Date(p.data_pedido).toLocaleDateString(); vendasPorDia[dia] = (vendasPorDia[dia] || 0) + p.total; });
-        const dias = Object.keys(vendasPorDia).slice(-7);
-        const valores = dias.map(d => vendasPorDia[d]);
-        const ctxVendas = document.getElementById('vendasChart')?.getContext('2d');
-        if (ctxVendas) { if (vendasChart) vendasChart.destroy(); vendasChart = new Chart(ctxVendas, { type: 'line', data: { labels: dias, datasets: [{ label: 'Vendas (R$)', data: valores, borderColor: '#d4a373', tension: 0.3 }] } }); }
-        const vendasProdutos = {};
-        pedidos.forEach(p => { (p.itens || []).forEach(i => { vendasProdutos[i.nome] = (vendasProdutos[i.nome] || 0) + (i.quantidade || 1); }); });
-        const topProdutos = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0,5);
-        document.getElementById('topProdutos').innerHTML = topProdutos.length ? topProdutos.map(([nome, qtd]) => `<div class="top-produto-item"><span>${nome}</span><span>${qtd} vendidos</span></div>`).join('') : '<p>Nenhuma venda registrada.</p>';
-        await carregarDashboardFinanceiro();
-        await carregarSatisfacaoChart();
-    }
-    async function carregarDashboardFinanceiro() {
-        const { data: entradas } = await supabaseClient.from('entrada_estoque').select('*');
-        const { data: saidas } = await supabaseClient.from('saida_estoque').select('*');
-        const totalGasto = (entradas || []).reduce((s, e) => s + e.valor_total, 0);
-        const totalCustoProducao = (saidas || []).reduce((s, e) => s + e.valor_total, 0);
-        const valorEstoqueAtual = materiais.reduce((s,m) => s + m.estoque_atual * m.preco_unitario, 0);
-        document.getElementById('financeiroStats').innerHTML = `<div class="stat-card"><h4>💰 Total Gasto</h4><div class="value">R$ ${totalGasto.toFixed(2)}</div></div><div class="stat-card"><h4>🏭 Custo Produção</h4><div class="value">R$ ${totalCustoProducao.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Estoque Atual</h4><div class="value">R$ ${valorEstoqueAtual.toFixed(2)}</div></div>`;
-        const custoPorProduto = {};
-        (saidas || []).forEach(s => { if (s.produto_fabricado && s.quantidade_produzida) { if (!custoPorProduto[s.produto_fabricado]) custoPorProduto[s.produto_fabricado] = { total: 0, quantidade: 0 }; custoPorProduto[s.produto_fabricado].total += s.valor_total; custoPorProduto[s.produto_fabricado].quantidade += s.quantidade_produzida; } });
-        document.getElementById('custosProdutos').innerHTML = Object.entries(custoPorProduto).length ? Object.entries(custoPorProduto).map(([produto, dados]) => `<div class="top-produto-item"><span>${produto}</span><span>R$ ${(dados.total / dados.quantidade).toFixed(2)} / unidade</span></div>`).join('') : '<p>Nenhum dado de produção registrado.</p>';
-    }
-    
-    // ==================== CARROSSEL ====================
-    async function carregarSlides() {
-        const { data } = await supabaseClient.from('slides').select('*').order('ordem');
-        slides = data || [{ id: 1, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200", titulo: "Mousse de Maracujá", descricao: "O mais pedido!", ordem: 1 }, { id: 2, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200", titulo: "Cheesecake", descricao: "Irresistível!", ordem: 2 }, { id: 3, imagem: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?w=1200", titulo: "Petit Gâteau", descricao: "Quentinho!", ordem: 3 }];
-        const container = document.getElementById('carouselSlides');
-        const dotsContainer = document.getElementById('carouselDots');
-        if (!container) return;
-        container.innerHTML = '';
-        slides.forEach(slide => { const slideDiv = document.createElement('div'); slideDiv.className = 'carousel-slide'; slideDiv.innerHTML = `<img src="${slide.imagem}" onerror="this.src='https://placehold.co/1200x400'"><div class="carousel-caption"><h3>${slide.titulo || ''}</h3><p>${slide.descricao || ''}</p></div>`; container.appendChild(slideDiv); });
-        dotsContainer.innerHTML = '';
-        slides.forEach((_, idx) => { const dot = document.createElement('div'); dot.className = 'carousel-dot'; if (idx === slideIndex) dot.classList.add('active'); dot.addEventListener('click', () => { slideIndex = idx; atualizarCarrosselPosicao(); }); dotsContainer.appendChild(dot); });
-        atualizarCarrosselPosicao();
-        if (window.carrosselInterval) clearInterval(window.carrosselInterval);
-        window.carrosselInterval = setInterval(() => { if (slides.length > 0) { slideIndex = (slideIndex + 1) % slides.length; atualizarCarrosselPosicao(); } }, 5000);
-    }
-    function atualizarCarrosselPosicao() { const container = document.getElementById('carouselSlides'); if (container) container.style.transform = `translateX(-${slideIndex * 100}%)`; document.querySelectorAll('.carousel-dot').forEach((dot, idx) => dot.classList.toggle('active', idx === slideIndex)); }
-    function mudarSlide(direction) { if (slides.length === 0) return; slideIndex = (slideIndex + direction + slides.length) % slides.length; atualizarCarrosselPosicao(); }
-    
-    // ==================== BUSCA ====================
-    function buscarProdutos() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-        const minRating = parseFloat(document.getElementById('minRating').value) || 0;
-        const sortBy = document.getElementById('sortBy').value;
-        produtosFiltrados = produtos.filter(p => {
-            const matchesSearch = p.nome.toLowerCase().includes(searchTerm) || p.descricao.toLowerCase().includes(searchTerm);
-            const matchesPrice = p.preco >= minPrice && p.preco <= maxPrice;
-            const matchesRating = getMediaAvaliacoes(p.id) >= minRating;
-            return matchesSearch && matchesPrice && matchesRating;
-        });
-        if (sortBy === 'nome') produtosFiltrados.sort((a,b) => a.nome.localeCompare(b.nome));
-        else if (sortBy === 'preco_asc') produtosFiltrados.sort((a,b) => a.preco - b.preco);
-        else if (sortBy === 'preco_desc') produtosFiltrados.sort((a,b) => b.preco - a.preco);
-        else if (sortBy === 'avaliacao') produtosFiltrados.sort((a,b) => getMediaAvaliacoes(b.id) - getMediaAvaliacoes(a.id));
-        document.getElementById('resultCount').innerHTML = `${produtosFiltrados.length} produtos`;
-        renderizarProdutos();
-    }
-    function resetarBusca() {
-        document.getElementById('searchInput').value = ''; document.getElementById('minPrice').value = ''; document.getElementById('maxPrice').value = ''; document.getElementById('minRating').value = '0'; document.getElementById('sortBy').value = 'nome';
-        produtosFiltrados = [...produtos]; document.getElementById('resultCount').innerHTML = ''; renderizarProdutos();
-    }
-    
-    // ==================== CLIENTES ADMIN ====================
-    async function carregarClientes() { const { data } = await supabaseClient.from('clientes').select('*'); clientes = data || []; renderizarClientesAdmin(); }
-    function renderizarClientesAdmin() {
-        const container = document.getElementById('listaClientesAdmin');
-        if (!container) return;
-        if (clientes.length === 0) { container.innerHTML = '<p>Nenhum cliente cadastrado.</p>'; return; }
-        container.innerHTML = '';
-        clientes.forEach(c => { const div = document.createElement('div'); div.className = 'produto-admin-item'; div.innerHTML = `<div><strong>${c.nome_social || c.nome}</strong></div><div>${c.email}</div><div>${c.telefone || '-'}</div>`; container.appendChild(div); });
-    }
-    async function buscarCep(cep, tipo) { cep = cep.replace(/\D/g, ''); if (cep.length !== 8) { showToast("CEP inválido!"); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if (data.erro) { showToast("CEP não encontrado!"); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; if (tipo === 'cadastro') document.getElementById('cadEndereco').value = endereco; showToast("Endereço encontrado!"); } catch(e) { showToast("Erro ao buscar CEP!"); } }
-    
-    // ==================== ATUALIZAR BOTÃO DE LOGIN ====================
-    function atualizarBotaoCliente() {
-        const area = document.getElementById('clienteButtonArea');
-        if (!area) return;
-        area.innerHTML = '';
-        
-        if (usuarioLogado) {
-            const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente'));
-            area.innerHTML = `<div class="usuario-dropdown" id="usuarioDropdown"><div class="usuario-info" onclick="toggleDropdown()"><span>👤 ${nomeExibir}</span><span>▼</span></div><div class="dropdown-content"><span class="close-dropdown" onclick="fecharDropdown()">✕</span><h4>✏️ Meus Dados</h4>${usuarioTipo === 'admin' ? '<p style="text-align:center; color:var(--accent-color);">👑 Administrador</p><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>' : `<div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop" value="${(usuarioLogado.nome || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop" value="${(usuarioLogado.nome_social || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop" value="${usuarioLogado.data_nasc || ''}"></div><div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop" value="${(usuarioLogado.cep || '').replace(/"/g, '&quot;')}"><button onclick="buscarCepNoDropdown()">🔍</button></div></div><div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop" value="${(usuarioLogado.endereco || '').replace(/"/g, '&quot;')}"></div><div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop" value="${(usuarioLogado.numero || '').replace(/"/g, '&quot;')}"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop" value="${(usuarioLogado.complemento || '').replace(/"/g, '&quot;')}"></div></div><div class="campo"><label>Ponto de referência</label><input type="text" id="perfilReferenciaDrop" value="${(usuarioLogado.referencia || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Telefone/WhatsApp</label><input type="text" id="perfilTelefoneDrop" value="${(usuarioLogado.telefone || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop" value="${(usuarioLogado.email || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Nova senha (opcional)</label><input type="password" id="perfilNovaSenhaDrop" placeholder="Deixe em branco para manter"></div><button onclick="atualizarPerfilDropdown()">💾 Salvar Alterações</button><button onclick="abrirHistorico()">📦 Meus Pedidos</button><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>`}</div></div>`;
-            if (usuarioTipo === 'cliente') carregarPerfilNoDropdown();
-        } else {
-            area.innerHTML = `<button class="btn-login" id="btnAbrirLogin">🔐 Login</button>`;
-            document.getElementById('btnAbrirLogin')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
-        }
-        
-        const btnFav = document.getElementById('btnFavoritos'), btnHist = document.getElementById('btnHistorico');
-        if (usuarioLogado && usuarioTipo === 'cliente') { btnFav?.classList.remove('hidden'); btnHist?.classList.remove('hidden'); } 
-        else { btnFav?.classList.add('hidden'); btnHist?.classList.add('hidden'); }
-    }
-    
-    function carregarPerfilNoDropdown() { if (!usuarioLogado || usuarioTipo !== 'cliente') return; document.getElementById('perfilNomeDrop').value = usuarioLogado.nome || ''; document.getElementById('perfilNomeSocialDrop').value = usuarioLogado.nome_social || ''; document.getElementById('perfilDataNascDrop').value = usuarioLogado.data_nasc || ''; document.getElementById('perfilCepDrop').value = usuarioLogado.cep || ''; document.getElementById('perfilEnderecoDrop').value = usuarioLogado.endereco || ''; document.getElementById('perfilNumeroDrop').value = usuarioLogado.numero || ''; document.getElementById('perfilComplementoDrop').value = usuarioLogado.complemento || ''; document.getElementById('perfilReferenciaDrop').value = usuarioLogado.referencia || ''; document.getElementById('perfilTelefoneDrop').value = usuarioLogado.telefone || ''; document.getElementById('perfilEmailDrop').value = usuarioLogado.email || ''; }
-    
-    async function atualizarPerfilDropdown() {
-        if (!usuarioLogado || usuarioTipo !== 'cliente') return;
-        const updates = { nome: document.getElementById('perfilNomeDrop').value, nome_social: document.getElementById('perfilNomeSocialDrop').value, data_nasc: document.getElementById('perfilDataNascDrop').value, cep: document.getElementById('perfilCepDrop').value, endereco: document.getElementById('perfilEnderecoDrop').value, numero: document.getElementById('perfilNumeroDrop').value, complemento: document.getElementById('perfilComplementoDrop').value, referencia: document.getElementById('perfilReferenciaDrop').value, telefone: document.getElementById('perfilTelefoneDrop').value, email: document.getElementById('perfilEmailDrop').value };
-        const novaSenha = document.getElementById('perfilNovaSenhaDrop').value;
-        if (novaSenha) { if (!validarSenhaForte(novaSenha)) { showToast("Senha fraca!"); return; } updates.senha = hashSenha(novaSenha); }
-        const { error } = await supabaseClient.from('clientes').update(updates).eq('id', usuarioLogado.id);
-        if (error) { showToast("Erro ao atualizar perfil!"); return; }
-        Object.assign(usuarioLogado, updates); if (novaSenha) usuarioLogado.senha = updates.senha;
-        localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-        localStorage.setItem("docesdi_usuario_tipo", usuarioTipo);
-        showToast("Perfil atualizado com sucesso!"); fecharDropdown(); atualizarBotaoCliente();
-    }
-    
-    async function buscarCepNoDropdown() { const cep = document.getElementById('perfilCepDrop').value.replace(/\D/g, ''); if (cep.length !== 8) { showToast("CEP inválido!"); return; } try { const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`); const data = await resp.json(); if (data.erro) { showToast("CEP não encontrado!"); return; } const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`; document.getElementById('perfilEnderecoDrop').value = endereco; showToast("Endereço encontrado!"); } catch(e) { showToast("Erro ao buscar CEP!"); } }
-    
-    function fazerLogout() { 
-        usuarioLogado = null; 
-        usuarioTipo = null;
-        localStorage.removeItem("docesdi_usuario_logado");
-        localStorage.removeItem("docesdi_usuario_tipo");
-        favoritos.clear(); 
-        atualizarBotaoCliente(); 
-        fecharDropdown(); 
-        renderizarProdutos(); 
-        showToast("Saiu da conta!"); 
-        fecharAdmin();
-    }
-    
-    function toggleDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.toggle('show'); }
-    function fecharDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.remove('show'); }
-    
-    // ==================== INICIALIZAÇÃO ====================
-    async function inicializar() {
-        const savedTheme = localStorage.getItem('docesdi_theme');
-        if (savedTheme === 'dark') document.body.classList.add('dark');
-        document.getElementById('themeToggle')?.addEventListener('click', () => { document.body.classList.toggle('dark'); localStorage.setItem('docesdi_theme', document.body.classList.contains('dark') ? 'dark' : 'light'); });
-        
-        await carregarProdutos();
-        await carregarAvaliacoes();
-        await carregarClientes();
-        await carregarSlides();
-        carregarCarrinho();
-        
-        const savedUser = localStorage.getItem("docesdi_usuario_logado");
-        const savedTipo = localStorage.getItem("docesdi_usuario_tipo");
-        if (savedUser && savedTipo) {
-            usuarioLogado = JSON.parse(savedUser);
-            usuarioTipo = savedTipo;
-            if (usuarioTipo === 'cliente') await carregarFavoritos();
-        }
-        
-        atualizarCarrinho();
-        atualizarBotaoCliente();
-        
-        document.getElementById('anoAtual').innerText = new Date().getFullYear();
-        
-        document.getElementById('carouselPrev')?.addEventListener('click', () => mudarSlide(-1));
-        document.getElementById('carouselNext')?.addEventListener('click', () => mudarSlide(1));
-        document.getElementById('btnBuscar')?.addEventListener('click', buscarProdutos);
-        document.getElementById('searchInput')?.addEventListener('keyup', (e) => { if(e.key === 'Enter') buscarProdutos(); });
-        document.getElementById('btnAplicarFiltros')?.addEventListener('click', buscarProdutos);
-        document.getElementById('btnResetarFiltros')?.addEventListener('click', resetarBusca);
-        document.getElementById('btnToggleFilters')?.addEventListener('click', () => { document.getElementById('advancedFilters')?.classList.toggle('show'); });
-        document.getElementById('btnMercadoPago')?.addEventListener('click', iniciarPagamentoMercadoPago);
-        document.getElementById('btn-finalizar')?.addEventListener('click', mostrarResumoPedido);
-        document.getElementById('btnConfirmarPagamento')?.addEventListener('click', iniciarPagamentoMercadoPago);
-        document.getElementById('btnCancelarResumo')?.addEventListener('click', fecharModal);
-        document.getElementById('btnFavoritos')?.addEventListener('click', () => abrirFavoritos());
-        document.getElementById('btnHistorico')?.addEventListener('click', () => abrirHistorico());
-        document.getElementById('btnFecharFavoritos')?.addEventListener('click', fecharModal);
-        document.getElementById('btnFecharHistorico')?.addEventListener('click', fecharModal);
-        
-        // Botão Admin independente (agora só abre se for admin)
-        document.getElementById('btnAdminAcesso')?.addEventListener('click', () => {
-            if (usuarioLogado && usuarioTipo === 'admin') {
-                abrirAdmin();
-            } else if (usuarioLogado && usuarioTipo === 'cliente') {
-                showToast("Você não tem permissão de administrador!", 'warning');
-            } else {
-                showToast("Faça login como administrador primeiro!", 'warning');
-                document.getElementById('modalCliente').style.display = 'flex';
-            }
-        });
-        
-        // LOGIN - Evento principal
-        document.getElementById('btnLogin')?.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
-            
-            const resultado = await fazerLogin(email, senha);
-            if (resultado) {
-                usuarioLogado = resultado.dados;
-                usuarioTipo = resultado.tipo;
-                localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
-                localStorage.setItem("docesdi_usuario_tipo", usuarioTipo);
-                atualizarBotaoCliente();
-                document.getElementById('modalCliente').style.display = 'none';
-                
-                if (usuarioTipo === 'cliente') {
-                    await carregarFavoritos();
-                    renderizarProdutos();
-                    showToast(`Bem-vindo, ${usuarioLogado.nome_social || usuarioLogado.nome}!`);
-                } else if (usuarioTipo === 'admin') {
-                    showToast("👑 Bem-vindo, Administrador!");
-                    abrirAdmin();
-                }
-            } else {
-                showToast("Email ou senha incorretos!");
-            }
-        });
-        
-        document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
-            const senha = document.getElementById('cadSenha').value, conf = document.getElementById('cadConfirmarSenha').value;
-            if (senha !== conf) { showToast("Senhas não conferem!"); return; }
-            await cadastrarCliente(document.getElementById('cadNome').value, document.getElementById('cadEmail').value, senha, document.getElementById('cadNomeSocial').value, document.getElementById('cadDataNasc').value, document.getElementById('cadCep').value, document.getElementById('cadEndereco').value, document.getElementById('cadNumero').value, document.getElementById('cadComplemento').value, document.getElementById('cadReferencia').value, document.getElementById('cadTelefone').value);
-            document.getElementById('tabLoginBtn').click();
-        });
-        
-        document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('recuperarPanel').style.display = 'block'; });
-        document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => { await solicitarRecuperacaoSenha(document.getElementById('recuperarEmail').value); document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-        document.getElementById('btnVoltarLogin')?.addEventListener('click', () => { document.getElementById('recuperarPanel').style.display = 'none'; document.getElementById('loginPanel').style.display = 'block'; });
-        document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => document.getElementById('modalCliente').style.display = 'none');
-        document.getElementById('tabLoginBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'block'; document.getElementById('cadastroPanel').style.display = 'none'; });
-        document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; });
-        document.getElementById('buscarCepCadastro')?.addEventListener('click', () => { const cep = document.getElementById('cadCep').value; if (cep) buscarCep(cep, 'cadastro'); });
-        
-        document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => fecharAdmin());
-        document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
-        document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
-        document.getElementById('btnSaveOrder')?.addEventListener('click', salvarOrdemAbas);
-        
-        document.getElementById('btnExpandAdmin')?.addEventListener('click', () => { const modalContent = document.querySelector('#modalAdmin .modal-content'); if (modalContent) { modalContent.style.width = '98%'; modalContent.style.maxWidth = '98%'; modalContent.style.height = '95vh'; modalContent.style.maxHeight = '95vh'; } });
-        document.getElementById('btnNewWindowAdmin')?.addEventListener('click', () => { const adminContent = document.getElementById('modalAdmin').cloneNode(true); const newWin = window.open('', '_blank'); newWin.document.write(`<!DOCTYPE html><html><head><title>Admin - Doces Di</title><style>${document.querySelector('style').innerHTML}</style></head><body style="background:var(--bg-color);">${adminContent.outerHTML}</body></html>`); newWin.document.close(); });
-        
-        document.getElementById('periodoFiltro')?.addEventListener('change', (e) => { const dateRange = document.getElementById('dateRange'); if (e.target.value === 'personalizado') dateRange.classList.add('show'); else { dateRange.classList.remove('show'); carregarDashboard(); } });
-        document.getElementById('btnAplicarData')?.addEventListener('click', () => carregarDashboard());
-        
-        document.getElementById('avaliacaoPeriodo')?.addEventListener('change', (e) => {
-            const dateRange = document.getElementById('avaliacaoDateRange');
-            if (e.target.value === 'personalizado') dateRange.classList.add('show');
-            else { dateRange.classList.remove('show'); carregarAvaliacoesAdmin(); }
-        });
-        document.getElementById('btnAplicarDataAvaliacao')?.addEventListener('click', () => carregarAvaliacoesAdmin());
-        
-        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-        document.addEventListener('click', function(event) { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown && !dropdown.contains(event.target)) dropdown.classList.remove('show'); });
-        
-        // Atalho de teclado Ctrl+Shift+A para abrir admin
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                e.preventDefault();
-                if (usuarioLogado && usuarioTipo === 'admin') {
-                    abrirAdmin();
-                } else if (usuarioLogado && usuarioTipo === 'cliente') {
-                    showToast("Você não tem permissão de administrador!", 'warning');
-                } else {
-                    showToast("Faça login como administrador primeiro!", 'warning');
-                    document.getElementById('modalCliente').style.display = 'flex';
-                }
-            }
-        });
-    }
-    
-    async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
-        if (!validarSenhaForte(senha)) { showToast("Senha fraca!"); return false; }
-        const { data: existing } = await supabaseClient.from('clientes').select('id').eq('email', email);
-        if (existing && existing.length) { showToast("Email já cadastrado!"); return false; }
-        const { error } = await supabaseClient.from('clientes').insert([{ nome, email, senha: hashSenha(senha), nome_social: nomeSocial, data_nasc: dataNasc, cep, endereco, numero, complemento, referencia, telefone }]);
-        if (error) { showToast("Erro ao cadastrar!"); return false; }
-        showToast("Cadastro realizado! Faça login."); return true;
-    }
-    
-    async function solicitarRecuperacaoSenha(email) { const { data } = await supabaseClient.from('clientes').select('id').eq('email', email); if (!data || !data.length) { showToast("Email não encontrado!"); return false; } const novaSenha = Math.random().toString(36).slice(-8); await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email); showToast(`Sua nova senha é: ${novaSenha}`); return true; }
-    
-    inicializar();
-</script>
-</body>
-</html>
+            row.innerHTML = `<tr>${m.nome}</td><td>${m.unidade}</td><td>R$ ${parseFloat(m.preco_unitario).toFixed(4)}
