@@ -187,7 +187,93 @@
 <div id="modalMaterial" class="modal"><div class="modal-content"><h3 id="modalMaterialTitulo">➕ Novo Material</h3><div style="display:flex;flex-direction:column;gap:15px;"><div><label>📦 Nome do Material *</label><input type="text" id="materialNome" placeholder="Ex: Farinha de Trigo"></div><div><label>⚖️ Unidade de Medida *</label><select id="materialUnidade"><option value="kg">Quilograma (kg)</option><option value="g">Grama (g)</option><option value="L">Litro (L)</option><option value="ml">Mililitro (ml)</option><option value="un">Unidade (un)</option><option value="pct">Pacote (pct)</option></select></div><div><label>💰 Preço Unitário (R$) *</label><input type="number" id="materialPreco" step="0.01" placeholder="0,00"></div><div><label>📊 Estoque Atual</label><input type="number" id="materialEstoque" step="0.001" placeholder="0"></div><input type="hidden" id="materialId"><div style="display:flex;gap:10px;"><button id="btnSalvarMaterial" class="btn-add" style="flex:1;">💾 Salvar</button><button id="btnCancelarMaterial" style="flex:1;background:#999;">Cancelar</button></div></div></div></div>
 <div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:95%;width:95%;max-height:90vh;"><div class="admin-header" style="display:flex;justify-content:space-between;margin-bottom:15px;"><h3>🔧 Área Administrativa</h3><div><button class="btn-expand" id="btnExpandAdmin">📐</button><button class="btn-new-window" id="btnNewWindowAdmin">🪟</button><button class="btn-save-order" id="btnSaveOrder">💾 Salvar Ordem</button></div></div><div class="admin-tabs-container" id="adminTabsContainer"><div class="admin-tab ativo" data-tab="produtos">🍰 Produtos</div><div class="admin-tab" data-tab="categorias">🏷️ Categorias</div><div class="admin-tab" data-tab="estoque">📦 Estoque</div><div class="admin-tab" data-tab="slides">📸 Slides</div><div class="admin-tab" data-tab="avaliacoes">⭐ Avaliações</div><div class="admin-tab" data-tab="clientes">👥 Clientes</div><div class="admin-tab" data-tab="dashboard">📊 Dashboard</div></div>
 <div id="tabProdutos" class="admin-tab-content ativo"><div class="form-produto"><div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Ex: Bolo de Chocolate"></div><div class="field"><label>Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição do produto"></textarea></div><div class="field"><label>Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="0.00"></div><div class="field"><label>Estoque</label><input type="number" id="prodEstoque" value="10"></div><div class="field"><label>Categoria</label><select id="prodCategoria"></select></div><div class="field"><label>URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://exemplo.com/imagem.jpg"></div><div><button id="btnAddProduto" class="btn-add">➕ Adicionar</button></div></div><h4>📋 Produtos Cadastrados</h4><div id="listaAdminProdutos"></div><button id="btnSalvarProdutos" class="btn-add">💾 Salvar Produtos</button></div>
-<div id="tabCategorias" class="admin-tab-content"><div class="form-categoria"><div class="field"><label>Nome</label><input type="text" id="categoriaNome"></div><div class="field"><label>Ícone</label><input type="text" id="categoriaIcone" placeholder="🍰"></div><div><button id="btnAddCategoria" class="btn-add">➕ Adicionar</button></div></div><h4>📋 Categorias</h4><div id="listaAdminCategorias"></div><button id="btnSalvarCategorias" class="btn-add">💾 Salvar Categorias</button></div>
+<div id="tabCategorias" class="admin-tab-content"><div class="form-categoria"><div class="field"><label>Nome</label><input type="text" id="categoriaNome"></div><div class="field"><label>Ícone</label>
+    <select id="categoriaIcone">
+    <!-- Doces e Sobremesas -->
+    <optgroup label="Doces e Sobremesas">
+        <option value="🍰">🍰 Bolo</option>
+        <option value="🥧">🥧 Torta</option>
+        <option value="🍬">🍬 Doce</option>
+        <option value="🍪">🍪 Biscoito</option>
+        <option value="🧁">🧁 Cupcake</option>
+        <option value="🍩">🍩 Donut</option>
+        <option value="🍫">🍫 Chocolate</option>
+        <option value="🍭">🍭 Pirulito</option>
+        <option value="🍦">🍦 Sorvete</option>
+        <option value="🍿">🍿 Pipoca</option>
+        <option value="🍯">🍯 Mel</option>
+    </optgroup>
+
+    <!-- Salgados e Panificação -->
+    <optgroup label="Pães e Salgados">
+        <option value="🥨">🥨 Salgado</option>
+        <option value="🍞">🍞 Pães</option>
+        <option value="🥐">🥐 Croissant</option>
+        <option value="🥪">🥪 Sanduíche / Natural</option>
+        <option value="🧀">🧀 Queijo</option>
+    </optgroup>
+
+    <!-- Fast Food e Lanches -->
+    <optgroup label="Lanches e Fast Food">
+        <option value="🍕">🍕 Pizza</option>
+        <option value="🍔">🍔 Hambúrguer</option>
+        <option value="🍟">🍟 Batata Frita</option>
+        <option value="🌭">🌭 Cachorro-Quente</option>
+        <option value="🌮">🌮 Taco / Burrito</option>
+    </optgroup>
+
+    <!-- Bebidas -->
+    <optgroup label="Bebidas">
+        <option value="☕">☕ Café</option>
+        <option value="🫖">🫖 Chá</option>
+        <option value="🥤">🥤 Suco / Refrigerante</option>
+        <option value="🧋">🧋 Bubble Tea</option>
+        <option value="🥛">🥛 Leite / Vitaminas</option>
+        <option value="🍹">🍹 Cocktail / Drinks</option>
+        <option value="🍷">🍷 Vinho</option>
+        <option value="🍺">🍺 Cerveja</option>
+    </optgroup>
+
+    <!-- Pratos Principais e Refeições -->
+    <optgroup label="Refeições">
+        <option value="🍝">🍝 Massa / Macarrão</option>
+        <option value="🍛">🍛 Arroz / Carreteiro</option>
+        <option value="🥩">🥩 Carnes / Churrasco</option>
+        <option value="🍗">🍗 Frango</option>
+        <option value="🐟">🐟 Peixes / Frutos do Mar</option>
+        <option value="🍣">🍣 Sushi / Comida Japonesa</option>
+        <option value="🍲">🍲 Sopa / Caldos</option>
+        <option value="🍳">🍳 Ovos / Omelete</option>
+        <option value="🥞">🥞 Panqueca / Waffle</option>
+    </optgroup>
+
+    <!-- Saudável e Hortifrúti -->
+    <optgroup label="Saudável e Frutas">
+        <option value="🥗">🥗 Salada / Saudável</option>
+        <option value="🍓">🍓 Morango</option>
+        <option value="🍌">🍌 Banana</option>
+        <option value="🍎">🍎 Maçã</option>
+        <option value="🍇">🍇 Uva</option>
+        <option value="🥑">🥑 Abacate</option>
+        <option value="🍋">🍋 Limão</option>
+        <option value="🍉">🍉 Melancia</option>
+    </optgroup>
+
+    <!-- Símbolos e Utilitários -->
+    <optgroup label="Símbolos e Marcadores">
+        <option value="⭐">⭐ Favoritos / Destaque</option>
+        <option value="🔥">🔥 Mais Vendidos / Promoção</option>
+        <option value="💵">💵 Preço / Econômico</option>
+        <option value="🏷️">🏷️ Oferta / Cupom</option>
+        <option value="🛍️">🛍️ Para Viagem / Takeaway</option>
+        <option value="🛵">🛵 Entrega / Delivery</option>
+        <option value="❤️">❤️ Recomendado / Saudável</option>
+        <option value="📍">📍 Localização / Filial</option>
+        <option value="ℹ️">ℹ️ Informações / Alergênicos</option>
+        <option value="🚫">🚫 Restrição / Glúten-Lactose</option>
+    </optgroup>
+</select>
+</div><div><button id="btnAddCategoria" class="btn-add">➕ Adicionar</button></div></div><h4>📋 Categorias</h4><div id="listaAdminCategorias"></div><button id="btnSalvarCategorias" class="btn-add">💾 Salvar Categorias</button></div>
 <div id="tabEstoque" class="admin-tab-content"><div class="estoque-stats" id="estoqueStats"></div><div class="estoque-tabs-container" id="estoqueTabsContainer"><div class="estoque-tab ativo" data-estoque-panel="resumo">📊 Resumo</div><div class="estoque-tab" data-estoque-panel="materiais">📦 Materiais</div><div class="estoque-tab" data-estoque-panel="entrada">📥 Entrada</div><div class="estoque-tab" data-estoque-panel="saida">📤 Saída</div><div class="estoque-tab" data-estoque-panel="desperdicio">⚠️ Desperdício</div><div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div></div><div id="estoquePanelResumo" class="estoque-panel ativo"><div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-add" id="btnNovoMaterial">➕ Novo Material</button></div><p>Painel de resumo do estoque (em breve estatísticas consolidadas).</p></div><div id="estoquePanelMateriais" class="estoque-panel"><div style="overflow-x:auto;"><table class="tabela-estoque" id="tabelaMateriais"><thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead><tbody></tbody></table></div></div><div id="estoquePanelEntrada" class="estoque-panel"><div id="listaEntradas"></div></div><div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div><div id="estoquePanelDesperdicio" class="estoque-panel"><div id="listaDesperdicios"></div></div><div id="estoquePanelMovimentacoes" class="estoque-panel"><div id="movimentacoesLista"></div></div></div>
 <div id="tabSlides" class="admin-tab-content"><div class="form-produto"><div class="field"><label>Imagem URL</label><input type="text" id="slideImagem"></div><div class="field"><label>Título</label><input type="text" id="slideTitulo"></div><div class="field"><label>Descrição</label><input type="text" id="slideDesc"></div><div><button id="btnAddSlide" class="btn-add">➕ Adicionar</button></div></div><h4>📋 Slides</h4><div id="listaAdminSlides"></div><button id="btnSalvarSlides" class="btn-add">💾 Salvar Slides</button></div>
 <div id="tabAvaliacoes" class="admin-tab-content"><div id="listaAvaliacoesAdmin"></div></div>
@@ -912,7 +998,7 @@
     }
     async function adicionarCategoria() {
         const nome = document.getElementById('categoriaNome').value.trim();
-        const icone = document.getElementById('categoriaIcone').value.trim() || '📁';
+        const icone = document.getElementById('categoriaIcone').value; // pega o select
         if (!nome) { showToast("Nome da categoria obrigatório!",'error'); return; }
         const novoId = Date.now();
         const nova = { id: novoId, nome, icone, ordem: categorias.length+1 };
@@ -924,7 +1010,7 @@
         renderizarAdminCategorias();
         popularSelectCategorias();
         document.getElementById('categoriaNome').value = '';
-        document.getElementById('categoriaIcone').value = '';
+        document.getElementById('categoriaIcone').selectedIndex = 0;
     }
     
     // ===== INICIALIZAÇÃO COM EVENTOS =====
