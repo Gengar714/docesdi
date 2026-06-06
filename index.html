@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Doces Di | Sistema Completo</title>
-    
     <meta name="theme-color" content="#d4a373">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBR173YFP4"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -16,6 +16,7 @@
         gtag('config', 'G-MBR173YFP4');
     </script>
     
+    <!-- Bibliotecas -->
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -104,7 +105,6 @@
         .btn-favoritos { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .btn-historico { background: linear-gradient(135deg, #3498db, #2980b9); }
         .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
-        .btn-login:hover, .theme-toggle:hover, .btn-favoritos:hover, .btn-historico:hover { transform: scale(1.05); }
         .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
         
         /* ===== DROPDOWN USUÁRIO ===== */
@@ -153,15 +153,10 @@
         }
         .btn-admin-float.hidden { display: none; }
         
-        /* ===== MODAL ADMIN ===== */
+        /* ===== MODAIS ===== */
         #modalAdmin { z-index: 2000; }
+        #modalMaterial, #modalFiltros { z-index: 2100 !important; }
         
-        /* ===== MODAL MATERIAL E MODAL FILTRO ===== */
-        #modalMaterial, #modalFiltros {
-            z-index: 2100 !important;
-        }
-        
-        /* ===== ESTILOS GERAIS DOS MODAIS ===== */
         .modal {
             display: none;
             position: fixed;
@@ -280,7 +275,7 @@
         .tabela-estoque th { background: var(--accent-color); color: white; }
         .alerta-estoque { background: #f39c12; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
         
-        /* ===== CATEGORIAS PÚBLICAS (ABAS) ===== */
+        /* ===== CATEGORIAS PÚBLICAS ===== */
         .categorias-container { margin: 20px 0; padding: 0 15px; }
         .categorias-carrossel {
             background: var(--categoria-bg);
@@ -304,7 +299,7 @@
             color: white;
         }
         
-        /* ===== PRODUTOS (CARROSSEL SWIPER) - CARDS COM ALTURA FIXA E DESCRIÇÃO COM SCROLL ===== */
+        /* ===== PRODUTOS - CARDS COM TAMANHO PADRÃO ===== */
         .produtos-carrossel-wrapper { padding: 0 15px; margin-top: 20px; }
         .product-swiper { padding: 20px 5px; }
         .card-produto-swiper {
@@ -318,7 +313,11 @@
             flex-direction: column;
         }
         .card-produto-swiper:hover { transform: translateY(-5px); }
-        .card-produto-swiper .card-img { width: 100%; height: 180px; object-fit: cover; }
+        .card-produto-swiper .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
         .card-produto-swiper .card-info {
             padding: 12px;
             flex: 1;
@@ -491,7 +490,7 @@
         }
         .carousel-dot.active { background: var(--accent-color); transform: scale(1.2); }
         
-        /* ===== BUSCA E FILTRO AVANÇADO ===== */
+        /* ===== BUSCA E FILTRO ===== */
         .search-wrapper { padding: 0 15px; margin-bottom: 20px; }
         .search-container {
             background: var(--card-bg);
@@ -523,7 +522,6 @@
             font-weight: bold;
         }
         
-        /* ===== MODAL DE FILTRO AVANÇADO ===== */
         .filter-modal .modal-content { max-width: 450px; }
         .filter-group { margin-bottom: 15px; }
         .filter-group label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--accent-color); margin-bottom: 5px; }
@@ -899,7 +897,7 @@
             <button id="btnSalvarCategorias" class="btn-add">💾 Salvar Categorias</button>
         </div>
         
-        <!-- Estoque (com todas as abas) -->
+        <!-- Estoque -->
         <div id="tabEstoque" class="admin-tab-content">
             <div class="estoque-stats" id="estoqueStats"></div>
             <div class="estoque-tabs-container" id="estoqueTabsContainer">
@@ -911,18 +909,11 @@
                 <div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div>
             </div>
             <div id="estoquePanelResumo" class="estoque-panel ativo">
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <button class="btn-add" id="btnNovoMaterial">➕ Novo Material</button>
-                </div>
+                <div style="display:flex; gap:10px; margin-bottom:20px;"><button class="btn-add" id="btnNovoMaterial">➕ Novo Material</button></div>
                 <p>Painel de resumo do estoque (em breve estatísticas consolidadas).</p>
             </div>
             <div id="estoquePanelMateriais" class="estoque-panel">
-                <div style="overflow-x:auto;">
-                    <table class="tabela-estoque" id="tabelaMateriais">
-                        <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                <div style="overflow-x:auto;"><table class="tabela-estoque" id="tabelaMateriais"><thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
             </div>
             <div id="estoquePanelEntrada" class="estoque-panel"><div id="listaEntradas"></div></div>
             <div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div>
@@ -992,45 +983,56 @@
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     function fecharModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     
-    // ==================== DADOS PADRÃO ====================
-    function carregarDadosPadrao() {
-        if (categorias.length === 0) {
-            categorias = [
-                { id: 1, nome: "Bolos", icone: "🍰", ordem: 1 },
-                { id: 2, nome: "Tortas", icone: "🥧", ordem: 2 },
-                { id: 3, nome: "Doces", icone: "🍬", ordem: 3 }
-            ];
-        }
-        if (produtos.length === 0) {
-            produtos = [
-                { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho com cobertura", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
-                { id: 2, nome: "Torta de Limão", descricao: "Cremosa com merengue", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
-                { id: 3, nome: "Brigadeiro", descricao: "Tradicional", preco: 3.50, estoque: 50, categoria_id: 3, imagem: "https://images.pexels.com/photos/2886936/pexels-photo-2886936.jpeg?w=400" }
-            ];
-        }
-        if (slides.length === 0) {
-            slides = [
-                { id: 1, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200", titulo: "Mousse de Maracujá", descricao: "O mais pedido!", ordem: 1 },
-                { id: 2, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200", titulo: "Cheesecake", descricao: "Irresistível!", ordem: 2 }
-            ];
-        }
-        if (materiais.length === 0) {
-            materiais = [
-                { id: 1, nome: "Farinha", unidade: "kg", preco_unitario: 5.50, estoque_atual: 50 },
-                { id: 2, nome: "Açúcar", unidade: "kg", preco_unitario: 4.00, estoque_atual: 30 },
-                { id: 3, nome: "Ovos", unidade: "un", preco_unitario: 0.80, estoque_atual: 100 }
-            ];
-        }
+    // ==================== DADOS PADRÃO (FALLBACK ROBUSTO) ====================
+    function getDefaultCategorias() {
+        return [
+            { id: 1, nome: "Bolos", icone: "🍰", ordem: 1 },
+            { id: 2, nome: "Tortas", icone: "🥧", ordem: 2 },
+            { id: 3, nome: "Doces", icone: "🍬", ordem: 3 },
+            { id: 4, nome: "Salgados", icone: "🥨", ordem: 4 }
+        ];
+    }
+    
+    function getDefaultProdutos() {
+        return [
+            { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho com cobertura de chocolate", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
+            { id: 2, nome: "Torta de Limão", descricao: "Torta cremosa com merengue", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
+            { id: 3, nome: "Brigadeiro", descricao: "Brigadeiro tradicional", preco: 3.50, estoque: 50, categoria_id: 3, imagem: "https://images.pexels.com/photos/2886936/pexels-photo-2886936.jpeg?w=400" },
+            { id: 4, nome: "Coxinha", descricao: "Coxinha de frango com catupiry", preco: 7.50, estoque: 30, categoria_id: 4, imagem: "https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?w=400" }
+        ];
+    }
+    
+    function getDefaultSlides() {
+        return [
+            { id: 1, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200", titulo: "Mousse de Maracujá", descricao: "O mais pedido!", ordem: 1 },
+            { id: 2, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200", titulo: "Cheesecake", descricao: "Irresistível!", ordem: 2 }
+        ];
+    }
+    
+    function getDefaultMateriais() {
+        return [
+            { id: 1, nome: "Farinha", unidade: "kg", preco_unitario: 5.50, estoque_atual: 50 },
+            { id: 2, nome: "Açúcar", unidade: "kg", preco_unitario: 4.00, estoque_atual: 30 },
+            { id: 3, nome: "Ovos", unidade: "un", preco_unitario: 0.80, estoque_atual: 100 }
+        ];
     }
     
     // ==================== CATEGORIAS ====================
     async function carregarCategorias() {
         try {
             const { data, error } = await supabaseClient.from('categorias').select('*').order('ordem');
-            if (error) throw error;
-            if (data && data.length > 0) categorias = data;
-            else carregarDadosPadrao();
-        } catch(e) { carregarDadosPadrao(); }
+            if (error || !data || data.length === 0) {
+                categorias = getDefaultCategorias();
+                // Tenta inserir no Supabase para próxima vez
+                for (let cat of categorias) {
+                    await supabaseClient.from('categorias').upsert(cat);
+                }
+            } else {
+                categorias = data;
+            }
+        } catch(e) {
+            categorias = getDefaultCategorias();
+        }
         renderizarCategoriasFront();
         renderizarAdminCategorias();
         popularSelectCategorias();
@@ -1089,6 +1091,8 @@
             renderizarAdminCategorias();
             renderizarCategoriasFront();
             popularSelectCategorias();
+            // Salvar no Supabase
+            supabaseClient.from('categorias').upsert(cat).catch(e=>console.log);
         }
     };
     
@@ -1103,6 +1107,7 @@
                 categoriaAtiva = categorias[0].id;
                 carregarProdutosPorCategoria();
             }
+            supabaseClient.from('categorias').delete().eq('id', id).catch(e=>console.log);
         }
     };
     
@@ -1111,13 +1116,15 @@
         const icone = document.getElementById('categoriaIcone').value.trim() || '📁';
         if (!nome) { showToast("Digite o nome!", 'error'); return; }
         const novoId = Date.now();
-        categorias.push({ id: novoId, nome, icone, ordem: categorias.length + 1 });
+        const novaCat = { id: novoId, nome, icone, ordem: categorias.length + 1 };
+        categorias.push(novaCat);
         showToast(`Categoria "${nome}" adicionada!`);
         document.getElementById('categoriaNome').value = '';
         document.getElementById('categoriaIcone').value = '';
         renderizarAdminCategorias();
         renderizarCategoriasFront();
         popularSelectCategorias();
+        supabaseClient.from('categorias').insert(novaCat).catch(e=>console.log);
     }
     
     function popularSelectCategorias() {
@@ -1127,17 +1134,26 @@
         }
     }
     
-    // ==================== PRODUTOS ====================
+    // ==================== PRODUTOS (COM FALLBACK ROBUSTO) ====================
     async function carregarProdutos() {
         try {
             const { data, error } = await supabaseClient.from('produtos').select('*');
-            if (error) throw error;
-            if (data && data.length > 0) produtos = data;
-            else carregarDadosPadrao();
-        } catch(e) { carregarDadosPadrao(); }
+            if (error || !data || data.length === 0) {
+                produtos = getDefaultProdutos();
+                // Tentar inserir no Supabase
+                for (let p of produtos) {
+                    await supabaseClient.from('produtos').upsert(p);
+                }
+            } else {
+                produtos = data;
+            }
+        } catch(e) {
+            produtos = getDefaultProdutos();
+        }
         renderizarAdminProdutos();
-        if (categoriaAtiva) carregarProdutosPorCategoria();
-        else if (categorias.length > 0) {
+        if (categoriaAtiva) {
+            carregarProdutosPorCategoria();
+        } else if (categorias.length > 0) {
             categoriaAtiva = categorias[0].id;
             carregarProdutosPorCategoria();
             renderizarCategoriasFront();
@@ -1229,6 +1245,7 @@
             showToast(`Produto "${p.nome}" salvo!`);
             renderizarAdminProdutos();
             carregarProdutosPorCategoria();
+            supabaseClient.from('produtos').upsert(p).catch(e=>console.log);
         }
     };
     
@@ -1238,6 +1255,7 @@
             showToast(`Produto removido!`);
             renderizarAdminProdutos();
             carregarProdutosPorCategoria();
+            supabaseClient.from('produtos').delete().eq('id', id).catch(e=>console.log);
         }
     };
     
@@ -1250,7 +1268,8 @@
         const imagem = document.getElementById('prodImagem').value.trim() || `https://placehold.co/400x300/f0e4da/d4a373?text=${encodeURIComponent(nome)}`;
         if (!nome || isNaN(preco)) { showToast("Preencha nome e preço!", 'error'); return; }
         const novoId = Date.now();
-        produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, categoria_id: categoriaId, imagem });
+        const novoProduto = { id: novoId, nome, descricao: desc, preco, estoque, categoria_id: categoriaId, imagem };
+        produtos.push(novoProduto);
         showToast(`Produto "${nome}" adicionado!`);
         document.getElementById('prodNome').value = '';
         document.getElementById('prodDesc').value = '';
@@ -1259,6 +1278,7 @@
         document.getElementById('prodImagem').value = '';
         renderizarAdminProdutos();
         if (categoriaAtiva === categoriaId) carregarProdutosPorCategoria();
+        supabaseClient.from('produtos').insert(novoProduto).catch(e=>console.log);
     }
     
     // ==================== AVALIAÇÕES ====================
@@ -1317,10 +1337,13 @@
     async function carregarSlides() {
         try {
             const { data, error } = await supabaseClient.from('slides').select('*').order('ordem');
-            if (error) throw error;
-            if (data && data.length > 0) slides = data;
-            else carregarDadosPadrao();
-        } catch(e) { carregarDadosPadrao(); }
+            if (error || !data || data.length === 0) {
+                slides = getDefaultSlides();
+                for (let s of slides) await supabaseClient.from('slides').upsert(s);
+            } else {
+                slides = data;
+            }
+        } catch(e) { slides = getDefaultSlides(); }
         renderizarCarrossel();
         renderizarAdminSlides();
     }
@@ -1366,6 +1389,7 @@
             s.titulo=document.querySelector(`[data-id="${id}"][data-field="titulo"]`).value;
             showToast('Slide atualizado!');
             renderizarCarrossel();
+            supabaseClient.from('slides').upsert(s).catch(e=>console.log);
         }
     };
     window.excluirSlideLocal = function(id){
@@ -1374,6 +1398,7 @@
             showToast('Slide removido!');
             renderizarCarrossel();
             renderizarAdminSlides();
+            supabaseClient.from('slides').delete().eq('id',id).catch(e=>console.log);
         }
     };
     async function adicionarSlide(){
@@ -1381,23 +1406,28 @@
         const tit=document.getElementById('slideTitulo').value;
         const desc=document.getElementById('slideDesc').value;
         if(!img){ showToast("URL da imagem obrigatória!",'error'); return; }
-        slides.push({ id:Date.now(), imagem:img, titulo:tit, descricao:desc, ordem:slides.length+1 });
+        const novoS = { id:Date.now(), imagem:img, titulo:tit, descricao:desc, ordem:slides.length+1 };
+        slides.push(novoS);
         showToast('Slide adicionado!');
         document.getElementById('slideImagem').value='';
         document.getElementById('slideTitulo').value='';
         document.getElementById('slideDesc').value='';
         renderizarCarrossel();
         renderizarAdminSlides();
+        supabaseClient.from('slides').insert(novoS).catch(e=>console.log);
     }
     
     // ==================== ESTOQUE ====================
     async function carregarMateriais() {
         try {
             const { data, error } = await supabaseClient.from('materiais').select('*').order('nome');
-            if(error) throw error;
-            if(data && data.length>0) materiais = data;
-            else carregarDadosPadrao();
-        } catch(e){ carregarDadosPadrao(); }
+            if (error || !data || data.length === 0) {
+                materiais = getDefaultMateriais();
+                for (let m of materiais) await supabaseClient.from('materiais').upsert(m);
+            } else {
+                materiais = data;
+            }
+        } catch(e) { materiais = getDefaultMateriais(); }
         atualizarTabelaMateriais();
         atualizarCardsEstoque();
     }
@@ -1472,17 +1502,19 @@
             if(idx!==-1){
                 materiais[idx] = {...materiais[idx], nome, unidade, preco_unitario:preco, estoque_atual:estoque};
                 showToast(`Material "${nome}" atualizado!`,'success');
+                supabaseClient.from('materiais').update(materiais[idx]).eq('id',id).catch(e=>console.log);
             }
         } else {
-            materiais.push({ id:Date.now(), nome, unidade, preco_unitario:preco, estoque_atual:estoque });
+            const novo = { id:Date.now(), nome, unidade, preco_unitario:preco, estoque_atual:estoque };
+            materiais.push(novo);
             showToast(`Material "${nome}" adicionado!`,'success');
+            supabaseClient.from('materiais').insert(novo).catch(e=>console.log);
         }
         document.getElementById('modalMaterial').style.display = 'none';
         atualizarTabelaMateriais();
         atualizarCardsEstoque();
     }
     
-    // Funções para listar entrada/saída (exemplo simplificado)
     async function carregarListaTipo(tipo) {
         const container = document.getElementById(`lista${tipo.charAt(0).toUpperCase()+tipo.slice(1)}s`);
         if(container) container.innerHTML = `<p>Nenhum registro de ${tipo} encontrado.</p>`;
@@ -1723,7 +1755,6 @@
         const maxPrice = parseFloat(document.getElementById('filterMaxPrice').value) || Infinity;
         const minRating = parseFloat(document.getElementById('filterRating').value) || 0;
         const sortBy = document.getElementById('filterSort').value;
-        
         if (!categoriaAtiva) return;
         let filtrados = produtos.filter(p => p.categoria_id === categoriaAtiva);
         filtrados = filtrados.filter(p => p.preco >= minPrice && p.preco <= maxPrice);
@@ -1734,7 +1765,6 @@
         else if (sortBy === 'preco_asc') filtrados.sort((a,b)=>a.preco - b.preco);
         else if (sortBy === 'preco_desc') filtrados.sort((a,b)=>b.preco - a.preco);
         else if (sortBy === 'avaliacao') filtrados.sort((a,b)=>getMediaAvaliacoes(b.id) - getMediaAvaliacoes(a.id));
-        
         renderizarProdutosSwiper(filtrados);
         fecharModal();
         showToast("Filtros aplicados!", 'success');
@@ -1763,8 +1793,9 @@
             localStorage.setItem('docesdi_theme', document.body.classList.contains('dark')?'dark':'light');
         });
         
+        // Carregar dados na ordem correta (categorias primeiro, depois produtos)
         await carregarCategorias();
-        await carregarProdutos();
+        await carregarProdutos();   // Agora produtos são carregados com fallback garantido
         await carregarSlides();
         await carregarClientes();
         await carregarAvaliacoes();
