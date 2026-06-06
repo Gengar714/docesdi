@@ -40,6 +40,9 @@
             --estoque-bg: #f0e4da;
             --estoque-text: #4a3b32;
             --categoria-bg: #f5e6d8;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --warning: #f39c12;
         }
         
         body.dark {
@@ -205,11 +208,14 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 30px;
-            cursor: pointer;
+            cursor: grab;
             font-weight: bold;
             font-size: 0.85rem;
             transition: all 0.3s;
+            user-select: none;
         }
+        .admin-tab:active { cursor: grabbing; }
+        .admin-tab.dragging { opacity: 0.5; cursor: grabbing; }
         .admin-tab:hover { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .admin-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
@@ -233,6 +239,12 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-expand:hover, .btn-new-window:hover, .btn-save-order:hover { 
+            background: var(--accent-color); 
+            color: white; 
+            border-color: var(--accent-color); 
         }
         
         /* Categorias/Abas Públicas */
@@ -283,6 +295,7 @@
         .card-produto-swiper .card-img { width: 100%; height: 180px; object-fit: cover; }
         .card-produto-swiper .card-info { padding: 12px; }
         .card-produto-swiper .card-nome { font-weight: bold; color: var(--accent-color); margin-bottom: 5px; }
+        .card-produto-swiper .card-descricao { font-size: 0.7rem; opacity: 0.7; margin-bottom: 8px; }
         .card-produto-swiper .card-preco { font-weight: bold; color: var(--accent-color); }
         .btn-comprar {
             background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover));
@@ -412,6 +425,80 @@
         .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: var(--accent-color); color: white; }
         
+        /* Estoque */
+        .estoque-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+        }
+        .estoque-tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            cursor: grab;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .estoque-tab:active { cursor: grabbing; }
+        .estoque-tab.dragging { opacity: 0.5; }
+        .estoque-tab:hover, .estoque-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        
+        .estoque-panel { display: none; margin-top: 15px; }
+        .estoque-panel.ativo { display: block; }
+        
+        .estoque-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card-estoque {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--btn-hover) 100%);
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        .stat-card-estoque h4 { font-size: 0.8rem; margin-bottom: 5px; opacity: 0.9; }
+        .stat-card-estoque .value { font-size: 1.5rem; font-weight: bold; }
+        
+        .movimentacao-item {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .movimentacao-item.entrada { border-left-color: #25d366; }
+        .movimentacao-item.saida { border-left-color: #ffc107; }
+        .movimentacao-item.desperdicio { border-left-color: #e74c3c; }
+        
+        .form-estoque {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        .form-estoque .field { flex: 1; min-width: 120px; }
+        .form-estoque label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-estoque input, .form-estoque select { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); }
+        
+        .tabela-estoque { width: 100%; border-collapse: collapse; }
+        .tabela-estoque th, .tabela-estoque td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .tabela-estoque th { background: var(--accent-color); color: white; font-size: 0.8rem; }
+        .tabela-estoque td { font-size: 0.8rem; }
+        
+        .alerta-estoque { background: #f39c12; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        
         .form-produto, .form-categoria {
             background: var(--bg-color);
             padding: 15px;
@@ -423,6 +510,7 @@
             align-items: flex-end;
         }
         .form-produto .field, .form-categoria .field { flex: 1; min-width: 120px; }
+        .form-produto .field.small { flex: 0.5; min-width: 80px; }
         .form-produto label, .form-categoria label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
         .form-produto input, .form-produto textarea, .form-categoria input, .form-categoria select {
             width: 100%;
@@ -430,7 +518,10 @@
             border-radius: 20px;
             border: 1px solid var(--border-color);
             background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.8rem;
         }
+        .form-produto textarea { resize: vertical; height: 60px; }
         .btn-add { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; }
         
         .produto-admin-item, .categoria-admin-item {
@@ -443,16 +534,45 @@
             gap: 8px;
             align-items: center;
         }
-        .produto-admin-item input, .categoria-admin-item input {
+        .produto-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-desc { flex: 2; min-width: 200px; }
+        .produto-admin-item .campo-preco { width: 100px; }
+        .produto-admin-item .campo-estoque { width: 80px; }
+        .produto-admin-item .campo-categoria { width: 150px; }
+        .produto-admin-item input, .produto-admin-item textarea, .produto-admin-item select {
             padding: 6px 10px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
             background: var(--input-bg);
             width: 100%;
+            font-size: 0.75rem;
         }
-        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
+        .produto-admin-item textarea { resize: vertical; height: 50px; }
+        
+        .categoria-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .categoria-admin-item .campo-icone { width: 80px; }
+        .categoria-admin-item input { padding: 6px 10px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); width: 100%; font-size: 0.75rem; }
+        
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px 8px; border-radius: 20px; transition: all 0.2s; }
         .btn-salvar { color: #27ae60; }
+        .btn-salvar:hover { background: #27ae60; color: white; }
         .btn-excluir { color: #e74c3c; }
+        .btn-excluir:hover { background: #e74c3c; color: white; }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        .stat-card h4 { font-size: 0.7rem; color: var(--accent-color); margin-bottom: 8px; }
+        .stat-card .value { font-size: 1.2rem; font-weight: bold; }
         
         .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
         .toast { padding: 8px 16px; border-radius: 50px; margin-top: 8px; animation: fadeInUp 0.3s ease; font-size: 0.8rem; }
@@ -606,12 +726,14 @@
         <div class="admin-tabs-container" id="adminTabsContainer">
             <div class="admin-tab ativo" data-tab="categorias">🏷️ Categorias</div>
             <div class="admin-tab" data-tab="produtos">🍰 Produtos</div>
+            <div class="admin-tab" data-tab="estoque">📦 Estoque</div>
             <div class="admin-tab" data-tab="slides">📸 Slides</div>
             <div class="admin-tab" data-tab="avaliacoes">⭐ Avaliações</div>
             <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
             <div class="admin-tab" data-tab="dashboard">📊 Dashboard</div>
         </div>
         
+        <!-- Aba Categorias -->
         <div id="tabCategorias" class="admin-tab-content ativo">
             <div class="form-categoria">
                 <div class="field"><label>Nome da Categoria</label><input type="text" id="categoriaNome" placeholder="Ex: Bolos"></div>
@@ -623,6 +745,7 @@
             <button id="btnSalvarCategorias" class="btn-add" style="margin-top:20px;">💾 Salvar Categorias</button>
         </div>
         
+        <!-- Aba Produtos -->
         <div id="tabProdutos" class="admin-tab-content">
             <div class="form-produto">
                 <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Produto"></div>
@@ -638,6 +761,45 @@
             <button id="btnSalvarProdutos" class="btn-add" style="margin-top:20px;">💾 Salvar Produtos</button>
         </div>
         
+        <!-- Aba Estoque -->
+        <div id="tabEstoque" class="admin-tab-content">
+            <div class="estoque-stats" id="estoqueStats"></div>
+            <div class="estoque-tabs-container" id="estoqueTabsContainer">
+                <div class="estoque-tab ativo" data-estoque-panel="resumo">📊 Resumo</div>
+                <div class="estoque-tab" data-estoque-panel="entrada">📥 Entrada</div>
+                <div class="estoque-tab" data-estoque-panel="saida">📤 Saída</div>
+                <div class="estoque-tab" data-estoque-panel="desperdicio">⚠️ Desperdício</div>
+                <div class="estoque-tab" data-estoque-panel="materiais">📦 Materiais</div>
+                <div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div>
+            </div>
+            <div id="estoquePanelResumo" class="estoque-panel ativo">
+                <div class="buttons-row" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn-add" onclick="mostrarFormularioEstoque('entrada')">📥 Nova Entrada</button>
+                    <button class="btn-add" onclick="mostrarFormularioEstoque('saida')">📤 Nova Saída</button>
+                    <button class="btn-add" onclick="mostrarFormularioEstoque('desperdicio')">⚠️ Novo Desperdício</button>
+                </div>
+                <div id="formularioEstoque" style="display: none;"></div>
+            </div>
+            <div id="estoquePanelEntrada" class="estoque-panel"><div id="listaEntradas"></div></div>
+            <div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div>
+            <div id="estoquePanelDesperdicio" class="estoque-panel"><div id="listaDesperdicios"></div></div>
+            <div id="estoquePanelMateriais" class="estoque-panel">
+                <div class="buttons-row" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn-add" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="tabela-estoque" id="tabelaMateriais">
+                        <thead>
+                            <tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="estoquePanelMovimentacoes" class="estoque-panel"><div id="movimentacoesLista"></div></div>
+        </div>
+        
+        <!-- Aba Slides -->
         <div id="tabSlides" class="admin-tab-content">
             <div class="form-produto">
                 <div class="field"><label>Imagem URL</label><input type="text" id="slideImagem" placeholder="https://..."></div>
@@ -650,18 +812,21 @@
             <button id="btnSalvarSlides" class="btn-add" style="margin-top:20px;">💾 Salvar Slides</button>
         </div>
         
+        <!-- Aba Avaliações -->
         <div id="tabAvaliacoes" class="admin-tab-content">
             <div id="listaAvaliacoesAdmin"></div>
         </div>
         
+        <!-- Aba Clientes -->
         <div id="tabClientes" class="admin-tab-content">
             <div id="listaClientesAdmin"></div>
         </div>
         
+        <!-- Aba Dashboard -->
         <div id="tabDashboard" class="admin-tab-content">
             <div class="dashboard-stats" id="dashboardStats"></div>
             <canvas id="vendasChart" style="max-height:300px; margin-top:20px;"></canvas>
-            <div id="topProdutos" class="top-produtos-list" style="margin-top:20px;"></div>
+            <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
         
         <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px; padding:10px; border:none; border-radius:25px; color:white; cursor:pointer;">✖️ Fechar</button>
@@ -679,6 +844,8 @@
     let slides = [];
     let avaliacoes = [];
     let clientes = [];
+    let materiais = [];
+    let movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     let carrinho = [];
     let carrinhoAntesLogin = [];
     let usuarioLogado = null;
@@ -687,6 +854,8 @@
     let categoriaAtiva = null;
     let slideIndex = 0;
     let vendasChart = null;
+    let sortableInstance = null;
+    let sortableEstoqueInstance = null;
     
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
@@ -710,8 +879,8 @@
         }
         if (produtos.length === 0) {
             produtos = [
-                { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
-                { id: 2, nome: "Torta de Limão", descricao: "Cremosa", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
+                { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho com cobertura", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
+                { id: 2, nome: "Torta de Limão", descricao: "Cremosa com merengue", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
                 { id: 3, nome: "Brigadeiro", descricao: "Tradicional", preco: 3.50, estoque: 50, categoria_id: 3, imagem: "https://images.pexels.com/photos/2886936/pexels-photo-2886936.jpeg?w=400" }
             ];
         }
@@ -720,6 +889,80 @@
                 { id: 1, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200", titulo: "Doces Especiais", descricao: "Os melhores doces", ordem: 1 },
                 { id: 2, imagem: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200", titulo: "Bolos Artesanais", descricao: "Feitos com amor", ordem: 2 }
             ];
+        }
+        if (materiais.length === 0) {
+            materiais = [
+                { id: 1, nome: "Farinha", unidade: "kg", preco_unitario: 5.50, estoque_atual: 50 },
+                { id: 2, nome: "Açúcar", unidade: "kg", preco_unitario: 4.00, estoque_atual: 30 },
+                { id: 3, nome: "Ovos", unidade: "un", preco_unitario: 0.80, estoque_atual: 100 }
+            ];
+        }
+    }
+    
+    // ==================== DRAG & DROP ====================
+    function initDragDropTabs() {
+        const container = document.getElementById('adminTabsContainer');
+        if (!container) return;
+        if (sortableInstance) sortableInstance.destroy();
+        sortableInstance = new Sortable(container, { 
+            animation: 300, 
+            handle: '.admin-tab', 
+            ghostClass: 'dragging',
+            onEnd: () => salvarOrdemAbas()
+        });
+    }
+    
+    function initDragDropEstoqueTabs() {
+        const container = document.getElementById('estoqueTabsContainer');
+        if (!container) return;
+        if (sortableEstoqueInstance) sortableEstoqueInstance.destroy();
+        sortableEstoqueInstance = new Sortable(container, { 
+            animation: 300, 
+            handle: '.estoque-tab', 
+            ghostClass: 'dragging',
+            onEnd: () => salvarOrdemEstoqueAbas()
+        });
+    }
+    
+    function salvarOrdemAbas() {
+        const tabs = document.querySelectorAll('.admin-tab');
+        const ordem = Array.from(tabs).map((tab, index) => ({ id: tab.dataset.tab, ordem: index }));
+        localStorage.setItem('admin_tabs_order', JSON.stringify(ordem));
+        showToast("✅ Ordem das abas salva!");
+    }
+    
+    function salvarOrdemEstoqueAbas() {
+        const tabs = document.querySelectorAll('.estoque-tab');
+        const ordem = Array.from(tabs).map((tab, index) => ({ id: tab.dataset.estoquePanel, ordem: index }));
+        localStorage.setItem('estoque_tabs_order', JSON.stringify(ordem));
+        showToast("✅ Ordem das abas do estoque salva!");
+    }
+    
+    function carregarOrdemAbas() {
+        const ordem = localStorage.getItem('admin_tabs_order');
+        if (ordem) {
+            const ordemArray = JSON.parse(ordem);
+            const container = document.getElementById('adminTabsContainer');
+            const tabs = Array.from(container.children);
+            ordemArray.sort((a,b) => a.ordem - b.ordem);
+            for (const item of ordemArray) {
+                const tab = tabs.find(t => t.dataset.tab === item.id);
+                if (tab) container.appendChild(tab);
+            }
+        }
+    }
+    
+    function carregarOrdemEstoqueAbas() {
+        const ordem = localStorage.getItem('estoque_tabs_order');
+        if (ordem) {
+            const ordemArray = JSON.parse(ordem);
+            const container = document.getElementById('estoqueTabsContainer');
+            const tabs = Array.from(container.children);
+            ordemArray.sort((a,b) => a.ordem - b.ordem);
+            for (const item of ordemArray) {
+                const tab = tabs.find(t => t.dataset.estoquePanel === item.id);
+                if (tab) container.appendChild(tab);
+            }
         }
     }
     
@@ -778,11 +1021,11 @@
         
         container.innerHTML = categorias.map(cat => `
             <div class="categoria-admin-item">
-                <div style="flex:2"><input type="text" value="${cat.nome}" data-id="${cat.id}" data-field="nome" placeholder="Nome"></div>
-                <div style="width:80px"><input type="text" value="${cat.icone || '📁'}" data-id="${cat.id}" data-field="icone" placeholder="Ícone"></div>
+                <div class="campo-nome"><input type="text" value="${cat.nome.replace(/"/g, '&quot;')}" data-id="${cat.id}" data-field="nome" placeholder="Nome"></div>
+                <div class="campo-icone"><input type="text" value="${cat.icone || '📁'}" data-id="${cat.id}" data-field="icone" placeholder="Ícone"></div>
                 <div>
-                    <button class="btn-icon btn-salvar" onclick="salvarCategoriaLocal(${cat.id})">💾</button>
-                    <button class="btn-icon btn-excluir" onclick="excluirCategoriaLocal(${cat.id})">🗑️</button>
+                    <button class="btn-icon btn-salvar" onclick="salvarCategoriaLocal(${cat.id})" title="Salvar">💾</button>
+                    <button class="btn-icon btn-excluir" onclick="excluirCategoriaLocal(${cat.id})" title="Excluir">🗑️</button>
                 </div>
             </div>
         `).join('');
@@ -874,7 +1117,7 @@
                         <img src="${p.imagem || 'https://placehold.co/400x300/f0e4da/d4a373?text=' + encodeURIComponent(p.nome)}" class="card-img" onerror="this.src='https://placehold.co/400x300/f0e4da/d4a373?text=Produto'">
                         <div class="card-info">
                             <div class="card-nome">${p.nome}</div>
-                            <div class="card-descricao" style="font-size:0.7rem;">${p.descricao || ''}</div>
+                            <div class="card-descricao">${p.descricao || ''}</div>
                             <div style="display:flex; justify-content:space-between; margin:8px 0;">
                                 <span class="card-preco">R$ ${p.preco.toFixed(2)}</span>
                                 <span style="font-size:0.6rem;">📦 ${p.estoque || 0}</span>
@@ -912,16 +1155,18 @@
         container.innerHTML = produtos.map(p => {
             return `
                 <div class="produto-admin-item">
-                    <div style="flex:2"><input type="text" value="${p.nome}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
-                    <div style="width:100px"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
-                    <div style="width:120px">
+                    <div class="campo-nome"><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
+                    <div class="campo-desc"><textarea rows="2" data-id="${p.id}" data-field="descricao" placeholder="Descrição">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
+                    <div class="campo-preco"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
+                    <div class="campo-estoque"><input type="number" value="${p.estoque || 0}" data-id="${p.id}" data-field="estoque" placeholder="Estoque"></div>
+                    <div class="campo-categoria">
                         <select data-id="${p.id}" data-field="categoria_id">
                             ${categorias.map(cat => `<option value="${cat.id}" ${p.categoria_id === cat.id ? 'selected' : ''}>${cat.icone} ${cat.nome}</option>`).join('')}
                         </select>
                     </div>
                     <div>
-                        <button class="btn-icon btn-salvar" onclick="salvarProdutoLocal(${p.id})">💾</button>
-                        <button class="btn-icon btn-excluir" onclick="excluirProdutoLocal(${p.id})">🗑️</button>
+                        <button class="btn-icon btn-salvar" onclick="salvarProdutoLocal(${p.id})" title="Salvar">💾</button>
+                        <button class="btn-icon btn-excluir" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button>
                     </div>
                 </div>
             `;
@@ -932,7 +1177,9 @@
         const p = produtos.find(p => p.id === id);
         if (p) {
             p.nome = document.querySelector(`[data-id="${id}"][data-field="nome"]`).value;
+            p.descricao = document.querySelector(`[data-id="${id}"][data-field="descricao"]`).value;
             p.preco = parseFloat(document.querySelector(`[data-id="${id}"][data-field="preco"]`).value);
+            p.estoque = parseInt(document.querySelector(`[data-id="${id}"][data-field="estoque"]`).value);
             const catSelect = document.querySelector(`[data-id="${id}"][data-field="categoria_id"]`);
             if (catSelect) p.categoria_id = parseInt(catSelect.value);
             showToast(`Produto "${p.nome}" salvo!`);
@@ -1046,7 +1293,7 @@
         
         container.innerHTML = slides.map(s => `
             <div class="produto-admin-item">
-                <div style="flex:2"><input type="text" value="${s.imagem}" data-id="${s.id}" data-field="imagem" placeholder="URL"></div>
+                <div class="campo-nome"><input type="text" value="${s.imagem}" data-id="${s.id}" data-field="imagem" placeholder="URL" style="width:300px"></div>
                 <div><input type="text" value="${s.titulo || ''}" data-id="${s.id}" data-field="titulo" placeholder="Título"></div>
                 <div>
                     <button class="btn-icon btn-salvar" onclick="salvarSlideLocal(${s.id})">💾</button>
@@ -1097,6 +1344,116 @@
         }
         showToast("Slides salvos no servidor!");
     }
+    
+    // ==================== ESTOQUE ====================
+    async function carregarMateriais() {
+        try {
+            const { data } = await supabaseClient.from('materiais').select('*').order('nome');
+            if (data && data.length > 0) materiais = data;
+            else carregarDadosPadrao();
+        } catch(e) { carregarDadosPadrao(); }
+        
+        atualizarTabelaMateriais();
+        atualizarCardsEstoque();
+    }
+    
+    function atualizarCardsEstoque() {
+        const valorTotalEstoque = materiais.reduce((s, m) => s + (m.estoque_atual * m.preco_unitario), 0);
+        const alertaBaixo = materiais.filter(m => m.estoque_atual < 10).length;
+        document.getElementById('estoqueStats').innerHTML = `
+            <div class="stat-card-estoque"><h4>📦 Materiais</h4><div class="value">${materiais.length}</div></div>
+            <div class="stat-card-estoque"><h4>💰 Valor em Estoque</h4><div class="value">R$ ${valorTotalEstoque.toFixed(2)}</div></div>
+            <div class="stat-card-estoque"><h4>⚠️ Estoque Baixo</h4><div class="value">${alertaBaixo}</div></div>
+        `;
+    }
+    
+    function atualizarTabelaMateriais() {
+        const tbody = document.querySelector('#tabelaMateriais tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        materiais.forEach(m => {
+            const alerta = m.estoque_atual < 10 ? '<span class="alerta-estoque">⚠️ Baixo</span>' : '';
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${m.nome}</td>
+                <td>${m.unidade}</td>
+                <td>R$ ${parseFloat(m.preco_unitario).toFixed(4)}</td>
+                <td>${m.estoque_atual.toFixed(2)} ${m.unidade} ${alerta}</td>
+                <td>R$ ${(m.estoque_atual * m.preco_unitario).toFixed(2)}</td>
+                <td><button onclick="editarMaterial(${m.id})" class="btn-add" style="padding:4px 8px;">✏️</button></td>
+            `;
+        });
+    }
+    
+    window.mostrarFormularioEstoque = function(tipo) {
+        const formHtml = `
+            <div class="form-estoque">
+                <div class="field"><label>Material</label><select id="materialSelect"><option value="">Selecione...</option>${materiais.map(m => `<option value="${m.id}" data-preco="${m.preco_unitario}" data-unidade="${m.unidade}">${m.nome} (${m.unidade})</option>`).join('')}</select></div>
+                <div class="field"><label>Quantidade</label><input type="number" id="quantidade" step="0.001" placeholder="Quantidade"></div>
+                <div class="field"><label>Valor Unitário</label><input type="number" id="valorUnitario" step="0.01" placeholder="R$"></div>
+                ${tipo === 'saida' ? `<div class="field"><label>Produto Fabricado</label><input type="text" id="produtoFabricado" placeholder="Qual produto?"></div><div class="field"><label>Qtd Produzida</label><input type="number" id="qtdProduzida" placeholder="Unidades"></div>` : ''}
+                ${tipo === 'desperdicio' ? `<div class="field"><label>Motivo</label><input type="text" id="motivo" placeholder="Ex: Quebrou, Venceu..."></div>` : ''}
+                <div class="field"><label>Data</label><input type="date" id="dataMovimento" value="${new Date().toISOString().slice(0,10)}"></div>
+                <div><button class="btn-add" onclick="salvarMovimentacao('${tipo}')">✅ Salvar</button></div>
+            </div>
+        `;
+        document.getElementById('formularioEstoque').innerHTML = formHtml;
+        document.getElementById('formularioEstoque').style.display = 'block';
+        
+        document.getElementById('materialSelect')?.addEventListener('change', (e) => {
+            const selected = e.target.options[e.target.selectedIndex];
+            const preco = selected.dataset.preco;
+            if (preco) document.getElementById('valorUnitario').value = preco;
+        });
+    };
+    
+    window.salvarMovimentacao = async function(tipo) {
+        const materialId = document.getElementById('materialSelect').value;
+        if (!materialId) { showToast("Selecione um material!", 'error'); return; }
+        
+        const quantidade = parseFloat(document.getElementById('quantidade').value) || 0;
+        if (quantidade <= 0) { showToast("Informe a quantidade!", 'error'); return; }
+        
+        const valorUnitario = parseFloat(document.getElementById('valorUnitario').value) || 0;
+        const valorTotal = quantidade * valorUnitario;
+        
+        const movimento = { material_id: parseInt(materialId), quantidade, valor_unitario: valorUnitario, valor_total: valorTotal, data: document.getElementById('dataMovimento').value };
+        
+        if (tipo === 'saida') {
+            movimento.produto_fabricado = document.getElementById('produtoFabricado')?.value || null;
+            movimento.quantidade_produzida = parseInt(document.getElementById('qtdProduzida')?.value) || null;
+        }
+        if (tipo === 'desperdicio') {
+            movimento.motivo = document.getElementById('motivo')?.value || null;
+        }
+        
+        showToast(`${tipo === 'entrada' ? 'Entrada' : tipo === 'saida' ? 'Saída' : 'Desperdício'} registrado!`);
+        document.getElementById('formularioEstoque').style.display = 'none';
+        await carregarMateriais();
+    };
+    
+    window.mostrarNovoMaterial = function() {
+        const nome = prompt("Nome do material:"); if (!nome) return;
+        const unidade = prompt("Unidade (kg, un, L, g):", "kg");
+        const preco = parseFloat(prompt("Preço unitário:"));
+        if (isNaN(preco)) return;
+        
+        const novoId = Date.now();
+        materiais.push({ id: novoId, nome, unidade: unidade || 'kg', preco_unitario: preco, estoque_atual: 0 });
+        atualizarTabelaMateriais();
+        atualizarCardsEstoque();
+        showToast("Material adicionado!");
+    };
+    
+    window.editarMaterial = async function(id) {
+        const material = materiais.find(m => m.id === id);
+        const novoNome = prompt("Novo nome:", material.nome);
+        if (novoNome && novoNome !== material.nome) {
+            material.nome = novoNome;
+            atualizarTabelaMateriais();
+            showToast("Material atualizado!");
+        }
+    };
     
     // ==================== AVALIAÇÕES ====================
     async function carregarAvaliacoes() {
@@ -1155,18 +1512,9 @@
         const ticketMedio = totalVendas / (pedidos.length || 1);
         
         document.getElementById('dashboardStats').innerHTML = `
-            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
-                <h4>💰 Faturamento</h4>
-                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">R$ ${totalVendas.toFixed(2)}</div>
-            </div>
-            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
-                <h4>📦 Pedidos</h4>
-                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">${pedidos.length}</div>
-            </div>
-            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
-                <h4>🎫 Ticket Médio</h4>
-                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">R$ ${ticketMedio.toFixed(2)}</div>
-            </div>
+            <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${totalVendas.toFixed(2)}</div></div>
+            <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
+            <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticketMedio.toFixed(2)}</div></div>
         `;
         
         const vendasProdutos = {};
@@ -1395,6 +1743,7 @@
             carregarDashboard();
             carregarAvaliacoes();
             carregarClientes();
+            carregarMateriais();
         } else if (usuarioLogado && usuarioTipo === 'cliente') {
             showToast("Você não tem permissão!", 'error');
         } else {
@@ -1417,6 +1766,23 @@
                 if (tabId === 'dashboard') carregarDashboard();
                 if (tabId === 'avaliacoes') carregarAvaliacoes();
                 if (tabId === 'clientes') renderizarClientesAdmin();
+                if (tabId === 'estoque') carregarMateriais();
+            });
+        });
+    }
+    
+    function initEstoqueTabs() {
+        const tabs = document.querySelectorAll('.estoque-tab');
+        const panels = document.querySelectorAll('.estoque-panel');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const panelId = tab.dataset.estoquePanel;
+                tabs.forEach(t => t.classList.remove('ativo'));
+                tab.classList.add('ativo');
+                panels.forEach(p => p.classList.remove('ativo'));
+                const targetPanel = document.getElementById(`estoquePanel${panelId.charAt(0).toUpperCase() + panelId.slice(1)}`);
+                if (targetPanel) targetPanel.classList.add('ativo');
+                if (panelId === 'materiais') atualizarTabelaMateriais();
             });
         });
     }
@@ -1444,6 +1810,7 @@
         await carregarSlides();
         await carregarClientes();
         await carregarAvaliacoes();
+        await carregarMateriais();
         carregarCarrinho();
         
         const savedUser = localStorage.getItem("docesdi_usuario_logado");
@@ -1456,6 +1823,7 @@
         atualizarBotaoCliente();
         document.getElementById('anoAtual').innerText = new Date().getFullYear();
         
+        // Eventos do carrossel
         document.getElementById('carouselPrev')?.addEventListener('click', () => {
             slideIndex = (slideIndex - 1 + slides.length) % slides.length;
             atualizarCarrosselPosicao();
@@ -1464,12 +1832,15 @@
             slideIndex = (slideIndex + 1) % slides.length;
             atualizarCarrosselPosicao();
         });
+        
+        // Eventos de busca e carrinho
         document.getElementById('btnBuscar')?.addEventListener('click', buscarProdutos);
         document.getElementById('searchInput')?.addEventListener('keyup', (e) => { if(e.key === 'Enter') buscarProdutos(); });
         document.getElementById('btn-finalizar')?.addEventListener('click', finalizarPedido);
         document.getElementById('btnAdminAcesso')?.addEventListener('click', abrirAdmin);
         document.getElementById('btnCancelarAdmin')?.addEventListener('click', fecharAdmin);
         
+        // Eventos do admin
         document.getElementById('btnAddCategoria')?.addEventListener('click', adicionarCategoria);
         document.getElementById('btnSalvarCategorias')?.addEventListener('click', salvarCategoriasBackup);
         document.getElementById('btnAddProduto')?.addEventListener('click', adicionarProdutoAdmin);
@@ -1477,6 +1848,7 @@
         document.getElementById('btnAddSlide')?.addEventListener('click', adicionarSlide);
         document.getElementById('btnSalvarSlides')?.addEventListener('click', salvarSlidesBackup);
         
+        // Botões de expansão
         document.getElementById('btnExpandAdmin')?.addEventListener('click', () => {
             const modalContent = document.querySelector('#modalAdmin .modal-content');
             if (modalContent) {
@@ -1492,8 +1864,9 @@
             newWin.document.write(`<!DOCTYPE html><html><head><title>Admin - Doces Di</title><style>${document.querySelector('style').innerHTML}</style></head><body style="background:var(--bg-color);">${adminContent.outerHTML}</body></html>`);
             newWin.document.close();
         });
+        document.getElementById('btnSaveOrder')?.addEventListener('click', salvarOrdemAbas);
         
-        // LOGIN - com verificação de carrinho pendente
+        // LOGIN
         document.getElementById('btnLogin')?.addEventListener('click', async () => {
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginSenha').value;
@@ -1507,7 +1880,6 @@
                 document.getElementById('modalCliente').style.display = 'none';
                 showToast(`Bem-vindo, ${usuarioLogado.nome || 'Admin'}!`);
                 
-                // Verificar carrinho pendente
                 mostrarCarrinhoPendente();
                 
                 if (usuarioTipo === 'admin') abrirAdmin();
@@ -1516,12 +1888,11 @@
             }
         });
         
-        // Botões do carrinho pendente
+        // Carrinho pendente
         document.getElementById('btnManterCarrinho')?.addEventListener('click', () => {
             fecharModal();
             showToast('Carrinho mantido!');
         });
-        
         document.getElementById('btnLimparCarrinho')?.addEventListener('click', () => {
             carrinho = [];
             salvarCarrinho();
@@ -1530,6 +1901,7 @@
             showToast('Carrinho limpo!');
         });
         
+        // Cadastro
         document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
             const senha = document.getElementById('cadSenha').value;
             const conf = document.getElementById('cadConfirmarSenha').value;
@@ -1552,11 +1924,6 @@
             if (error) { showToast("Erro ao cadastrar: " + error.message, 'error'); return; }
             showToast("Cadastro realizado! Faça login.", 'success');
             document.getElementById('tabLoginBtn').click();
-            document.getElementById('cadNome').value = '';
-            document.getElementById('cadEmail').value = '';
-            document.getElementById('cadTelefone').value = '';
-            document.getElementById('cadSenha').value = '';
-            document.getElementById('cadConfirmarSenha').value = '';
         });
         
         // Recuperação de senha
@@ -1564,20 +1931,18 @@
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('recuperarPanel').style.display = 'block';
         });
-        
         document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => {
             const email = document.getElementById('recuperarEmail').value;
             await solicitarRecuperacaoSenha(email);
             document.getElementById('recuperarPanel').style.display = 'none';
             document.getElementById('loginPanel').style.display = 'block';
-            document.getElementById('recuperarEmail').value = '';
         });
-        
         document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
             document.getElementById('recuperarPanel').style.display = 'none';
             document.getElementById('loginPanel').style.display = 'block';
         });
         
+        // Tabs
         document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
             document.getElementById('loginPanel').style.display = 'block';
             document.getElementById('cadastroPanel').style.display = 'none';
@@ -1591,6 +1956,8 @@
         document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
             document.getElementById('modalCliente').style.display = 'none';
         });
+        
+        // Buscar CEP
         document.getElementById('buscarCepCadastro')?.addEventListener('click', async () => {
             const cep = document.getElementById('cadCep').value.replace(/\D/g, '');
             if (cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
@@ -1603,14 +1970,22 @@
             } catch(e) { showToast("Erro ao buscar CEP!", 'error'); }
         });
         
+        // Inicializar drag & drop e tabs
+        initDragDropTabs();
+        initDragDropEstoqueTabs();
         initAdminTabs();
+        initEstoqueTabs();
+        carregarOrdemAbas();
+        carregarOrdemEstoqueAbas();
         
+        // Fechar modais ao clicar fora
         window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
         document.addEventListener('click', function(event) { 
             const dropdown = document.getElementById('usuarioDropdown'); 
             if (dropdown && !dropdown.contains(event.target)) dropdown.classList.remove('show'); 
         });
         
+        // Atalho de teclado
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
