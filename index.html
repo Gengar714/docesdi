@@ -152,14 +152,6 @@
         .admin-tab:hover { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .admin-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
-        /* Ícone de arrastar */
-        .drag-handle {
-            cursor: grab;
-            margin-right: 5px;
-            opacity: 0.6;
-        }
-        .drag-handle:active { cursor: grabbing; }
-        
         .admin-tab-content { display: none; margin-top: 20px; }
         .admin-tab-content.ativo { display: block; }
         
@@ -186,7 +178,7 @@
             border-color: var(--accent-color); 
         }
         
-        /* Demais estilos (mantidos da versão anterior) */
+        /* Skeleton */
         .skeleton-card {
             background: linear-gradient(90deg, var(--border-color) 25%, var(--card-bg) 50%, var(--border-color) 75%);
             background-size: 200% 100%;
@@ -194,12 +186,12 @@
             border-radius: var(--border-radius);
             height: 280px;
         }
-        
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
         
+        /* Dropdown usuário */
         .usuario-dropdown { position: relative; display: inline-block; }
         .usuario-info {
             background: var(--card-bg);
@@ -251,6 +243,7 @@
         .admin-btn-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
         .btn-admin-float { background: linear-gradient(135deg, #654321, #4a3b32); color: white; border: none; padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
+        /* Search */
         .search-container {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -347,6 +340,7 @@
             .card-preco { font-size: 0.9rem; }
         }
         
+        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -440,6 +434,7 @@
             gap: 8px;
         }
         
+        /* Carrossel */
         .carousel-container { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 40px; background: #1a1a2e; }
         @media (max-width: 768px) { .carousel-container { height: 180px; margin-bottom: 20px; } }
         .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; }
@@ -460,6 +455,7 @@
         .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
         .carousel-dot.active { background: var(--accent-color); transform: scale(1.2); }
         
+        /* Modais */
         .modal {
             display: none;
             position: fixed;
@@ -506,6 +502,7 @@
         .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
         .tab-btn.ativo { background: var(--accent-color); color: white; }
         
+        /* Itens carrinho */
         .item-carrinho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); flex-wrap: wrap; gap: 6px; }
         .item-info { flex: 2; }
         .item-info strong { font-size: 0.8rem; }
@@ -513,6 +510,7 @@
         .btn-qtd { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f0e4da; cursor: pointer; font-weight: bold; }
         .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; }
         
+        /* Favoritos */
         .favorito-item {
             display: flex;
             justify-content: space-between;
@@ -535,7 +533,33 @@
             font-weight: bold;
         }
         
-        /* Estoque */
+        /* Estoque - DRAG & DROP */
+        .estoque-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+        }
+        .estoque-tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            cursor: grab;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .estoque-tab:active { cursor: grabbing; }
+        .estoque-tab.dragging { opacity: 0.5; }
+        .estoque-tab:hover, .estoque-tab.ativo { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+        
+        .estoque-panel { display: none; margin-top: 15px; }
+        .estoque-panel.ativo { display: block; }
+        
         .estoque-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -576,14 +600,16 @@
         .form-estoque label { display: block; font-size: 0.7rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
         .form-estoque input, .form-estoque select { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); }
         
-        .btn-estoque { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .btn-estoque { background: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.75rem; }
         
         .tabela-estoque { width: 100%; border-collapse: collapse; }
         .tabela-estoque th, .tabela-estoque td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .tabela-estoque th { background: var(--accent-color); color: white; }
+        .tabela-estoque th { background: var(--accent-color); color: white; font-size: 0.8rem; }
+        .tabela-estoque td { font-size: 0.8rem; }
         
-        .alerta-estoque { background: #f39c12; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .alerta-estoque { background: #f39c12; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
         
+        /* Produtos Admin - OTIMIZADO */
         .form-produto {
             background: var(--bg-color);
             padding: 15px;
@@ -594,7 +620,7 @@
             gap: 10px;
             align-items: flex-end;
         }
-        .form-produto .field { flex: 1; min-width: 130px; }
+        .form-produto .field { flex: 1; min-width: 120px; }
         .form-produto .field.small { flex: 0.5; min-width: 80px; }
         .form-produto label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
         .form-produto input, .form-produto textarea { width: 100%; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 0.8rem; }
@@ -604,43 +630,63 @@
         .upload-mini-label { background: var(--accent-color); color: white; padding: 8px; border-radius: 20px; cursor: pointer; text-align: center; font-size: 0.7rem; }
         .btn-add-produto { background: #25d366; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         
+        /* Produtos listados - OTIMIZADO: mais espaço para nome/descrição, ícones pequenos */
         .produto-admin-item {
             background: var(--bg-color);
-            padding: 8px;
+            padding: 10px;
             border-radius: var(--border-radius);
             margin-bottom: 8px;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             align-items: center;
         }
+        .produto-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-desc { flex: 3; min-width: 200px; }
+        .produto-admin-item .campo-preco { width: 80px; }
+        .produto-admin-item .campo-estoque { width: 70px; }
+        .produto-admin-item .campo-imagem { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-upload { width: 80px; }
+        .produto-admin-item .campo-acoes { display: flex; gap: 5px; width: auto; }
+        
         .produto-admin-item input, .produto-admin-item textarea {
-            padding: 5px 8px;
+            padding: 6px 10px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
             background: var(--input-bg);
             color: var(--text-color);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            width: 100%;
         }
-        .produto-admin-item .edit-nome { width: 110px; }
-        .produto-admin-item .edit-desc { width: 160px; }
-        .produto-admin-item .edit-preco { width: 65px; }
-        .produto-admin-item .edit-estoque { width: 55px; }
-        .produto-admin-item .edit-imagem { width: 130px; }
-        .produto-admin-item button {
+        .produto-admin-item textarea { resize: vertical; height: 50px; }
+        
+        .btn-icon {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
-            padding: 4px 6px;
+            font-size: 1.1rem;
+            padding: 5px 8px;
             border-radius: 20px;
+            transition: all 0.2s;
         }
         .btn-salvar-produto { color: #27ae60; }
         .btn-salvar-produto:hover { background: #27ae60; color: white; }
         .btn-excluir-produto { color: #e74c3c; }
         .btn-excluir-produto:hover { background: #e74c3c; color: white; }
-        .btn-salvar-todos { background: #25d366; margin-top: 20px; padding: 10px 20px; border: none; border-radius: 25px; color: white; cursor: pointer; font-weight: bold; }
         
+        .btn-salvar-todos {
+            background: #25d366;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        /* Dashboard */
         .date-filter {
             display: flex;
             flex-wrap: wrap;
@@ -670,6 +716,7 @@
         
         .loading { text-align: center; padding: 40px; font-size: 0.9rem; color: var(--accent-color); }
         .cep-grupo-mini { display: flex; gap: 6px; align-items: center; }
+        .cep-grupo-mini button { width: auto; padding: 6px 10px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.7rem; }
         
         .payment-loading {
             display: none;
@@ -791,7 +838,7 @@
             </div>
         </div>
         
-        <!-- Abas lado a lado COM DRAG AND DROP -->
+        <!-- Abas principais lado a lado -->
         <div class="admin-tabs-container" id="adminTabsContainer">
             <div class="admin-tab ativo" data-tab="produtos">🍰 Produtos</div>
             <div class="admin-tab" data-tab="estoque">📦 Estoque</div>
@@ -800,6 +847,7 @@
             <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
         </div>
         
+        <!-- TAB PRODUTOS -->
         <div id="tabProdutos" class="admin-tab-content ativo">
             <div class="form-produto">
                 <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Ex: Mousse de Maracujá"></div>
@@ -815,21 +863,69 @@
             <button id="btnSalvarProdutos" class="btn-salvar-todos">💾 SALVAR TODOS OS PRODUTOS</button>
         </div>
         
+        <!-- TAB ESTOQUE COM DRAG & DROP -->
         <div id="tabEstoque" class="admin-tab-content">
+            <!-- Cards de resumo -->
             <div class="estoque-stats" id="estoqueStats"></div>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-                <button class="btn-estoque" onclick="mostrarFormulario('entrada')">📥 Nova Entrada</button>
-                <button class="btn-estoque" onclick="mostrarFormulario('saida')">📤 Nova Saída</button>
-                <button class="btn-estoque" onclick="mostrarFormulario('desperdicio')">⚠️ Novo Desperdício</button>
-                <button class="btn-estoque" onclick="mostrarMateriais()">📋 Materiais</button>
-                <button class="btn-estoque" onclick="carregarMovimentacoes()">📜 Movimentações</button>
-                <button class="btn-estoque" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
+            
+            <!-- Sub-abas do estoque com drag & drop -->
+            <div class="estoque-tabs-container" id="estoqueTabsContainer">
+                <div class="estoque-tab ativo" data-estoque-panel="resumo">📊 Resumo</div>
+                <div class="estoque-tab" data-estoque-panel="entrada">📥 Entrada</div>
+                <div class="estoque-tab" data-estoque-panel="saida">📤 Saída</div>
+                <div class="estoque-tab" data-estoque-panel="desperdicio">⚠️ Desperdício</div>
+                <div class="estoque-tab" data-estoque-panel="materiais">📦 Materiais</div>
+                <div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div>
             </div>
-            <div id="formularioEstoque" style="display: none;"></div>
-            <div id="listaMateriais" style="display: none;"><h4>📦 Materiais em Estoque</h4><div style="overflow-x: auto;"><table class="tabela-estoque" id="tabelaMateriais"><thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead><tbody></tbody></table></div></div>
-            <div id="listaMovimentacoes" style="display: none;"><h4>📜 Últimas Movimentações</h4><div id="movimentacoesLista"></div></div>
+            
+            <!-- Painel Resumo -->
+            <div id="estoquePanelResumo" class="estoque-panel ativo">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn-estoque" onclick="mostrarFormulario('entrada')">📥 Nova Entrada</button>
+                    <button class="btn-estoque" onclick="mostrarFormulario('saida')">📤 Nova Saída</button>
+                    <button class="btn-estoque" onclick="mostrarFormulario('desperdicio')">⚠️ Novo Desperdício</button>
+                    <button class="btn-estoque" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
+                </div>
+                <div id="formularioEstoque" style="display: none;"></div>
+            </div>
+            
+            <!-- Painel Entrada -->
+            <div id="estoquePanelEntrada" class="estoque-panel">
+                <h4>📥 Histórico de Entradas</h4>
+                <div id="listaEntradas"></div>
+            </div>
+            
+            <!-- Painel Saída -->
+            <div id="estoquePanelSaida" class="estoque-panel">
+                <h4>📤 Histórico de Saídas</h4>
+                <div id="listaSaidas"></div>
+            </div>
+            
+            <!-- Painel Desperdício -->
+            <div id="estoquePanelDesperdicio" class="estoque-panel">
+                <h4>⚠️ Histórico de Desperdícios</h4>
+                <div id="listaDesperdicios"></div>
+            </div>
+            
+            <!-- Painel Materiais -->
+            <div id="estoquePanelMateriais" class="estoque-panel">
+                <h4>📦 Materiais em Estoque</h4>
+                <div style="overflow-x: auto;">
+                    <table class="tabela-estoque" id="tabelaMateriais">
+                        <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Painel Movimentações -->
+            <div id="estoquePanelMovimentacoes" class="estoque-panel">
+                <h4>📜 Últimas Movimentações</h4>
+                <div id="movimentacoesLista"></div>
+            </div>
         </div>
         
+        <!-- TAB DASHBOARD -->
         <div id="tabDashboard" class="admin-tab-content">
             <div class="date-filter">
                 <select id="periodoFiltro"><option value="hoje">📅 Hoje</option><option value="ontem">📅 Ontem</option><option value="ultimos2">📅 Ontem e Hoje</option><option value="semana">📅 Última semana</option><option value="mes">📅 Último mês</option><option value="6meses">📅 Últimos 6 meses</option><option value="ano">📅 Último ano</option><option value="personalizado">📅 Personalizado</option></select>
@@ -842,7 +938,10 @@
             <div class="chart-container"><h4>💰 Custos por Produto</h4><div id="custosProdutos" class="top-produtos-list"></div></div>
         </div>
         
+        <!-- TAB AVALIAÇÕES -->
         <div id="tabAvaliacoes" class="admin-tab-content"><div id="listaAvaliacoesAdmin"></div></div>
+        
+        <!-- TAB CLIENTES -->
         <div id="tabClientes" class="admin-tab-content"><div id="listaClientesAdmin"></div></div>
         
         <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px; padding:10px; border:none; border-radius:25px; color:white; cursor:pointer; font-weight:bold;">✖️ Fechar</button>
@@ -861,7 +960,7 @@
     
     let produtos = [], avaliacoes = [], clientes = [], slides = [], carrinho = [], usuarioLogado = null, favoritos = new Set(), slideIndex = 0, produtosFiltrados = [], vendasChart = null;
     let materiais = [], movimentacoes = { entrada: [], saida: [], desperdicio: [] };
-    let sortableInstance = null;
+    let sortableInstance = null, sortableEstoqueInstance = null;
     
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     function validarSenhaForte(s) { return s.length >= 8 && /[A-Z]/.test(s) && /[a-z]/.test(s) && /[0-9]/.test(s) && /[!@#$%^&*]/.test(s); }
@@ -869,61 +968,47 @@
     function trackEvent(eventName, eventParams) { if (typeof gtag !== 'undefined') gtag('event', eventName, eventParams); }
     function fecharModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     
-    // ==================== DRAG & DROP DAS ABAS ====================
+    // ==================== DRAG & DROP DAS ABAS PRINCIPAIS ====================
     function initDragDropTabs() {
         const container = document.getElementById('adminTabsContainer');
         if (!container) return;
-        
         if (sortableInstance) sortableInstance.destroy();
-        
-        sortableInstance = new Sortable(container, {
-            animation: 300,
-            handle: '.admin-tab',
-            ghostClass: 'dragging',
-            onEnd: function() {
-                // Salvar ordem automaticamente quando terminar de arrastar
-                salvarOrdemAbas();
-            }
-        });
+        sortableInstance = new Sortable(container, { animation: 300, handle: '.admin-tab', ghostClass: 'dragging', onEnd: function() { salvarOrdemAbas(); } });
+    }
+    
+    // ==================== DRAG & DROP DAS ABAS DO ESTOQUE ====================
+    function initDragDropEstoqueTabs() {
+        const container = document.getElementById('estoqueTabsContainer');
+        if (!container) return;
+        if (sortableEstoqueInstance) sortableEstoqueInstance.destroy();
+        sortableEstoqueInstance = new Sortable(container, { animation: 300, handle: '.estoque-tab', ghostClass: 'dragging', onEnd: function() { salvarOrdemEstoqueAbas(); } });
     }
     
     async function salvarOrdemAbas() {
         const tabs = document.querySelectorAll('.admin-tab');
-        const ordem = Array.from(tabs).map((tab, index) => ({
-            id: tab.dataset.tab,
-            ordem: index
-        }));
-        
-        // Salvar no localStorage
+        const ordem = Array.from(tabs).map((tab, index) => ({ id: tab.dataset.tab, ordem: index }));
         localStorage.setItem('admin_tabs_order', JSON.stringify(ordem));
-        
-        // Salvar no banco de dados (opcional - se tiver uma tabela de configurações)
-        try {
-            await supabaseClient.from('config').upsert({ chave: 'admin_tabs_order', valor: JSON.stringify(ordem) });
-        } catch(e) { console.log("Não foi possível salvar no banco"); }
-        
+        try { await supabaseClient.from('config').upsert({ chave: 'admin_tabs_order', valor: JSON.stringify(ordem) }); } catch(e) {}
         showToast("✅ Ordem das abas salva!");
     }
     
+    async function salvarOrdemEstoqueAbas() {
+        const tabs = document.querySelectorAll('.estoque-tab');
+        const ordem = Array.from(tabs).map((tab, index) => ({ id: tab.dataset.estoquePanel, ordem: index }));
+        localStorage.setItem('estoque_tabs_order', JSON.stringify(ordem));
+        showToast("✅ Ordem das abas do estoque salva!");
+    }
+    
     async function carregarOrdemAbas() {
-        // Tentar carregar do localStorage primeiro
         let ordem = localStorage.getItem('admin_tabs_order');
-        
-        // Se não tiver no localStorage, tentar do banco
         if (!ordem) {
-            try {
-                const { data } = await supabaseClient.from('config').select('valor').eq('chave', 'admin_tabs_order').single();
-                if (data && data.valor) ordem = data.valor;
-            } catch(e) {}
+            try { const { data } = await supabaseClient.from('config').select('valor').eq('chave', 'admin_tabs_order').single(); if (data && data.valor) ordem = data.valor; } catch(e) {}
         }
-        
         if (ordem) {
             const ordemArray = JSON.parse(ordem);
             const container = document.getElementById('adminTabsContainer');
             const tabs = Array.from(container.children);
-            
             ordemArray.sort((a,b) => a.ordem - b.ordem);
-            
             for (const item of ordemArray) {
                 const tab = tabs.find(t => t.dataset.tab === item.id);
                 if (tab) container.appendChild(tab);
@@ -931,31 +1016,78 @@
         }
     }
     
-    // ==================== FUNÇÕES DAS ABAS ====================
+    async function carregarOrdemEstoqueAbas() {
+        let ordem = localStorage.getItem('estoque_tabs_order');
+        if (ordem) {
+            const ordemArray = JSON.parse(ordem);
+            const container = document.getElementById('estoqueTabsContainer');
+            const tabs = Array.from(container.children);
+            ordemArray.sort((a,b) => a.ordem - b.ordem);
+            for (const item of ordemArray) {
+                const tab = tabs.find(t => t.dataset.estoquePanel === item.id);
+                if (tab) container.appendChild(tab);
+            }
+        }
+    }
+    
+    // ==================== FUNÇÕES DAS ABAS PRINCIPAIS ====================
     function initTabs() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
-        
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
-                // Evitar que o click atrapalhe o drag
                 if (e.target.classList.contains('dragging')) return;
-                
                 const tabId = tab.dataset.tab;
                 tabs.forEach(t => t.classList.remove('ativo'));
                 tab.classList.add('ativo');
                 contents.forEach(c => c.classList.remove('ativo'));
                 const targetContent = document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
                 if (targetContent) targetContent.classList.add('ativo');
-                
-                // Recarregar dados da aba selecionada
-                if (tabId === 'estoque') { carregarMateriais(); mostrarMateriais(); }
+                if (tabId === 'estoque') { carregarMateriais(); atualizarTabelaMateriais(); carregarMovimentacoes(); }
                 if (tabId === 'dashboard') carregarDashboard();
                 if (tabId === 'avaliacoes') renderizarAvaliacoesAdmin();
                 if (tabId === 'clientes') renderizarClientesAdmin();
                 if (tabId === 'produtos') renderizarAdminLista();
             });
         });
+    }
+    
+    // ==================== FUNÇÕES DAS SUB-ABAS DO ESTOQUE ====================
+    function initEstoqueTabs() {
+        const tabs = document.querySelectorAll('.estoque-tab');
+        const panels = document.querySelectorAll('.estoque-panel');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                if (e.target.classList.contains('dragging')) return;
+                const panelId = tab.dataset.estoquePanel;
+                tabs.forEach(t => t.classList.remove('ativo'));
+                tab.classList.add('ativo');
+                panels.forEach(p => p.classList.remove('ativo'));
+                const targetPanel = document.getElementById(`estoquePanel${panelId.charAt(0).toUpperCase() + panelId.slice(1)}`);
+                if (targetPanel) targetPanel.classList.add('ativo');
+                if (panelId === 'materiais') atualizarTabelaMateriais();
+                if (panelId === 'movimentacoes') carregarMovimentacoes();
+                if (panelId === 'entrada') carregarListaTipo('entrada');
+                if (panelId === 'saida') carregarListaTipo('saida');
+                if (panelId === 'desperdicio') carregarListaTipo('desperdicio');
+            });
+        });
+    }
+    
+    async function carregarListaTipo(tipo) {
+        const { data } = await supabaseClient.from(`${tipo}_estoque`).select('*').order('created_at', { ascending: false });
+        const container = document.getElementById(`lista${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
+        if (!container) return;
+        if (!data || data.length === 0) { container.innerHTML = '<p>Nenhum registro encontrado.</p>'; return; }
+        container.innerHTML = data.map(item => {
+            const material = materiais.find(m => m.id === item.material_id);
+            return `<div class="movimentacao-item ${tipo}">
+                        <div><strong>${new Date(item.created_at).toLocaleDateString()}</strong></div>
+                        <div>📦 ${material?.nome || 'Material'} - ${item.quantidade} ${material?.unidade} ${item.peso ? `(${item.peso}kg)` : ''}</div>
+                        <div>💰 R$ ${item.valor_total?.toFixed(2) || 0}</div>
+                        ${item.observacao ? `<div>📝 ${item.observacao}</div>` : ''}
+                    </div>`;
+        }).join('');
     }
     
     // ==================== MERCADO PAGO ====================
@@ -1073,7 +1205,7 @@
         if (nota && nota >= 1 && nota <= 5) showToast(`⭐ Avaliação ${nota} estrelas salva! Obrigado!`);
     };
     
-    // ==================== PRODUTOS ====================
+    // ==================== PRODUTOS - OTIMIZADO ====================
     async function carregarProdutos() {
         const { data } = await supabaseClient.from('produtos').select('*').order('id');
         produtos = data || [{ id: 1, nome: "Mousse de Maracujá", descricao: "Cremoso com toque azedinho", preco: 18.90, estoque: 8, imagem: "https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=600" },
@@ -1119,16 +1251,23 @@
         produtos.forEach(p => {
             const div = document.createElement('div');
             div.className = 'produto-admin-item';
-            div.innerHTML = `<input type="text" class="edit-nome" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" placeholder="Nome" style="width:110px;">
-                <input type="text" class="edit-desc" value="${p.descricao.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="descricao" placeholder="Descrição" style="width:160px;">
-                <input type="number" step="0.01" class="edit-preco" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço" style="width:65px;">
-                <input type="number" class="edit-estoque" value="${p.estoque}" data-id="${p.id}" data-field="estoque" placeholder="Estoque" style="width:55px;">
-                <input type="text" class="edit-imagem" value="${p.imagem}" data-id="${p.id}" data-field="imagem" placeholder="URL imagem" style="width:130px;">
-                <div class="upload-mini" style="width:80px;"><div class="upload-mini-label">📁</div><input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png"></div>
-                <button class="btn-salvar-produto" onclick="editarProdutoLocal(${p.id})" title="Salvar">💾</button>
-                <button class="btn-excluir-produto" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button>`;
+            div.innerHTML = `
+                <div class="campo-nome"><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
+                <div class="campo-desc"><textarea rows="2" data-id="${p.id}" data-field="descricao" placeholder="Descrição">${p.descricao.replace(/"/g, '&quot;')}</textarea></div>
+                <div class="campo-preco"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
+                <div class="campo-estoque"><input type="number" value="${p.estoque}" data-id="${p.id}" data-field="estoque" placeholder="Estoque"></div>
+                <div class="campo-imagem"><input type="text" value="${p.imagem}" data-id="${p.id}" data-field="imagem" placeholder="URL imagem"></div>
+                <div class="campo-upload">
+                    <div class="upload-mini"><div class="upload-mini-label">📁</div><input type="file" class="upload-imagem-edicao" data-id="${p.id}" accept="image/jpeg,image/png"></div>
+                </div>
+                <div class="campo-acoes">
+                    <button class="btn-icon btn-salvar-produto" onclick="editarProdutoLocal(${p.id})" title="Salvar">💾</button>
+                    <button class="btn-icon btn-excluir-produto" onclick="excluirProdutoLocal(${p.id})" title="Excluir">🗑️</button>
+                </div>
+            `;
             container.appendChild(div);
         });
+        
         document.querySelectorAll('.upload-imagem-edicao').forEach(input => {
             input.addEventListener('change', async (e) => {
                 const id = parseInt(input.dataset.id);
@@ -1207,8 +1346,6 @@
         qtdInput.addEventListener('input', calcularTotal); pesoInput.addEventListener('input', calcularTotal); valorUnitarioInput.addEventListener('input', calcularTotal);
         document.getElementById('materialSelect').addEventListener('change', (e) => { const selected = e.target.options[e.target.selectedIndex]; const preco = selected.dataset.preco; if (preco) valorUnitarioInput.value = preco; });
         document.getElementById('formularioEstoque').style.display = 'block';
-        document.getElementById('listaMateriais').style.display = 'none';
-        document.getElementById('listaMovimentacoes').style.display = 'none';
     }
     function fecharFormularioEstoque() { document.getElementById('formularioEstoque').style.display = 'none'; }
     async function salvarMovimentacao(tipo) {
@@ -1230,6 +1367,9 @@
         await carregarMateriais();
         await carregarMovimentacoes();
         await carregarDashboardFinanceiro();
+        if (tipo === 'entrada') carregarListaTipo('entrada');
+        if (tipo === 'saida') carregarListaTipo('saida');
+        if (tipo === 'desperdicio') carregarListaTipo('desperdicio');
     }
     async function carregarMovimentacoes() {
         const tipos = ['entrada', 'saida', 'desperdicio'];
@@ -1237,11 +1377,7 @@
         const todas = [...movimentacoes.entrada.map(m => ({ ...m, tipo: 'entrada' })), ...movimentacoes.saida.map(m => ({ ...m, tipo: 'saida' })), ...movimentacoes.desperdicio.map(m => ({ ...m, tipo: 'desperdicio' }))];
         todas.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
         document.getElementById('movimentacoesLista').innerHTML = todas.slice(0,30).map(m => { const material = materiais.find(mat => mat.id === m.material_id); const tipoText = { entrada: '📥 Entrada', saida: '📤 Saída', desperdicio: '⚠️ Desperdício' }[m.tipo]; const classe = { entrada: 'entrada', saida: 'saida', desperdicio: 'desperdicio' }[m.tipo]; const detalhes = m.tipo === 'saida' ? `<br>🎯 Produto: ${m.produto_fabricado || '-'}` : ''; return `<div class="movimentacao-item ${classe}"><div style="display:flex; justify-content:space-between;"><strong>${tipoText}</strong><small>${new Date(m.created_at).toLocaleString()}</small></div><div>📦 ${material?.nome || 'Material'} - ${m.quantidade} ${material?.unidade} ${m.peso ? `(${m.peso}kg)` : ''}</div><div>💰 R$ ${m.valor_total?.toFixed(2) || 0}</div>${detalhes}${m.observacao ? `<div>📝 ${m.observacao}</div>` : ''}</div>`; }).join('');
-        document.getElementById('listaMovimentacoes').style.display = 'block';
-        document.getElementById('listaMateriais').style.display = 'none';
-        document.getElementById('formularioEstoque').style.display = 'none';
     }
-    function mostrarMateriais() { document.getElementById('listaMateriais').style.display = 'block'; document.getElementById('listaMovimentacoes').style.display = 'none'; document.getElementById('formularioEstoque').style.display = 'none'; atualizarTabelaMateriais(); }
     function mostrarNovoMaterial() {
         const nome = prompt("Nome do material:"); if (!nome) return;
         const unidade = prompt("Unidade (kg, un, L, g):", "kg");
@@ -1249,7 +1385,7 @@
         if (isNaN(preco)) return;
         supabaseClient.from('materiais').insert([{ nome, unidade: unidade || 'kg', preco_unitario: preco, estoque_atual: 0 }]).then(() => { carregarMateriais(); showToast("Material adicionado!", 'success'); });
     }
-    async function editarMaterial(id) { const material = materiais.find(m => m.id === id); const novoNome = prompt("Novo nome:", material.nome); if (novoNome && novoNome !== material.nome) { await supabaseClient.from('materiais').update({ nome: novoNome }).eq('id', id); await carregarMateriais(); mostrarMateriais(); showToast("Material atualizado!", 'success'); } }
+    async function editarMaterial(id) { const material = materiais.find(m => m.id === id); const novoNome = prompt("Novo nome:", material.nome); if (novoNome && novoNome !== material.nome) { await supabaseClient.from('materiais').update({ nome: novoNome }).eq('id', id); await carregarMateriais(); showToast("Material atualizado!", 'success'); } }
     
     // ==================== DASHBOARD ====================
     async function carregarDashboard() {
@@ -1425,14 +1561,17 @@
                 document.getElementById('modalAdminSenha').style.display = 'none';
                 document.getElementById('modalAdmin').style.display = 'flex';
                 await carregarMateriais();
-                mostrarMateriais();
+                await carregarMovimentacoes();
                 await carregarDashboard();
                 renderizarAvaliacoesAdmin();
                 renderizarClientesAdmin();
                 renderizarAdminLista();
                 initDragDropTabs();
+                initDragDropEstoqueTabs();
                 await carregarOrdemAbas();
+                await carregarOrdemEstoqueAbas();
                 initTabs();
+                initEstoqueTabs();
             } else showToast("Senha incorreta!");
         });
         document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
