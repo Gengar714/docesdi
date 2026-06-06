@@ -327,6 +327,34 @@
         
         .alerta-estoque { background: #f39c12; color: white; padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
         
+        /* Modal de Material */
+        .modal-material .modal-content {
+            max-width: 500px;
+        }
+        .form-material {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-material .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-material label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .form-material input, .form-material select {
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        
         /* Formulários Admin */
         .form-produto, .form-categoria {
             background: var(--bg-color);
@@ -919,7 +947,9 @@
         <!-- Carrossel de Produtos -->
         <div class="produtos-carrossel-wrapper">
             <div class="swiper product-swiper" id="productSwiper">
-                <div class="swiper-wrapper" id="swiperProdutosWrapper"></div>
+                <div class="swiper-wrapper" id="swiperProdutosWrapper">
+                    <div class="swiper-slide" style="text-align:center;padding:40px;">Carregando produtos...</div>
+                </div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-pagination"></div>
@@ -1001,6 +1031,44 @@
     </div>
 </div>
 
+<!-- Modal para Material (Inclusão/Edição) -->
+<div id="modalMaterial" class="modal modal-material">
+    <div class="modal-content">
+        <h3 id="modalMaterialTitulo">➕ Novo Material</h3>
+        <div class="form-material">
+            <div class="field">
+                <label>📦 Nome do Material *</label>
+                <input type="text" id="materialNome" placeholder="Ex: Farinha de Trigo">
+            </div>
+            <div class="field">
+                <label>⚖️ Unidade de Medida *</label>
+                <select id="materialUnidade">
+                    <option value="kg">Quilograma (kg)</option>
+                    <option value="g">Grama (g)</option>
+                    <option value="L">Litro (L)</option>
+                    <option value="ml">Mililitro (ml)</option>
+                    <option value="un">Unidade (un)</option>
+                    <option value="pct">Pacote (pct)</option>
+                    <option value="cx">Caixa (cx)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>💰 Preço Unitário (R$) *</label>
+                <input type="number" id="materialPreco" step="0.01" placeholder="0,00">
+            </div>
+            <div class="field">
+                <label>📊 Estoque Atual</label>
+                <input type="number" id="materialEstoque" step="0.001" placeholder="0">
+            </div>
+            <input type="hidden" id="materialId" value="">
+            <div style="display: flex; gap: 10px;">
+                <button id="btnSalvarMaterial" class="btn-add" style="flex:1;">💾 Salvar</button>
+                <button id="btnCancelarMaterial" style="flex:1; background:#999;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Admin COMPLETO -->
 <div id="modalAdmin" class="modal">
     <div class="modal-content" style="max-width:95%; width:95%; max-height:90vh;">
@@ -1064,6 +1132,7 @@
             </div>
             <div id="estoquePanelResumo" class="estoque-panel ativo">
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn-add" onclick="abrirModalMaterial(null)">➕ Novo Material</button>
                     <button class="btn-add" onclick="mostrarFormularioEstoque('entrada')">📥 Nova Entrada</button>
                     <button class="btn-add" onclick="mostrarFormularioEstoque('saida')">📤 Nova Saída</button>
                     <button class="btn-add" onclick="mostrarFormularioEstoque('desperdicio')">⚠️ Novo Desperdício</button>
@@ -1074,12 +1143,11 @@
             <div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div>
             <div id="estoquePanelDesperdicio" class="estoque-panel"><div id="listaDesperdicios"></div></div>
             <div id="estoquePanelMateriais" class="estoque-panel">
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <button class="btn-add" onclick="mostrarNovoMaterial()">➕ Novo Material</button>
-                </div>
                 <div style="overflow-x: auto;">
                     <table class="tabela-estoque" id="tabelaMateriais">
-                        <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr></thead>
+                        <thead>
+                            <tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Valor Total</th><th>Ações</th></tr>
+                        </thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -1133,7 +1201,6 @@
     let avaliacoes = [];
     let clientes = [];
     let materiais = [];
-    let movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     let carrinho = [];
     let carrinhoAntesLogin = [];
     let usuarioLogado = null;
@@ -1363,7 +1430,7 @@
         }
     }
     
-    // ==================== PRODUTOS ====================
+    // ==================== PRODUTOS - CORRIGIDO ====================
     async function carregarProdutos() {
         try {
             const { data, error } = await supabaseClient.from('produtos').select('*');
@@ -1373,10 +1440,20 @@
         } catch(e) { carregarDadosPadrao(); }
         
         renderizarAdminProdutos();
-        if (categoriaAtiva) carregarProdutosPorCategoria();
+        
+        // Forçar carregamento dos produtos na categoria ativa
+        if (categoriaAtiva) {
+            carregarProdutosPorCategoria();
+        } else if (categorias.length > 0) {
+            categoriaAtiva = categorias[0].id;
+            carregarProdutosPorCategoria();
+            renderizarCategoriasFront();
+        }
     }
     
     function carregarProdutosPorCategoria() {
+        if (!categoriaAtiva) return;
+        
         let filtrados = produtos.filter(p => p.categoria_id === categoriaAtiva);
         
         // Aplicar busca por texto
@@ -1471,7 +1548,7 @@
             if (catSelect) p.categoria_id = parseInt(catSelect.value);
             showToast(`Produto "${p.nome}" salvo!`);
             renderizarAdminProdutos();
-            if (categoriaAtiva) carregarProdutosPorCategoria();
+            carregarProdutosPorCategoria();
         }
     };
     
@@ -1480,7 +1557,7 @@
             produtos = produtos.filter(p => p.id !== id);
             showToast(`Produto removido!`);
             renderizarAdminProdutos();
-            if (categoriaAtiva) carregarProdutosPorCategoria();
+            carregarProdutosPorCategoria();
         }
     };
     
@@ -1683,10 +1760,11 @@
         renderizarAdminSlides();
     }
     
-    // ==================== ESTOQUE ====================
+    // ==================== ESTOQUE - CORRIGIDO ====================
     async function carregarMateriais() {
         try {
-            const { data } = await supabaseClient.from('materiais').select('*').order('nome');
+            const { data, error } = await supabaseClient.from('materiais').select('*').order('nome');
+            if (error) throw error;
             if (data && data.length > 0) materiais = data;
             else carregarDadosPadrao();
         } catch(e) { carregarDadosPadrao(); }
@@ -1718,9 +1796,80 @@
                 <td>R$ ${parseFloat(m.preco_unitario).toFixed(4)}</td>
                 <td>${m.estoque_atual.toFixed(2)} ${m.unidade} ${alerta}</td>
                 <td>R$ ${(m.estoque_atual * m.preco_unitario).toFixed(2)}</td>
-                <td><button onclick="editarMaterial(${m.id})" class="btn-add" style="padding:4px 8px;">✏️</button></td>
+                <td><button class="btn-add" style="padding:4px 8px;" onclick="abrirModalMaterial(${m.id})">✏️ Editar</button></td>
             `;
         });
+    }
+    
+    // Abrir modal para novo material ou edição
+    window.abrirModalMaterial = function(id = null) {
+        const modal = document.getElementById('modalMaterial');
+        const titulo = document.getElementById('modalMaterialTitulo');
+        const nomeInput = document.getElementById('materialNome');
+        const unidadeSelect = document.getElementById('materialUnidade');
+        const precoInput = document.getElementById('materialPreco');
+        const estoqueInput = document.getElementById('materialEstoque');
+        const idInput = document.getElementById('materialId');
+        
+        if (id) {
+            // Modo edição
+            const material = materiais.find(m => m.id === id);
+            if (material) {
+                titulo.textContent = '✏️ Editar Material';
+                nomeInput.value = material.nome;
+                unidadeSelect.value = material.unidade;
+                precoInput.value = material.preco_unitario;
+                estoqueInput.value = material.estoque_atual;
+                idInput.value = material.id;
+            }
+        } else {
+            // Modo novo
+            titulo.textContent = '➕ Novo Material';
+            nomeInput.value = '';
+            unidadeSelect.value = 'kg';
+            precoInput.value = '';
+            estoqueInput.value = '0';
+            idInput.value = '';
+        }
+        
+        modal.style.display = 'flex';
+    };
+    
+    // Salvar material (novo ou edição)
+    async function salvarMaterial() {
+        const id = document.getElementById('materialId').value;
+        const nome = document.getElementById('materialNome').value.trim();
+        const unidade = document.getElementById('materialUnidade').value;
+        const preco = parseFloat(document.getElementById('materialPreco').value);
+        const estoque = parseFloat(document.getElementById('materialEstoque').value) || 0;
+        
+        if (!nome) {
+            showToast("Nome do material é obrigatório!", 'error');
+            return;
+        }
+        if (isNaN(preco) || preco <= 0) {
+            showToast("Preço unitário deve ser maior que zero!", 'error');
+            return;
+        }
+        
+        if (id) {
+            // Atualizar existente
+            const index = materiais.findIndex(m => m.id == id);
+            if (index !== -1) {
+                materiais[index] = { ...materiais[index], nome, unidade, preco_unitario: preco, estoque_atual: estoque };
+                showToast(`Material "${nome}" atualizado!`, 'success');
+            }
+        } else {
+            // Criar novo
+            const novoId = Date.now();
+            materiais.push({ id: novoId, nome, unidade, preco_unitario: preco, estoque_atual: estoque });
+            showToast(`Material "${nome}" adicionado!`, 'success');
+        }
+        
+        // Fechar modal e atualizar tabela
+        document.getElementById('modalMaterial').style.display = 'none';
+        atualizarTabelaMateriais();
+        atualizarCardsEstoque();
     }
     
     window.mostrarFormularioEstoque = function(tipo) {
@@ -1770,28 +1919,14 @@
         await carregarMateriais();
     };
     
-    window.mostrarNovoMaterial = function() {
-        const nome = prompt("Nome do material:"); if (!nome) return;
-        const unidade = prompt("Unidade (kg, un, L, g):", "kg");
-        const preco = parseFloat(prompt("Preço unitário:"));
-        if (isNaN(preco)) return;
+    async function carregarListaTipo(tipo) {
+        const container = document.getElementById(`lista${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
+        if (!container) return;
+        container.innerHTML = '<p>Carregando...</p>';
         
-        const novoId = Date.now();
-        materiais.push({ id: novoId, nome, unidade: unidade || 'kg', preco_unitario: preco, estoque_atual: 0 });
-        atualizarTabelaMateriais();
-        atualizarCardsEstoque();
-        showToast("Material adicionado!");
-    };
-    
-    window.editarMaterial = async function(id) {
-        const material = materiais.find(m => m.id === id);
-        const novoNome = prompt("Novo nome:", material.nome);
-        if (novoNome && novoNome !== material.nome) {
-            material.nome = novoNome;
-            atualizarTabelaMateriais();
-            showToast("Material atualizado!");
-        }
-    };
+        // Simular dados para exemplo
+        container.innerHTML = '<p>Nenhum registro</p>';
+    }
     
     // ==================== DASHBOARD ====================
     async function carregarDashboard() {
@@ -2124,22 +2259,6 @@
         });
     }
     
-    async function carregarListaTipo(tipo) {
-        const { data } = await supabaseClient.from(`${tipo}_estoque`).select('*').order('created_at', { ascending: false });
-        const container = document.getElementById(`lista${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
-        if (!container) return;
-        if (!data || data.length === 0) { container.innerHTML = '<p>Nenhum registro</p>'; return; }
-        container.innerHTML = data.map(item => {
-            const material = materiais.find(m => m.id === item.material_id);
-            return `<div class="movimentacao-item ${tipo}">
-                        <div><strong>${new Date(item.created_at).toLocaleDateString()}</strong></div>
-                        <div>📦 ${material?.nome || 'Material'} - ${item.quantidade} ${material?.unidade}</div>
-                        <div>💰 R$ ${item.valor_total?.toFixed(2) || 0}</div>
-                        ${item.observacao ? `<div>📝 ${item.observacao}</div>` : ''}
-                    </div>`;
-        }).join('');
-    }
-    
     // ==================== RECUPERAÇÃO DE SENHA ====================
     async function solicitarRecuperacaoSenha(email) {
         const { data } = await supabaseClient.from('clientes').select('id').eq('email', email);
@@ -2213,6 +2332,12 @@
         document.getElementById('btnSalvarCategorias')?.addEventListener('click', () => showToast("Categorias salvas!"));
         document.getElementById('btnSalvarProdutos')?.addEventListener('click', () => showToast("Produtos salvos!"));
         document.getElementById('btnSalvarSlides')?.addEventListener('click', () => showToast("Slides salvos!"));
+        
+        // Eventos do modal de material
+        document.getElementById('btnSalvarMaterial')?.addEventListener('click', salvarMaterial);
+        document.getElementById('btnCancelarMaterial')?.addEventListener('click', () => {
+            document.getElementById('modalMaterial').style.display = 'none';
+        });
         
         document.getElementById('btnExpandAdmin')?.addEventListener('click', () => {
             const modalContent = document.querySelector('#modalAdmin .modal-content');
