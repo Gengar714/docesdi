@@ -167,6 +167,25 @@
         .btn-sair-dropdown { background: #e74c3c !important; }
         .close-dropdown { float: right; cursor: pointer; font-size: 1.2rem; }
         
+        /* Admin */
+        .admin-btn-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .btn-admin-float {
+            background: linear-gradient(135deg, #654321, #4a3b32);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 0.85rem;
+        }
+        
         .admin-tabs-container {
             display: flex;
             flex-wrap: wrap;
@@ -219,6 +238,7 @@
             border-color: var(--accent-color); 
         }
         
+        /* Gráficos minimizáveis */
         .chart-card {
             background: var(--bg-color);
             border-radius: var(--border-radius);
@@ -248,6 +268,7 @@
         .chart-body { padding: 15px; transition: all 0.3s; }
         .chart-body.minimized { display: none; }
         
+        /* Filtro de data */
         .filter-date {
             display: flex;
             gap: 10px;
@@ -770,7 +791,6 @@
         .date-range { display: none; gap: 8px; align-items: center; }
         .date-range.show { display: flex; }
         
-        /* Checkbox personalizado */
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -801,6 +821,7 @@
     <button class="btn-historico hidden" id="btnHistorico">📦 Histórico</button>
     <div id="clienteButtonArea"></div>
 </div>
+<div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
 
 <header>
     <h1 id="logoNome">Doces Di</h1>
@@ -1033,12 +1054,51 @@
     let materiais = [], movimentacoes = { entrada: [], saida: [], desperdicio: [] };
     let sortableInstance = null, sortableEstoqueInstance = null;
     let paymentCheckInterval = null;
+    let adminModalAberto = false;
+    let dadosAdminCarregados = false;
     
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     function validarSenhaForte(s) { return s.length >= 8 && /[A-Z]/.test(s) && /[a-z]/.test(s) && /[0-9]/.test(s) && /[!@#$%^&*]/.test(s); }
     function showToast(message, type = 'success') { const toast = document.createElement('div'); toast.className = 'toast'; toast.textContent = message; document.getElementById('toastContainer').appendChild(toast); setTimeout(() => toast.remove(), 3000); }
     function trackEvent(eventName, eventParams) { if (typeof gtag !== 'undefined') gtag('event', eventName, eventParams); }
     function fecharModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    
+    // ==================== ADMIN: ABRIR/FECHAR ====================
+    function abrirAdmin() {
+        const modal = document.getElementById('modalAdmin');
+        if (!modal) return;
+        
+        modal.style.display = 'flex';
+        adminModalAberto = true;
+        
+        if (dadosAdminCarregados) {
+            return;
+        }
+        
+        carregarDadosAdmin();
+    }
+    
+    function fecharAdmin() {
+        const modal = document.getElementById('modalAdmin');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        adminModalAberto = false;
+    }
+    
+    async function carregarDadosAdmin() {
+        showToast("🔄 Carregando dados do administrador...", 'info');
+        
+        await carregarMateriais();
+        await carregarMovimentacoes();
+        await carregarDashboard();
+        await carregarAvaliacoesAdmin();
+        renderizarClientesAdmin();
+        renderizarAdminLista();
+        
+        dadosAdminCarregados = true;
+        showToast("✅ Dados carregados!", 'success');
+    }
     
     // ==================== FUNÇÕES PARA MINIMIZAR GRÁFICOS ====================
     window.toggleChart = function(chartId) {
@@ -1283,7 +1343,6 @@
         } catch (error) { return null; }
     }
     
-    // Verificar se o usuário já optou por não ver a mensagem de criar conta
     function verificarNaoMostrarNovamente() {
         return localStorage.getItem('nao_mostrar_criar_conta') === 'true';
     }
@@ -1302,12 +1361,9 @@
         const descricao = `Pedido Doces Di - ${new Date().toLocaleDateString()}`;
         const pedidoId = Date.now();
         
-        // Verificar se já mostrou a mensagem de criar conta
         if (!verificarNaoMostrarNovamente()) {
-            // Mostrar modal de pergunta
             document.getElementById('modalPerguntaConta').style.display = 'block';
             
-            // Aguardar escolha do usuário
             return new Promise((resolve) => {
                 const btnCriarConta = document.getElementById('btnCriarConta');
                 const btnPagarSemConta = document.getElementById('btnPagarSemConta');
@@ -1343,7 +1399,6 @@
     }
     
     async function processarPagamento(total, descricao, pedidoId) {
-        // Salvar pedido no banco
         const { error } = await supabaseClient.from('pedidos').insert([{ 
             cliente_id: usuarioLogado?.id || null, 
             cliente_nome: usuarioLogado?.nome || 'Cliente', 
@@ -1366,7 +1421,6 @@
         if (checkoutUrl) {
             window.open(checkoutUrl, '_blank');
             
-            // Verificar pagamento periodicamente
             if (paymentCheckInterval) clearInterval(paymentCheckInterval);
             paymentCheckInterval = setInterval(async () => {
                 const { data } = await supabaseClient
@@ -1383,7 +1437,6 @@
                 }
             }, 3000);
             
-            // Timeout de 5 minutos
             setTimeout(() => {
                 if (paymentCheckInterval) {
                     clearInterval(paymentCheckInterval);
@@ -1429,7 +1482,6 @@
         if (observacao) msg += `📝 Obs: ${observacao}\n`;
         msg += `✨ Pedido confirmado! Aguardo preparo.`;
         
-        // Atualizar status do pedido
         const { data: pedidos } = await supabaseClient
             .from('pedidos')
             .select('id')
@@ -1441,16 +1493,12 @@
             await supabaseClient.from('pedidos').update({ status: 'pago' }).eq('id', pedidos[0].id);
         }
         
-        // Salvar carrinho antes de limpar
         const itensCarrinho = [...carrinho];
-        
-        // Limpar carrinho
         carrinho = [];
         salvarCarrinho();
         atualizarCarrinho();
         renderizarProdutos();
         
-        // Abrir WhatsApp
         window.open(`https://wa.me/5521965783597?text=${encodeURIComponent(msg)}`, '_blank');
         showToast("📦 Pedido enviado para a loja!", 'success');
         trackEvent('purchase', { value: total, items: itensCarrinho });
@@ -1802,7 +1850,6 @@
         area.innerHTML = '';
         
         if (usuarioLogado) {
-            // Usar nome_social como prioridade para exibição
             const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente'));
             area.innerHTML = `<div class="usuario-dropdown" id="usuarioDropdown"><div class="usuario-info" onclick="toggleDropdown()"><span>👤 ${nomeExibir}</span><span>▼</span></div><div class="dropdown-content"><span class="close-dropdown" onclick="fecharDropdown()">✕</span><h4>✏️ Meus Dados</h4>${usuarioTipo === 'admin' ? '<p style="text-align:center; color:var(--accent-color);">👑 Administrador</p><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>' : `<div class="campo"><label>Nome completo</label><input type="text" id="perfilNomeDrop" value="${(usuarioLogado.nome || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Como prefere que a gente te chame?</label><input type="text" id="perfilNomeSocialDrop" value="${(usuarioLogado.nome_social || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Data de nascimento</label><input type="date" id="perfilDataNascDrop" value="${usuarioLogado.data_nasc || ''}"></div><div class="campo"><label>CEP</label><div class="cep-grupo-mini"><input type="text" id="perfilCepDrop" value="${(usuarioLogado.cep || '').replace(/"/g, '&quot;')}"><button onclick="buscarCepNoDropdown()">🔍</button></div></div><div class="campo"><label>Endereço</label><input type="text" id="perfilEnderecoDrop" value="${(usuarioLogado.endereco || '').replace(/"/g, '&quot;')}"></div><div class="linha-2-col"><div><label>Número</label><input type="text" id="perfilNumeroDrop" value="${(usuarioLogado.numero || '').replace(/"/g, '&quot;')}"></div><div><label>Complemento</label><input type="text" id="perfilComplementoDrop" value="${(usuarioLogado.complemento || '').replace(/"/g, '&quot;')}"></div></div><div class="campo"><label>Ponto de referência</label><input type="text" id="perfilReferenciaDrop" value="${(usuarioLogado.referencia || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Telefone/WhatsApp</label><input type="text" id="perfilTelefoneDrop" value="${(usuarioLogado.telefone || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>E-mail</label><input type="email" id="perfilEmailDrop" value="${(usuarioLogado.email || '').replace(/"/g, '&quot;')}"></div><div class="campo"><label>Nova senha (opcional)</label><input type="password" id="perfilNovaSenhaDrop" placeholder="Deixe em branco para manter"></div><button onclick="atualizarPerfilDropdown()">💾 Salvar Alterações</button><button onclick="abrirHistorico()">📦 Meus Pedidos</button><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>`}</div></div>`;
             if (usuarioTipo === 'cliente') carregarPerfilNoDropdown();
@@ -1843,7 +1890,7 @@
         fecharDropdown(); 
         renderizarProdutos(); 
         showToast("Saiu da conta!"); 
-        document.getElementById('modalAdmin').style.display = 'none';
+        fecharAdmin();
     }
     
     function toggleDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.toggle('show'); }
@@ -1890,6 +1937,18 @@
         document.getElementById('btnFecharFavoritos')?.addEventListener('click', fecharModal);
         document.getElementById('btnFecharHistorico')?.addEventListener('click', fecharModal);
         
+        // Botão Admin independente (agora só abre se for admin)
+        document.getElementById('btnAdminAcesso')?.addEventListener('click', () => {
+            if (usuarioLogado && usuarioTipo === 'admin') {
+                abrirAdmin();
+            } else if (usuarioLogado && usuarioTipo === 'cliente') {
+                showToast("Você não tem permissão de administrador!", 'warning');
+            } else {
+                showToast("Faça login como administrador primeiro!", 'warning');
+                document.getElementById('modalCliente').style.display = 'flex';
+            }
+        });
+        
         // LOGIN - Evento principal
         document.getElementById('btnLogin')?.addEventListener('click', async () => {
             const email = document.getElementById('loginEmail').value;
@@ -1910,19 +1969,7 @@
                     showToast(`Bem-vindo, ${usuarioLogado.nome_social || usuarioLogado.nome}!`);
                 } else if (usuarioTipo === 'admin') {
                     showToast("👑 Bem-vindo, Administrador!");
-                    document.getElementById('modalAdmin').style.display = 'flex';
-                    await carregarMateriais();
-                    await carregarMovimentacoes();
-                    await carregarDashboard();
-                    await carregarAvaliacoesAdmin();
-                    renderizarClientesAdmin();
-                    renderizarAdminLista();
-                    initDragDropTabs();
-                    initDragDropEstoqueTabs();
-                    await carregarOrdemAbas();
-                    await carregarOrdemEstoqueAbas();
-                    initTabs();
-                    initEstoqueTabs();
+                    abrirAdmin();
                 }
             } else {
                 showToast("Email ou senha incorretos!");
@@ -1944,7 +1991,7 @@
         document.getElementById('tabCadastroBtn')?.addEventListener('click', () => { document.getElementById('loginPanel').style.display = 'none'; document.getElementById('cadastroPanel').style.display = 'block'; });
         document.getElementById('buscarCepCadastro')?.addEventListener('click', () => { const cep = document.getElementById('cadCep').value; if (cep) buscarCep(cep, 'cadastro'); });
         
-        document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => document.getElementById('modalAdmin').style.display = 'none');
+        document.getElementById('btnCancelarAdmin')?.addEventListener('click', () => fecharAdmin());
         document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosNoBanco);
         document.getElementById('btnAddProdutoAdmin')?.addEventListener('click', adicionarProdutoAdmin);
         document.getElementById('btnSaveOrder')?.addEventListener('click', salvarOrdemAbas);
@@ -1964,6 +2011,21 @@
         
         window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
         document.addEventListener('click', function(event) { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown && !dropdown.contains(event.target)) dropdown.classList.remove('show'); });
+        
+        // Atalho de teclado Ctrl+Shift+A para abrir admin
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                if (usuarioLogado && usuarioTipo === 'admin') {
+                    abrirAdmin();
+                } else if (usuarioLogado && usuarioTipo === 'cliente') {
+                    showToast("Você não tem permissão de administrador!", 'warning');
+                } else {
+                    showToast("Faça login como administrador primeiro!", 'warning');
+                    document.getElementById('modalCliente').style.display = 'flex';
+                }
+            }
+        });
     }
     
     async function cadastrarCliente(nome, email, senha, nomeSocial, dataNasc, cep, endereco, numero, complemento, referencia, telefone) {
