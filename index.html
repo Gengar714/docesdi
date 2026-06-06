@@ -226,7 +226,7 @@
         }
         .admin-header h3 { margin: 0; }
         .admin-header-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-expand, .btn-new-window {
+        .btn-expand, .btn-new-window, .btn-save-order {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             padding: 5px 10px;
@@ -387,8 +387,32 @@
             max-height: 85vh;
             overflow-y: auto;
         }
+        .modal-content h3 { color: var(--accent-color); margin-bottom: 15px; }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+        .modal-content button {
+            background: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; background: var(--bg-color); border: none; padding: 10px; border-radius: 25px; cursor: pointer; }
+        .tab-btn.ativo { background: var(--accent-color); color: white; }
         
-        .form-produto {
+        .form-produto, .form-categoria {
             background: var(--bg-color);
             padding: 15px;
             border-radius: var(--border-radius);
@@ -398,9 +422,9 @@
             gap: 10px;
             align-items: flex-end;
         }
-        .form-produto .field { flex: 1; min-width: 120px; }
-        .form-produto label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
-        .form-produto input, .form-produto textarea, .form-produto select {
+        .form-produto .field, .form-categoria .field { flex: 1; min-width: 120px; }
+        .form-produto label, .form-categoria label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-produto input, .form-produto textarea, .form-categoria input, .form-categoria select {
             width: 100%;
             padding: 8px;
             border-radius: 20px;
@@ -409,7 +433,7 @@
         }
         .btn-add { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; }
         
-        .produto-admin-item {
+        .produto-admin-item, .categoria-admin-item {
             background: var(--bg-color);
             padding: 10px;
             border-radius: var(--border-radius);
@@ -419,7 +443,7 @@
             gap: 8px;
             align-items: center;
         }
-        .produto-admin-item input, .produto-admin-item select {
+        .produto-admin-item input, .categoria-admin-item input {
             padding: 6px 10px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
@@ -434,6 +458,7 @@
         .toast { padding: 8px 16px; border-radius: 50px; margin-top: 8px; animation: fadeInUp 0.3s ease; font-size: 0.8rem; }
         .toast.success { background: #27ae60; color: white; }
         .toast.error { background: #e74c3c; color: white; }
+        .toast.warning { background: #f39c12; color: white; }
         
         footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 15px; margin-top: 40px; }
         
@@ -451,7 +476,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="login-btn-container">
-    <button class="theme-toggle" id="themeToggle">🌙 Tema</button>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
     <button class="btn-favoritos hidden" id="btnFavoritos">❤️ Favoritos</button>
     <button class="btn-historico hidden" id="btnHistorico">📦 Histórico</button>
     <div id="clienteButtonArea"></div>
@@ -461,38 +486,40 @@
 </div>
 
 <header>
-    <h1>Doces Di</h1>
-    <p>A vida é mais doce quando compartilhada</p>
+    <h1 id="logoNome">Doces Di</h1>
+    <p id="logoSlogan">A vida é mais doce quando compartilhada</p>
 </header>
 
 <div class="carousel-container" id="carouselContainer">
     <div class="carousel-slides" id="carouselSlides"></div>
     <button class="carousel-btn prev" id="carouselPrev">❮</button>
     <button class="carousel-btn next" id="carouselNext">❯</button>
+    <div class="carousel-dots" id="carouselDots"></div>
 </div>
 
-<!-- Carrossel de Categorias/Abas -->
 <div class="categorias-container">
     <div class="categorias-carrossel" id="categoriasCarrossel">
-        <span style="padding:8px 20px;">Carregando...</span>
+        <span style="padding:8px 20px;">Carregando categorias...</span>
     </div>
 </div>
 
-<!-- Carrossel de Produtos -->
 <div class="produtos-carrossel-wrapper">
     <div class="swiper product-swiper" id="productSwiper">
         <div class="swiper-wrapper" id="swiperProdutosWrapper"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
 </div>
 
 <div class="main-layout">
     <main class="vitrine">
         <div class="search-container">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Buscar produto...">
-                <button id="btnBuscar">Buscar</button>
+            <div class="search-main">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar produto...">
+                    <button id="btnBuscar">Buscar</button>
+                </div>
             </div>
         </div>
     </main>
@@ -507,25 +534,61 @@
 </div>
 
 <footer>
-    <p>© 2026 Doces Di - Todos os direitos reservados</p>
-    <p>📞 (21) 96578-3597</p>
+    <p>© <span id="anoAtual">2026</span> <span id="footerNome">Doces Di</span></p>
+    <p id="footerContato">(21) 96578-3597 | contato@docesdi.com</p>
 </footer>
 
 <!-- MODAIS -->
 <div id="modalCliente" class="modal">
     <div class="modal-content">
-        <h3>🔐 Login</h3>
-        <input type="text" id="loginEmail" placeholder="E-mail / Admin">
-        <input type="password" id="loginSenha" placeholder="Senha">
-        <button id="btnLogin" style="background:var(--accent-color); color:white; border:none; padding:10px; border-radius:25px; width:100%;">Entrar</button>
-        <hr style="margin:15px 0;">
-        <h3>📝 Cadastro</h3>
-        <input type="text" id="cadNome" placeholder="Nome completo">
-        <input type="email" id="cadEmail" placeholder="E-mail">
-        <input type="text" id="cadTelefone" placeholder="WhatsApp">
-        <input type="password" id="cadSenha" placeholder="Senha">
-        <button id="btnCadastrar" style="background:#27ae60; color:white; border:none; padding:10px; border-radius:25px; width:100%;">Cadastrar</button>
-        <button id="btnComprarSemLogin" style="background:#999; color:white; border:none; padding:10px; border-radius:25px; width:100%; margin-top:10px;">Continuar sem login</button>
+        <div class="tab-buttons">
+            <button class="tab-btn ativo" id="tabLoginBtn">Entrar</button>
+            <button class="tab-btn" id="tabCadastroBtn">Cadastrar</button>
+        </div>
+        <div id="loginPanel">
+            <h3>Login</h3>
+            <input type="text" id="loginEmail" placeholder="E-mail / Admin">
+            <input type="password" id="loginSenha" placeholder="Senha">
+            <button id="btnLogin">Entrar</button>
+            <button id="btnEsqueciSenha" style="background:#f39c12;">🔑 Esqueci minha senha</button>
+            <hr>
+            <button id="btnComprarSemLogin" style="background:#25d366;">Continuar sem login</button>
+        </div>
+        <div id="cadastroPanel" style="display:none;">
+            <h3>Cadastro</h3>
+            <input type="text" id="cadNome" placeholder="Nome completo *">
+            <input type="text" id="cadNomeSocial" placeholder="Como prefere que a gente te chame?">
+            <input type="date" id="cadDataNasc">
+            <input type="text" id="cadCep" placeholder="CEP">
+            <button id="buscarCepCadastro">🔍 Buscar CEP</button>
+            <input type="text" id="cadEndereco" placeholder="Endereço">
+            <div style="display:flex; gap:8px;"><input type="text" id="cadNumero" placeholder="Número"><input type="text" id="cadComplemento" placeholder="Complemento"></div>
+            <input type="text" id="cadReferencia" placeholder="Ponto referência">
+            <input type="text" id="cadTelefone" placeholder="Telefone/WhatsApp">
+            <input type="email" id="cadEmail" placeholder="E-mail *">
+            <input type="password" id="cadSenha" placeholder="Senha *">
+            <input type="password" id="cadConfirmarSenha" placeholder="Confirmar senha *">
+            <button id="btnCadastrar">Cadastrar</button>
+        </div>
+        <div id="recuperarPanel" style="display:none;">
+            <h3>Recuperar Senha</h3>
+            <input type="email" id="recuperarEmail" placeholder="Seu e-mail">
+            <button id="btnEnviarRecuperacao">📧 Enviar nova senha</button>
+            <button id="btnVoltarLogin" style="background:#999;">Voltar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para carrinho pendente ao logar -->
+<div id="modalCarrinhoPendente" class="modal">
+    <div class="modal-content">
+        <h3>🛒 Carrinho Pendente</h3>
+        <p>Você tem itens no carrinho de antes de fazer login.</p>
+        <div id="carrinhoPendenteItens" style="margin: 15px 0; max-height: 200px; overflow-y: auto;"></div>
+        <div style="display: flex; gap: 10px;">
+            <button id="btnManterCarrinho" style="flex:1; background:var(--success); color:white; border:none; padding:10px; border-radius:25px; cursor:pointer;">✅ Manter itens</button>
+            <button id="btnLimparCarrinho" style="flex:1; background:var(--error); color:white; border:none; padding:10px; border-radius:25px; cursor:pointer;">🗑️ Limpar carrinho</button>
+        </div>
     </div>
 </div>
 
@@ -534,38 +597,25 @@
         <div class="admin-header">
             <h3>🔧 Área Administrativa</h3>
             <div class="admin-header-buttons">
-                <button class="btn-expand" id="btnExpandAdmin" title="Expandir">📐 Expandir</button>
-                <button class="btn-new-window" id="btnNewWindowAdmin" title="Abrir em nova guia">🪟 Nova Janela</button>
+                <button class="btn-expand" id="btnExpandAdmin" title="Expandir">📐</button>
+                <button class="btn-new-window" id="btnNewWindowAdmin" title="Abrir em nova guia">🪟</button>
+                <button class="btn-save-order" id="btnSaveOrder" title="Salvar ordem das abas">💾 Salvar Ordem</button>
             </div>
         </div>
         
         <div class="admin-tabs-container" id="adminTabsContainer">
-            <div class="admin-tab ativo" data-tab="produtos">🍰 Produtos</div>
-            <div class="admin-tab" data-tab="categorias">🏷️ Categorias</div>
+            <div class="admin-tab ativo" data-tab="categorias">🏷️ Categorias</div>
+            <div class="admin-tab" data-tab="produtos">🍰 Produtos</div>
             <div class="admin-tab" data-tab="slides">📸 Slides</div>
+            <div class="admin-tab" data-tab="avaliacoes">⭐ Avaliações</div>
+            <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
+            <div class="admin-tab" data-tab="dashboard">📊 Dashboard</div>
         </div>
         
-        <!-- Aba Produtos -->
-        <div id="tabProdutos" class="admin-tab-content ativo">
-            <div class="form-produto">
-                <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Produto"></div>
-                <div class="field"><label>Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição"></textarea></div>
-                <div class="field"><label>Preço</label><input type="number" step="0.01" id="prodPreco" placeholder="0.00"></div>
-                <div class="field"><label>Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
-                <div class="field"><label>Categoria</label><select id="prodCategoriaSelect"></select></div>
-                <div class="field"><label>Imagem URL</label><input type="text" id="prodImagem" placeholder="https://..."></div>
-                <div><button id="btnAddProduto" class="btn-add">➕ Adicionar</button></div>
-            </div>
-            <h4>📋 Produtos Cadastrados</h4>
-            <div id="listaAdminProdutos"></div>
-            <button id="btnSalvarProdutos" class="btn-add" style="margin-top:20px;">💾 Salvar Produtos</button>
-        </div>
-        
-        <!-- Aba Categorias -->
-        <div id="tabCategorias" class="admin-tab-content">
-            <div class="form-produto">
+        <div id="tabCategorias" class="admin-tab-content ativo">
+            <div class="form-categoria">
                 <div class="field"><label>Nome da Categoria</label><input type="text" id="categoriaNome" placeholder="Ex: Bolos"></div>
-                <div class="field"><label>Ícone</label><input type="text" id="categoriaIcone" placeholder="🍰"></div>
+                <div class="field small"><label>Ícone</label><input type="text" id="categoriaIcone" placeholder="🍰"></div>
                 <div><button id="btnAddCategoria" class="btn-add">➕ Adicionar</button></div>
             </div>
             <h4>📋 Categorias</h4>
@@ -573,7 +623,21 @@
             <button id="btnSalvarCategorias" class="btn-add" style="margin-top:20px;">💾 Salvar Categorias</button>
         </div>
         
-        <!-- Aba Slides -->
+        <div id="tabProdutos" class="admin-tab-content">
+            <div class="form-produto">
+                <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Produto"></div>
+                <div class="field"><label>Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição"></textarea></div>
+                <div class="field small"><label>Preço</label><input type="number" step="0.01" id="prodPreco" placeholder="0.00"></div>
+                <div class="field small"><label>Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
+                <div class="field"><label>Categoria</label><select id="prodCategoria"></select></div>
+                <div class="field"><label>Imagem URL</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div><button id="btnAddProduto" class="btn-add">➕ Adicionar</button></div>
+            </div>
+            <h4>📋 Produtos</h4>
+            <div id="listaAdminProdutos"></div>
+            <button id="btnSalvarProdutos" class="btn-add" style="margin-top:20px;">💾 Salvar Produtos</button>
+        </div>
+        
         <div id="tabSlides" class="admin-tab-content">
             <div class="form-produto">
                 <div class="field"><label>Imagem URL</label><input type="text" id="slideImagem" placeholder="https://..."></div>
@@ -586,51 +650,68 @@
             <button id="btnSalvarSlides" class="btn-add" style="margin-top:20px;">💾 Salvar Slides</button>
         </div>
         
+        <div id="tabAvaliacoes" class="admin-tab-content">
+            <div id="listaAvaliacoesAdmin"></div>
+        </div>
+        
+        <div id="tabClientes" class="admin-tab-content">
+            <div id="listaClientesAdmin"></div>
+        </div>
+        
+        <div id="tabDashboard" class="admin-tab-content">
+            <div class="dashboard-stats" id="dashboardStats"></div>
+            <canvas id="vendasChart" style="max-height:300px; margin-top:20px;"></canvas>
+            <div id="topProdutos" class="top-produtos-list" style="margin-top:20px;"></div>
+        </div>
+        
         <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px; padding:10px; border:none; border-radius:25px; color:white; cursor:pointer;">✖️ Fechar</button>
     </div>
 </div>
 
 <script>
-    // CONFIGURAÇÕES SUPABASE
+    // ==================== CONFIGURAÇÕES ====================
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // DADOS GLOBAIS
-    let categorias = [];
     let produtos = [];
+    let categorias = [];
     let slides = [];
+    let avaliacoes = [];
+    let clientes = [];
     let carrinho = [];
+    let carrinhoAntesLogin = [];
     let usuarioLogado = null;
     let usuarioTipo = null;
     let swiperInstance = null;
     let categoriaAtiva = null;
     let slideIndex = 0;
+    let vendasChart = null;
     
-    function showToast(msg, type = 'success') {
+    function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.textContent = msg;
+        toast.textContent = message;
         document.getElementById('toastContainer').appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
     
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+    function fecharModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     
-    // ==================== DADOS PADRÃO (FALLBACK) ====================
+    // ==================== DADOS PADRÃO ====================
     function carregarDadosPadrao() {
         if (categorias.length === 0) {
             categorias = [
                 { id: 1, nome: "Bolos", icone: "🍰", ordem: 1 },
                 { id: 2, nome: "Tortas", icone: "🥧", ordem: 2 },
-                { id: 3, nome: "Doces", icone: "🍬", ordem: 3 },
-                { id: 4, nome: "Salgados", icone: "🥨", ordem: 4 }
+                { id: 3, nome: "Doces", icone: "🍬", ordem: 3 }
             ];
         }
         if (produtos.length === 0) {
             produtos = [
-                { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho com cobertura", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
-                { id: 2, nome: "Torta de Limão", descricao: "Cremosa com merengue", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
+                { id: 1, nome: "Bolo de Chocolate", descricao: "Bolo fofinho", preco: 45.90, estoque: 10, categoria_id: 1, imagem: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?w=400" },
+                { id: 2, nome: "Torta de Limão", descricao: "Cremosa", preco: 32.90, estoque: 8, categoria_id: 2, imagem: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?w=400" },
                 { id: 3, nome: "Brigadeiro", descricao: "Tradicional", preco: 3.50, estoque: 50, categoria_id: 3, imagem: "https://images.pexels.com/photos/2886936/pexels-photo-2886936.jpeg?w=400" }
             ];
         }
@@ -645,13 +726,12 @@
     // ==================== CATEGORIAS ====================
     async function carregarCategorias() {
         try {
-            const { data, error } = await supabase.from('categorias').select('*').order('ordem');
+            const { data, error } = await supabaseClient.from('categorias').select('*').order('ordem');
             if (error) throw error;
             if (data && data.length > 0) categorias = data;
             else carregarDadosPadrao();
-        } catch(e) {
-            carregarDadosPadrao();
-        }
+        } catch(e) { carregarDadosPadrao(); }
+        
         renderizarCategoriasFront();
         renderizarAdminCategorias();
         popularSelectCategorias();
@@ -697,38 +777,35 @@
         }
         
         container.innerHTML = categorias.map(cat => `
-            <div class="produto-admin-item">
-                <div><input type="text" value="${cat.nome}" data-id="${cat.id}" data-field="nome" placeholder="Nome" style="width:150px"></div>
-                <div><input type="text" value="${cat.icone || '📁'}" data-id="${cat.id}" data-field="icone" placeholder="Ícone" style="width:80px"></div>
+            <div class="categoria-admin-item">
+                <div style="flex:2"><input type="text" value="${cat.nome}" data-id="${cat.id}" data-field="nome" placeholder="Nome"></div>
+                <div style="width:80px"><input type="text" value="${cat.icone || '📁'}" data-id="${cat.id}" data-field="icone" placeholder="Ícone"></div>
                 <div>
-                    <button class="btn-icon btn-salvar" onclick="salvarCategoria(${cat.id})">💾</button>
-                    <button class="btn-icon btn-excluir" onclick="excluirCategoria(${cat.id})">🗑️</button>
+                    <button class="btn-icon btn-salvar" onclick="salvarCategoriaLocal(${cat.id})">💾</button>
+                    <button class="btn-icon btn-excluir" onclick="excluirCategoriaLocal(${cat.id})">🗑️</button>
                 </div>
             </div>
         `).join('');
     }
     
-    window.salvarCategoria = function(id) {
-        const nomeInput = document.querySelector(`[data-id="${id}"][data-field="nome"]`);
-        const iconeInput = document.querySelector(`[data-id="${id}"][data-field="icone"]`);
+    window.salvarCategoriaLocal = function(id) {
         const cat = categorias.find(c => c.id === id);
-        if (cat && nomeInput) {
-            cat.nome = nomeInput.value;
-            cat.icone = iconeInput?.value || '📁';
+        if (cat) {
+            cat.nome = document.querySelector(`[data-id="${id}"][data-field="nome"]`).value;
+            cat.icone = document.querySelector(`[data-id="${id}"][data-field="icone"]`).value;
             showToast(`Categoria "${cat.nome}" salva!`);
-            renderizarCategoriasFront();
             renderizarAdminCategorias();
+            renderizarCategoriasFront();
             popularSelectCategorias();
         }
     };
     
-    window.excluirCategoria = function(id) {
-        if (confirm('Excluir esta categoria?')) {
+    window.excluirCategoriaLocal = function(id) {
+        if (confirm("Excluir esta categoria?")) {
             categorias = categorias.filter(c => c.id !== id);
-            produtos.forEach(p => { if (p.categoria_id === id) p.categoria_id = null; });
-            showToast('Categoria excluída!');
-            renderizarCategoriasFront();
+            showToast(`Categoria removida!`);
             renderizarAdminCategorias();
+            renderizarCategoriasFront();
             popularSelectCategorias();
             if (categoriaAtiva === id && categorias.length > 0) {
                 categoriaAtiva = categorias[0].id;
@@ -740,27 +817,27 @@
     async function adicionarCategoria() {
         const nome = document.getElementById('categoriaNome').value.trim();
         const icone = document.getElementById('categoriaIcone').value.trim() || '📁';
-        if (!nome) { showToast('Digite o nome!', 'error'); return; }
+        if (!nome) { showToast("Digite o nome!", 'error'); return; }
         
         const novoId = Date.now();
         categorias.push({ id: novoId, nome, icone, ordem: categorias.length + 1 });
         showToast(`Categoria "${nome}" adicionada!`);
         document.getElementById('categoriaNome').value = '';
         document.getElementById('categoriaIcone').value = '';
-        renderizarCategoriasFront();
         renderizarAdminCategorias();
+        renderizarCategoriasFront();
         popularSelectCategorias();
     }
     
     async function salvarCategoriasBackup() {
         for (const cat of categorias) {
-            await supabase.from('categorias').upsert(cat);
+            await supabaseClient.from('categorias').upsert(cat);
         }
-        showToast('Categorias salvas no servidor!');
+        showToast("Categorias salvas no servidor!");
     }
     
     function popularSelectCategorias() {
-        const select = document.getElementById('prodCategoriaSelect');
+        const select = document.getElementById('prodCategoria');
         if (select) {
             select.innerHTML = categorias.map(cat => `<option value="${cat.id}">${cat.icone} ${cat.nome}</option>`).join('');
         }
@@ -769,13 +846,12 @@
     // ==================== PRODUTOS ====================
     async function carregarProdutos() {
         try {
-            const { data, error } = await supabase.from('produtos').select('*');
+            const { data, error } = await supabaseClient.from('produtos').select('*');
             if (error) throw error;
             if (data && data.length > 0) produtos = data;
             else carregarDadosPadrao();
-        } catch(e) {
-            carregarDadosPadrao();
-        }
+        } catch(e) { carregarDadosPadrao(); }
+        
         renderizarAdminProdutos();
         if (categoriaAtiva) carregarProdutosPorCategoria();
     }
@@ -798,7 +874,7 @@
                         <img src="${p.imagem || 'https://placehold.co/400x300/f0e4da/d4a373?text=' + encodeURIComponent(p.nome)}" class="card-img" onerror="this.src='https://placehold.co/400x300/f0e4da/d4a373?text=Produto'">
                         <div class="card-info">
                             <div class="card-nome">${p.nome}</div>
-                            <div class="card-descricao" style="font-size:0.7rem; opacity:0.7;">${p.descricao || ''}</div>
+                            <div class="card-descricao" style="font-size:0.7rem;">${p.descricao || ''}</div>
                             <div style="display:flex; justify-content:space-between; margin:8px 0;">
                                 <span class="card-preco">R$ ${p.preco.toFixed(2)}</span>
                                 <span style="font-size:0.6rem;">📦 ${p.estoque || 0}</span>
@@ -815,6 +891,7 @@
             slidesPerView: 1,
             spaceBetween: 20,
             navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            pagination: { el: '.swiper-pagination', clickable: true },
             breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } }
         });
         
@@ -832,24 +909,26 @@
             return;
         }
         
-        container.innerHTML = produtos.map(p => `
-            <div class="produto-admin-item">
-                <div style="flex:2"><input type="text" value="${p.nome}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
-                <div style="width:100px"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
-                <div style="width:120px">
-                    <select data-id="${p.id}" data-field="categoria_id">
-                        ${categorias.map(cat => `<option value="${cat.id}" ${p.categoria_id === cat.id ? 'selected' : ''}>${cat.icone} ${cat.nome}</option>`).join('')}
-                    </select>
+        container.innerHTML = produtos.map(p => {
+            return `
+                <div class="produto-admin-item">
+                    <div style="flex:2"><input type="text" value="${p.nome}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
+                    <div style="width:100px"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço"></div>
+                    <div style="width:120px">
+                        <select data-id="${p.id}" data-field="categoria_id">
+                            ${categorias.map(cat => `<option value="${cat.id}" ${p.categoria_id === cat.id ? 'selected' : ''}>${cat.icone} ${cat.nome}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn-icon btn-salvar" onclick="salvarProdutoLocal(${p.id})">💾</button>
+                        <button class="btn-icon btn-excluir" onclick="excluirProdutoLocal(${p.id})">🗑️</button>
+                    </div>
                 </div>
-                <div>
-                    <button class="btn-icon btn-salvar" onclick="salvarProduto(${p.id})">💾</button>
-                    <button class="btn-icon btn-excluir" onclick="excluirProduto(${p.id})">🗑️</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
     
-    window.salvarProduto = function(id) {
+    window.salvarProdutoLocal = function(id) {
         const p = produtos.find(p => p.id === id);
         if (p) {
             p.nome = document.querySelector(`[data-id="${id}"][data-field="nome"]`).value;
@@ -857,31 +936,32 @@
             const catSelect = document.querySelector(`[data-id="${id}"][data-field="categoria_id"]`);
             if (catSelect) p.categoria_id = parseInt(catSelect.value);
             showToast(`Produto "${p.nome}" salvo!`);
-            if (categoriaAtiva) carregarProdutosPorCategoria();
-        }
-    };
-    
-    window.excluirProduto = function(id) {
-        if (confirm('Excluir produto?')) {
-            produtos = produtos.filter(p => p.id !== id);
-            showToast('Produto excluído!');
             renderizarAdminProdutos();
             if (categoriaAtiva) carregarProdutosPorCategoria();
         }
     };
     
-    async function adicionarProduto() {
+    window.excluirProdutoLocal = function(id) {
+        if (confirm("Excluir este produto?")) {
+            produtos = produtos.filter(p => p.id !== id);
+            showToast(`Produto removido!`);
+            renderizarAdminProdutos();
+            if (categoriaAtiva) carregarProdutosPorCategoria();
+        }
+    };
+    
+    async function adicionarProdutoAdmin() {
         const nome = document.getElementById('prodNome').value.trim();
         const desc = document.getElementById('prodDesc').value;
         const preco = parseFloat(document.getElementById('prodPreco').value);
         const estoque = parseInt(document.getElementById('prodEstoque').value) || 0;
-        const categoria_id = parseInt(document.getElementById('prodCategoriaSelect').value);
+        const categoriaId = parseInt(document.getElementById('prodCategoria').value);
         const imagem = document.getElementById('prodImagem').value.trim() || `https://placehold.co/400x300/f0e4da/d4a373?text=${encodeURIComponent(nome)}`;
         
-        if (!nome || isNaN(preco)) { showToast('Preencha nome e preço!', 'error'); return; }
+        if (!nome || isNaN(preco)) { showToast("Preencha nome e preço!", 'error'); return; }
         
         const novoId = Date.now();
-        produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, categoria_id, imagem });
+        produtos.push({ id: novoId, nome, descricao: desc, preco, estoque, categoria_id: categoriaId, imagem });
         showToast(`Produto "${nome}" adicionado!`);
         document.getElementById('prodNome').value = '';
         document.getElementById('prodDesc').value = '';
@@ -889,32 +969,32 @@
         document.getElementById('prodEstoque').value = '';
         document.getElementById('prodImagem').value = '';
         renderizarAdminProdutos();
-        if (categoriaAtiva === categoria_id) carregarProdutosPorCategoria();
+        if (categoriaAtiva === categoriaId) carregarProdutosPorCategoria();
     }
     
     async function salvarProdutosBackup() {
         for (const p of produtos) {
-            await supabase.from('produtos').upsert(p);
+            await supabaseClient.from('produtos').upsert(p);
         }
-        showToast('Produtos salvos no servidor!');
+        showToast("Produtos salvos no servidor!");
     }
     
     // ==================== SLIDES ====================
     async function carregarSlides() {
         try {
-            const { data, error } = await supabase.from('slides').select('*').order('ordem');
+            const { data, error } = await supabaseClient.from('slides').select('*').order('ordem');
             if (error) throw error;
             if (data && data.length > 0) slides = data;
             else carregarDadosPadrao();
-        } catch(e) {
-            carregarDadosPadrao();
-        }
+        } catch(e) { carregarDadosPadrao(); }
+        
         renderizarCarrossel();
         renderizarAdminSlides();
     }
     
     function renderizarCarrossel() {
         const container = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
         if (!container) return;
         
         container.innerHTML = slides.map(slide => `
@@ -927,18 +1007,32 @@
             </div>
         `).join('');
         
+        dotsContainer.innerHTML = slides.map((_, idx) => `<div class="carousel-dot ${idx === slideIndex ? 'active' : ''}" data-index="${idx}"></div>`).join('');
+        
+        document.querySelectorAll('.carousel-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                slideIndex = parseInt(dot.dataset.index);
+                atualizarCarrosselPosicao();
+            });
+        });
+        
         atualizarCarrosselPosicao();
         
         if (window.carrosselInterval) clearInterval(window.carrosselInterval);
         window.carrosselInterval = setInterval(() => {
-            slideIndex = (slideIndex + 1) % slides.length;
-            atualizarCarrosselPosicao();
+            if (slides.length > 0) {
+                slideIndex = (slideIndex + 1) % slides.length;
+                atualizarCarrosselPosicao();
+            }
         }, 5000);
     }
     
     function atualizarCarrosselPosicao() {
         const container = document.getElementById('carouselSlides');
         if (container) container.style.transform = `translateX(-${slideIndex * 100}%)`;
+        document.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === slideIndex);
+        });
     }
     
     function renderizarAdminSlides() {
@@ -952,30 +1046,30 @@
         
         container.innerHTML = slides.map(s => `
             <div class="produto-admin-item">
-                <div><input type="text" value="${s.imagem}" data-id="${s.id}" data-field="imagem" placeholder="URL" style="width:300px"></div>
+                <div style="flex:2"><input type="text" value="${s.imagem}" data-id="${s.id}" data-field="imagem" placeholder="URL"></div>
                 <div><input type="text" value="${s.titulo || ''}" data-id="${s.id}" data-field="titulo" placeholder="Título"></div>
                 <div>
-                    <button class="btn-icon btn-salvar" onclick="salvarSlide(${s.id})">💾</button>
-                    <button class="btn-icon btn-excluir" onclick="excluirSlide(${s.id})">🗑️</button>
+                    <button class="btn-icon btn-salvar" onclick="salvarSlideLocal(${s.id})">💾</button>
+                    <button class="btn-icon btn-excluir" onclick="excluirSlideLocal(${s.id})">🗑️</button>
                 </div>
             </div>
         `).join('');
     }
     
-    window.salvarSlide = function(id) {
+    window.salvarSlideLocal = function(id) {
         const slide = slides.find(s => s.id === id);
         if (slide) {
             slide.imagem = document.querySelector(`[data-id="${id}"][data-field="imagem"]`).value;
             slide.titulo = document.querySelector(`[data-id="${id}"][data-field="titulo"]`).value;
-            showToast('Slide salvo!');
+            showToast(`Slide atualizado!`);
             renderizarCarrossel();
         }
     };
     
-    window.excluirSlide = function(id) {
-        if (confirm('Excluir slide?')) {
+    window.excluirSlideLocal = function(id) {
+        if (confirm("Excluir este slide?")) {
             slides = slides.filter(s => s.id !== id);
-            showToast('Slide excluído!');
+            showToast(`Slide removido!`);
             renderizarCarrossel();
             renderizarAdminSlides();
         }
@@ -985,11 +1079,11 @@
         const imagem = document.getElementById('slideImagem').value.trim();
         const titulo = document.getElementById('slideTitulo').value;
         const descricao = document.getElementById('slideDesc').value;
-        if (!imagem) { showToast('URL da imagem é obrigatória!', 'error'); return; }
+        if (!imagem) { showToast("URL da imagem é obrigatória!", 'error'); return; }
         
         const novoId = Date.now();
         slides.push({ id: novoId, imagem, titulo, descricao, ordem: slides.length + 1 });
-        showToast('Slide adicionado!');
+        showToast(`Slide adicionado!`);
         document.getElementById('slideImagem').value = '';
         document.getElementById('slideTitulo').value = '';
         document.getElementById('slideDesc').value = '';
@@ -999,23 +1093,106 @@
     
     async function salvarSlidesBackup() {
         for (const s of slides) {
-            await supabase.from('slides').upsert(s);
+            await supabaseClient.from('slides').upsert(s);
         }
-        showToast('Slides salvos no servidor!');
+        showToast("Slides salvos no servidor!");
+    }
+    
+    // ==================== AVALIAÇÕES ====================
+    async function carregarAvaliacoes() {
+        const { data } = await supabaseClient.from('avaliacoes').select('*');
+        avaliacoes = data || [];
+        renderizarAvaliacoesAdmin();
+    }
+    
+    function renderizarAvaliacoesAdmin() {
+        const container = document.getElementById('listaAvaliacoesAdmin');
+        if (!container) return;
+        if (avaliacoes.length === 0) { container.innerHTML = '<p>Nenhuma avaliação</p>'; return; }
+        
+        container.innerHTML = avaliacoes.map(a => {
+            const produto = produtos.find(p => p.id === a.produto_id);
+            let estrelas = '';
+            for (let i = 1; i <= 5; i++) estrelas += i <= a.nota ? '★' : '☆';
+            return `
+                <div style="padding:12px; margin-bottom:10px; background:var(--bg-color); border-radius:15px; border-left:4px solid ${a.nota >= 4 ? '#27ae60' : a.nota >= 3 ? '#f39c12' : '#e74c3c'}">
+                    <div><strong>📅 ${new Date(a.created_at).toLocaleDateString()}</strong></div>
+                    <div><strong>🍰 Produto:</strong> ${produto?.nome || 'Produto'}</div>
+                    <div><strong>⭐ Avaliação:</strong> ${estrelas} (${a.nota}/5)</div>
+                    ${a.comentario ? `<div><strong>💬 ${a.comentario}</strong></div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ==================== CLIENTES ====================
+    async function carregarClientes() {
+        const { data } = await supabaseClient.from('clientes').select('*');
+        clientes = data || [];
+        renderizarClientesAdmin();
+    }
+    
+    function renderizarClientesAdmin() {
+        const container = document.getElementById('listaClientesAdmin');
+        if (!container) return;
+        if (clientes.length === 0) { container.innerHTML = '<p>Nenhum cliente</p>'; return; }
+        
+        container.innerHTML = clientes.map(c => `
+            <div class="produto-admin-item">
+                <div><strong>${c.nome_social || c.nome}</strong></div>
+                <div>${c.email}</div>
+                <div>${c.telefone || '-'}</div>
+            </div>
+        `).join('');
+    }
+    
+    // ==================== DASHBOARD ====================
+    async function carregarDashboard() {
+        const { data: pedidos } = await supabaseClient.from('pedidos').select('*');
+        if (!pedidos) return;
+        
+        const totalVendas = pedidos.reduce((s, p) => s + (p.total || 0), 0);
+        const ticketMedio = totalVendas / (pedidos.length || 1);
+        
+        document.getElementById('dashboardStats').innerHTML = `
+            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
+                <h4>💰 Faturamento</h4>
+                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">R$ ${totalVendas.toFixed(2)}</div>
+            </div>
+            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
+                <h4>📦 Pedidos</h4>
+                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">${pedidos.length}</div>
+            </div>
+            <div class="stat-card" style="background:var(--bg-color); padding:15px; border-radius:15px; text-align:center;">
+                <h4>🎫 Ticket Médio</h4>
+                <div class="value" style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">R$ ${ticketMedio.toFixed(2)}</div>
+            </div>
+        `;
+        
+        const vendasProdutos = {};
+        pedidos.forEach(p => {
+            (p.itens || []).forEach(i => {
+                vendasProdutos[i.nome] = (vendasProdutos[i.nome] || 0) + (i.quantidade || 1);
+            });
+        });
+        const topProdutos = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        document.getElementById('topProdutos').innerHTML = topProdutos.length ? 
+            topProdutos.map(([nome, qtd]) => `<div style="display:flex; justify-content:space-between; padding:10px; background:var(--bg-color); border-radius:10px; margin-bottom:5px;"><span>${nome}</span><span>${qtd} vendidos</span></div>`).join('') : 
+            '<p>Nenhuma venda</p>';
     }
     
     // ==================== CARRINHO ====================
     function adicionarAoCarrinho(id) {
         const produto = produtos.find(p => p.id === id);
         if (!produto || produto.estoque <= 0) {
-            showToast('Produto sem estoque!', 'error');
+            showToast("Produto sem estoque!", 'error');
             return;
         }
         
         const existente = carrinho.find(i => i.id === id);
         if (existente) {
             if (existente.quantidade + 1 > produto.estoque) {
-                showToast(`Estoque máximo: ${produto.estoque}`, 'error');
+                showToast(`Estoque máximo: ${produto.estoque}`, 'warning');
                 return;
             }
             existente.quantidade++;
@@ -1045,14 +1222,17 @@
             total += subtotal;
             container.innerHTML += `
                 <div class="item-carrinho">
-                    <div><strong>${item.nome}</strong><br>R$ ${item.preco.toFixed(2)}</div>
-                    <div style="display:flex; gap:5px; align-items:center;">
+                    <div class="item-info">
+                        <strong>${item.nome}</strong>
+                        <div style="font-size:0.7rem;">R$ ${item.preco.toFixed(2)}</div>
+                    </div>
+                    <div class="item-controles">
                         <button class="btn-qtd" onclick="alterarQuantidade(${item.id}, -1)">-</button>
                         <span>${item.quantidade}</span>
                         <button class="btn-qtd" onclick="alterarQuantidade(${item.id}, 1)">+</button>
+                        <span style="min-width:60px;">R$ ${subtotal.toFixed(2)}</span>
                         <button class="btn-remover" onclick="removerDoCarrinho(${item.id})">🗑️</button>
                     </div>
-                    <span>R$ ${subtotal.toFixed(2)}</span>
                 </div>
             `;
         });
@@ -1061,22 +1241,20 @@
     
     window.alterarQuantidade = function(id, delta) {
         const item = carrinho.find(i => i.id === id);
-        const produto = produtos.find(p => p.id === id);
-        if (item) {
-            if (delta === -1 && item.quantidade > 1) {
-                item.quantidade--;
-            } else if (delta === -1 && item.quantidade === 1) {
-                removerDoCarrinho(id);
-                return;
-            } else if (delta === 1 && produto && item.quantidade + 1 <= produto.estoque) {
-                item.quantidade++;
-            } else if (delta === 1) {
-                showToast(`Estoque máximo: ${produto.estoque}`, 'error');
-                return;
-            }
-            salvarCarrinho();
-            atualizarCarrinho();
+        const prod = produtos.find(p => p.id === id);
+        if (item && delta === -1 && item.quantidade > 1) {
+            item.quantidade--;
+        } else if (item && delta === 1 && prod && item.quantidade + 1 <= prod.estoque) {
+            item.quantidade++;
+        } else if (delta === -1 && item.quantidade === 1) {
+            removerDoCarrinho(id);
+            return;
+        } else if (delta === 1) {
+            showToast(`Estoque máximo: ${prod.estoque}`, 'warning');
+            return;
         }
+        salvarCarrinho();
+        atualizarCarrinho();
     };
     
     window.removerDoCarrinho = function(id) {
@@ -1085,26 +1263,26 @@
         atualizarCarrinho();
     };
     
-    function salvarCarrinho() { localStorage.setItem('carrinho_docesdi', JSON.stringify(carrinho)); }
-    function carregarCarrinho() { const data = localStorage.getItem('carrinho_docesdi'); carrinho = data ? JSON.parse(data) : []; atualizarCarrinho(); }
+    function salvarCarrinho() { localStorage.setItem("docesdi_carrinho", JSON.stringify(carrinho)); }
+    function carregarCarrinho() { const data = localStorage.getItem("docesdi_carrinho"); carrinho = data ? JSON.parse(data) : []; atualizarCarrinho(); }
     
     function finalizarPedido() {
-        if (carrinho.length === 0) { showToast('Carrinho vazio!', 'error'); return; }
+        if (carrinho.length === 0) { showToast("Carrinho vazio!", 'warning'); return; }
         
-        let msg = '🍰 *PEDIDO DOCES DI* 🍰\n\n';
-        msg += `👤 ${usuarioLogado?.nome || 'Cliente'}\n`;
+        let msg = `🧁 *PEDIDO - Doces Di* 🧁\n`;
+        msg += `👤 ${usuarioLogado?.nome_social || usuarioLogado?.nome || 'Cliente'}\n`;
         msg += `📞 ${usuarioLogado?.telefone || 'Não informado'}\n\n`;
-        msg += '📋 *ITENS:*\n';
+        msg += `📋 Itens:\n`;
         carrinho.forEach(i => msg += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco * i.quantidade).toFixed(2)}\n`);
         const total = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
-        msg += `\n💰 *TOTAL:* R$ ${total.toFixed(2)}`;
+        msg += `\n💰 Total: R$ ${total.toFixed(2)}`;
         
         carrinho = [];
         salvarCarrinho();
         atualizarCarrinho();
         
         window.open(`https://wa.me/5521965783597?text=${encodeURIComponent(msg)}`, '_blank');
-        showToast('Pedido enviado!');
+        showToast("Pedido enviado!");
     }
     
     // ==================== LOGIN ====================
@@ -1115,24 +1293,48 @@
             return { tipo: 'admin', dados: { nome: 'Administrador', email: 'admin' } };
         }
         
-        const { data } = await supabase.from('clientes').select('*').eq('email', email);
+        const { data } = await supabaseClient.from('clientes').select('*').eq('email', email);
         if (data && data.length > 0 && data[0].senha === senhaHash) {
             return { tipo: 'cliente', dados: data[0] };
         }
         return null;
     }
     
-    function atualizarBotoes() {
+    function mostrarCarrinhoPendente() {
+        const carrinhoAtual = JSON.parse(localStorage.getItem('docesdi_carrinho') || '[]');
+        if (carrinhoAtual.length > 0) {
+            carrinhoAntesLogin = [...carrinhoAtual];
+            const container = document.getElementById('carrinhoPendenteItens');
+            container.innerHTML = carrinhoAntesLogin.map(item => `
+                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-color);">
+                    <span>${item.quantidade}x ${item.nome}</span>
+                    <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                </div>
+            `).join('');
+            document.getElementById('modalCarrinhoPendente').style.display = 'flex';
+        }
+    }
+    
+    function atualizarBotaoCliente() {
         const area = document.getElementById('clienteButtonArea');
         const btnAdmin = document.getElementById('btnAdminAcesso');
         
         if (usuarioLogado) {
-            const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome || 'Cliente');
+            const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome_social || (usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Cliente'));
             area.innerHTML = `
                 <div class="usuario-dropdown" id="usuarioDropdown">
-                    <div class="usuario-info" onclick="toggleDropdown()">👤 ${nomeExibir} ▼</div>
+                    <div class="usuario-info" onclick="toggleDropdown()">
+                        <span>👤 ${nomeExibir}</span>
+                        <span>▼</span>
+                    </div>
                     <div class="dropdown-content">
-                        <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>
+                        <span class="close-dropdown" onclick="fecharDropdown()">✕</span>
+                        <h4>✏️ Meus Dados</h4>
+                        ${usuarioTipo === 'admin' ? 
+                            '<p style="text-align:center; color:var(--accent-color);">👑 Administrador</p><button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>' : 
+                            `<button onclick="abrirHistorico()">📦 Meus Pedidos</button>
+                             <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair da Conta</button>`
+                        }
                     </div>
                 </div>
             `;
@@ -1143,82 +1345,36 @@
             }
         } else {
             area.innerHTML = `<button class="btn-login" id="btnAbrirLogin">🔐 Login</button>`;
-            document.getElementById('btnAbrirLogin')?.addEventListener('click', () => {
-                document.getElementById('modalCliente').style.display = 'flex';
-            });
+            document.getElementById('btnAbrirLogin')?.addEventListener('click', () => { document.getElementById('modalCliente').style.display = 'flex'; });
             btnAdmin?.classList.add('hidden');
         }
     }
     
-    function toggleDropdown() {
-        const dropdown = document.getElementById('usuarioDropdown');
-        if (dropdown) dropdown.classList.toggle('show');
-    }
-    
-    function fazerLogout() {
-        usuarioLogado = null;
-        usuarioTipo = null;
-        localStorage.removeItem('usuario_docesdi');
-        atualizarBotoes();
-        showToast('Logout realizado!');
-    }
-    
-    async function cadastrarCliente() {
-        const nome = document.getElementById('cadNome').value.trim();
-        const email = document.getElementById('cadEmail').value.trim();
-        const telefone = document.getElementById('cadTelefone').value.trim();
-        const senha = document.getElementById('cadSenha').value;
-        
-        if (!nome || !email || !senha) {
-            showToast('Preencha nome, email e senha!', 'error');
-            return;
-        }
-        
-        if (senha.length < 6) {
-            showToast('Senha deve ter no mínimo 6 caracteres!', 'error');
-            return;
-        }
-        
-        const { error } = await supabase.from('clientes').insert([{ nome, email, telefone, senha: hashSenha(senha) }]);
-        if (error) {
-            if (error.message.includes('duplicate')) showToast('Email já cadastrado!', 'error');
-            else showToast('Erro ao cadastrar!', 'error');
-            return;
-        }
-        
-        showToast('Cadastro realizado! Faça login.');
-        document.getElementById('cadNome').value = '';
-        document.getElementById('cadEmail').value = '';
-        document.getElementById('cadTelefone').value = '';
-        document.getElementById('cadSenha').value = '';
-        document.getElementById('modalCliente').style.display = 'none';
-    }
-    
-    // ==================== ADMIN ====================
-    function abrirAdmin() {
-        if (usuarioLogado && usuarioTipo === 'admin') {
-            document.getElementById('modalAdmin').style.display = 'flex';
-        } else {
-            showToast('Faça login como admin! (admin / admin123)', 'error');
-            document.getElementById('modalCliente').style.display = 'flex';
-        }
-    }
-    
+    function toggleDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.toggle('show'); }
+    function fecharDropdown() { const dropdown = document.getElementById('usuarioDropdown'); if (dropdown) dropdown.classList.remove('show'); }
     function fecharAdmin() { document.getElementById('modalAdmin').style.display = 'none'; }
     
-    function initAdminTabs() {
-        const tabs = document.querySelectorAll('.admin-tab');
-        const contents = document.querySelectorAll('.admin-tab-content');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabId = tab.dataset.tab;
-                tabs.forEach(t => t.classList.remove('ativo'));
-                tab.classList.add('ativo');
-                contents.forEach(c => c.classList.remove('ativo'));
-                document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).classList.add('ativo');
-            });
-        });
+    window.abrirHistorico = async function() {
+        if (!usuarioLogado || usuarioTipo !== 'cliente') { showToast("Faça login como cliente primeiro!", 'warning'); return; }
+        const { data } = await supabaseClient.from('pedidos').select('*').eq('cliente_id', usuarioLogado.id).order('created_at', { ascending: false });
+        document.getElementById('historicoLista').innerHTML = (!data || data.length === 0) ? '<p>Nenhum pedido</p>' : 
+            data.map(p => `<div style="border:1px solid var(--border-color); border-radius:15px; padding:12px; margin-bottom:12px;">
+                <div><strong>📅 ${new Date(p.created_at).toLocaleDateString()}</strong></div>
+                <div><strong>💰 Total:</strong> R$ ${p.total?.toFixed(2) || 0}</div>
+                <div><strong>📦 Status:</strong> ${p.status || 'Pendente'}</div>
+            </div>`).join('');
+        document.getElementById('modalHistorico').style.display = 'flex';
+    };
+    
+    async function fazerLogout() { 
+        usuarioLogado = null; 
+        usuarioTipo = null;
+        localStorage.removeItem("docesdi_usuario_logado");
+        localStorage.removeItem("docesdi_usuario_tipo");
+        atualizarBotaoCliente(); 
+        fecharDropdown(); 
+        showToast("Saiu da conta!"); 
+        fecharAdmin();
     }
     
     // ==================== BUSCA ====================
@@ -1232,15 +1388,73 @@
         renderizarProdutosSwiper(filtrados);
     }
     
+    // ==================== ADMIN ====================
+    function abrirAdmin() {
+        if (usuarioLogado && usuarioTipo === 'admin') {
+            document.getElementById('modalAdmin').style.display = 'flex';
+            carregarDashboard();
+            carregarAvaliacoes();
+            carregarClientes();
+        } else if (usuarioLogado && usuarioTipo === 'cliente') {
+            showToast("Você não tem permissão!", 'error');
+        } else {
+            showToast("Faça login como administrador!", 'error');
+            document.getElementById('modalCliente').style.display = 'flex';
+        }
+    }
+    
+    function initAdminTabs() {
+        const tabs = document.querySelectorAll('.admin-tab');
+        const contents = document.querySelectorAll('.admin-tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                tabs.forEach(t => t.classList.remove('ativo'));
+                tab.classList.add('ativo');
+                contents.forEach(c => c.classList.remove('ativo'));
+                const targetContent = document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+                if (targetContent) targetContent.classList.add('ativo');
+                if (tabId === 'dashboard') carregarDashboard();
+                if (tabId === 'avaliacoes') carregarAvaliacoes();
+                if (tabId === 'clientes') renderizarClientesAdmin();
+            });
+        });
+    }
+    
+    // ==================== RECUPERAÇÃO DE SENHA ====================
+    async function solicitarRecuperacaoSenha(email) {
+        const { data } = await supabaseClient.from('clientes').select('id').eq('email', email);
+        if (!data || !data.length) { showToast("Email não encontrado!", 'error'); return; }
+        const novaSenha = Math.random().toString(36).slice(-8);
+        await supabaseClient.from('clientes').update({ senha: hashSenha(novaSenha) }).eq('email', email);
+        showToast(`Sua nova senha é: ${novaSenha}`, 'success');
+    }
+    
     // ==================== INICIALIZAÇÃO ====================
     async function inicializar() {
         const savedTheme = localStorage.getItem('docesdi_theme');
         if (savedTheme === 'dark') document.body.classList.add('dark');
-        
         document.getElementById('themeToggle')?.addEventListener('click', () => {
             document.body.classList.toggle('dark');
             localStorage.setItem('docesdi_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         });
+        
+        await carregarCategorias();
+        await carregarProdutos();
+        await carregarSlides();
+        await carregarClientes();
+        await carregarAvaliacoes();
+        carregarCarrinho();
+        
+        const savedUser = localStorage.getItem("docesdi_usuario_logado");
+        const savedTipo = localStorage.getItem("docesdi_usuario_tipo");
+        if (savedUser && savedTipo) {
+            usuarioLogado = JSON.parse(savedUser);
+            usuarioTipo = savedTipo;
+        }
+        
+        atualizarBotaoCliente();
+        document.getElementById('anoAtual').innerText = new Date().getFullYear();
         
         document.getElementById('carouselPrev')?.addEventListener('click', () => {
             slideIndex = (slideIndex - 1 + slides.length) % slides.length;
@@ -1256,34 +1470,12 @@
         document.getElementById('btnAdminAcesso')?.addEventListener('click', abrirAdmin);
         document.getElementById('btnCancelarAdmin')?.addEventListener('click', fecharAdmin);
         
-        document.getElementById('btnAddProduto')?.addEventListener('click', adicionarProduto);
-        document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosBackup);
         document.getElementById('btnAddCategoria')?.addEventListener('click', adicionarCategoria);
         document.getElementById('btnSalvarCategorias')?.addEventListener('click', salvarCategoriasBackup);
+        document.getElementById('btnAddProduto')?.addEventListener('click', adicionarProdutoAdmin);
+        document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutosBackup);
         document.getElementById('btnAddSlide')?.addEventListener('click', adicionarSlide);
         document.getElementById('btnSalvarSlides')?.addEventListener('click', salvarSlidesBackup);
-        
-        document.getElementById('btnLogin')?.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
-            const resultado = await fazerLogin(email, senha);
-            if (resultado) {
-                usuarioLogado = resultado.dados;
-                usuarioTipo = resultado.tipo;
-                localStorage.setItem('usuario_docesdi', JSON.stringify(usuarioLogado));
-                atualizarBotoes();
-                document.getElementById('modalCliente').style.display = 'none';
-                showToast(`Bem-vindo, ${usuarioLogado.nome || 'Admin'}!`);
-                if (usuarioTipo === 'admin') abrirAdmin();
-            } else {
-                showToast('Email ou senha incorretos!', 'error');
-            }
-        });
-        
-        document.getElementById('btnCadastrar')?.addEventListener('click', cadastrarCliente);
-        document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
-            document.getElementById('modalCliente').style.display = 'none';
-        });
         
         document.getElementById('btnExpandAdmin')?.addEventListener('click', () => {
             const modalContent = document.querySelector('#modalAdmin .modal-content');
@@ -1294,7 +1486,6 @@
                 modalContent.style.maxHeight = '95vh';
             }
         });
-        
         document.getElementById('btnNewWindowAdmin')?.addEventListener('click', () => {
             const adminContent = document.getElementById('modalAdmin').cloneNode(true);
             const newWin = window.open('', '_blank');
@@ -1302,24 +1493,122 @@
             newWin.document.close();
         });
         
-        await carregarCategorias();
-        await carregarProdutos();
-        await carregarSlides();
-        carregarCarrinho();
+        // LOGIN - com verificação de carrinho pendente
+        document.getElementById('btnLogin')?.addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            const resultado = await fazerLogin(email, senha);
+            if (resultado) {
+                usuarioLogado = resultado.dados;
+                usuarioTipo = resultado.tipo;
+                localStorage.setItem("docesdi_usuario_logado", JSON.stringify(usuarioLogado));
+                localStorage.setItem("docesdi_usuario_tipo", usuarioTipo);
+                atualizarBotaoCliente();
+                document.getElementById('modalCliente').style.display = 'none';
+                showToast(`Bem-vindo, ${usuarioLogado.nome || 'Admin'}!`);
+                
+                // Verificar carrinho pendente
+                mostrarCarrinhoPendente();
+                
+                if (usuarioTipo === 'admin') abrirAdmin();
+            } else {
+                showToast("Email ou senha incorretos!", 'error');
+            }
+        });
         
-        const savedUser = localStorage.getItem('usuario_docesdi');
-        if (savedUser) {
-            usuarioLogado = JSON.parse(savedUser);
-            usuarioTipo = usuarioLogado.email === 'admin' ? 'admin' : 'cliente';
-            atualizarBotoes();
-        }
+        // Botões do carrinho pendente
+        document.getElementById('btnManterCarrinho')?.addEventListener('click', () => {
+            fecharModal();
+            showToast('Carrinho mantido!');
+        });
+        
+        document.getElementById('btnLimparCarrinho')?.addEventListener('click', () => {
+            carrinho = [];
+            salvarCarrinho();
+            atualizarCarrinho();
+            fecharModal();
+            showToast('Carrinho limpo!');
+        });
+        
+        document.getElementById('btnCadastrar')?.addEventListener('click', async () => {
+            const senha = document.getElementById('cadSenha').value;
+            const conf = document.getElementById('cadConfirmarSenha').value;
+            if (senha !== conf) { showToast("Senhas não conferem!", 'error'); return; }
+            if (senha.length < 6) { showToast("Senha deve ter no mínimo 6 caracteres!", 'error'); return; }
+            
+            const { error } = await supabaseClient.from('clientes').insert([{
+                nome: document.getElementById('cadNome').value,
+                nome_social: document.getElementById('cadNomeSocial').value,
+                data_nasc: document.getElementById('cadDataNasc').value,
+                cep: document.getElementById('cadCep').value,
+                endereco: document.getElementById('cadEndereco').value,
+                numero: document.getElementById('cadNumero').value,
+                complemento: document.getElementById('cadComplemento').value,
+                referencia: document.getElementById('cadReferencia').value,
+                telefone: document.getElementById('cadTelefone').value,
+                email: document.getElementById('cadEmail').value,
+                senha: hashSenha(senha)
+            }]);
+            if (error) { showToast("Erro ao cadastrar: " + error.message, 'error'); return; }
+            showToast("Cadastro realizado! Faça login.", 'success');
+            document.getElementById('tabLoginBtn').click();
+            document.getElementById('cadNome').value = '';
+            document.getElementById('cadEmail').value = '';
+            document.getElementById('cadTelefone').value = '';
+            document.getElementById('cadSenha').value = '';
+            document.getElementById('cadConfirmarSenha').value = '';
+        });
+        
+        // Recuperação de senha
+        document.getElementById('btnEsqueciSenha')?.addEventListener('click', () => {
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('recuperarPanel').style.display = 'block';
+        });
+        
+        document.getElementById('btnEnviarRecuperacao')?.addEventListener('click', async () => {
+            const email = document.getElementById('recuperarEmail').value;
+            await solicitarRecuperacaoSenha(email);
+            document.getElementById('recuperarPanel').style.display = 'none';
+            document.getElementById('loginPanel').style.display = 'block';
+            document.getElementById('recuperarEmail').value = '';
+        });
+        
+        document.getElementById('btnVoltarLogin')?.addEventListener('click', () => {
+            document.getElementById('recuperarPanel').style.display = 'none';
+            document.getElementById('loginPanel').style.display = 'block';
+        });
+        
+        document.getElementById('tabLoginBtn')?.addEventListener('click', () => {
+            document.getElementById('loginPanel').style.display = 'block';
+            document.getElementById('cadastroPanel').style.display = 'none';
+            document.getElementById('recuperarPanel').style.display = 'none';
+        });
+        document.getElementById('tabCadastroBtn')?.addEventListener('click', () => {
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('cadastroPanel').style.display = 'block';
+            document.getElementById('recuperarPanel').style.display = 'none';
+        });
+        document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
+            document.getElementById('modalCliente').style.display = 'none';
+        });
+        document.getElementById('buscarCepCadastro')?.addEventListener('click', async () => {
+            const cep = document.getElementById('cadCep').value.replace(/\D/g, '');
+            if (cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
+            try {
+                const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await resp.json();
+                if (data.erro) { showToast("CEP não encontrado!", 'error'); return; }
+                document.getElementById('cadEndereco').value = `${data.logradouro}, ${data.bairro}, ${data.localidade}/${data.uf}`;
+                showToast("Endereço encontrado!");
+            } catch(e) { showToast("Erro ao buscar CEP!", 'error'); }
+        });
         
         initAdminTabs();
         
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('usuarioDropdown');
-            if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('show');
-            if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+        document.addEventListener('click', function(event) { 
+            const dropdown = document.getElementById('usuarioDropdown'); 
+            if (dropdown && !dropdown.contains(event.target)) dropdown.classList.remove('show'); 
         });
         
         document.addEventListener('keydown', (e) => {
