@@ -1,34 +1,1324 @@
--- Executar no SQL Editor do Supabase:
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Doces Di | Sistema Completo</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBR173YFP4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-MBR173YFP4');
+    </script>
+    
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-color: #fcf8f5;
+            --text-color: #4a3b32;
+            --card-bg: white;
+            --header-bg: #ffffff;
+            --sidebar-bg: white;
+            --border-color: #f0e4da;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --input-bg: white;
+            --btn-bg: #d4a373;
+            --btn-hover: #c49a6c;
+            --accent-color: #d4a373;
+            --border-radius: 20px;
+            --categoria-bg: #f5e6d8;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body.dark {
+            --bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --card-bg: #16213e;
+            --header-bg: #0f3460;
+            --sidebar-bg: #16213e;
+            --border-color: #2a3a5e;
+            --input-bg: #1a1a2e;
+            --categoria-bg: #0f3460;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 60px;
+            transition: all 0.3s ease;
+        }
+        
+        header {
+            background-color: var(--header-bg);
+            padding: 60px 20px 20px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) { header { padding: 70px 15px 15px 15px; } }
+        
+        header h1 { color: var(--accent-color); font-size: clamp(1.3rem, 5vw, 2rem); margin-bottom: 5px; }
+        header p { font-style: italic; opacity: 0.8; font-size: clamp(0.7rem, 3vw, 0.9rem); }
+        
+        .login-btn-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        
+        @media (max-width: 768px) { .login-btn-container { top: 5px; right: 5px; gap: 5px; } }
+        
+        .btn-login, .theme-toggle, .btn-favoritos, .btn-historico {
+            background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        
+        .btn-favoritos { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-historico { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .theme-toggle { background: linear-gradient(135deg, #654321, #4a3b32); }
+        .btn-favoritos.hidden, .btn-historico.hidden { display: none; }
+        
+        .usuario-dropdown { position: relative; display: inline-block; }
+        .usuario-info {
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 45px;
+            background: var(--card-bg);
+            min-width: 280px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 1001;
+            padding: 15px;
+        }
+        .usuario-dropdown.show .dropdown-content { display: block; }
+        .btn-sair-dropdown { background: #e74c3c !important; color: white; border: none; padding: 8px; border-radius: 25px; width: 100%; cursor: pointer; }
+        
+        .admin-btn-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .btn-admin-float {
+            background: linear-gradient(135deg, #654321, #4a3b32);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .admin-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+        }
+        .admin-tab {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .admin-tab:hover, .admin-tab.ativo { background: var(--accent-color); color: white; }
+        .admin-tab-content { display: none; margin-top: 20px; }
+        .admin-tab-content.ativo { display: block; }
+        
+        /* Categorias Front */
+        .categorias-container { margin: 20px 0; padding: 0 15px; }
+        .categorias-carrossel {
+            background: var(--categoria-bg);
+            border-radius: 50px;
+            padding: 12px 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: thin;
+        }
+        .categoria-tab {
+            display: inline-block;
+            padding: 8px 24px;
+            margin: 0 5px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .categoria-tab:hover, .categoria-tab.ativo { background: var(--accent-color); color: white; }
+        
+        .product-swiper { padding: 20px 5px; }
+        .card-produto-swiper {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .card-produto-swiper:hover { transform: translateY(-5px); }
+        .card-produto-swiper .card-img { width: 100%; height: 180px; object-fit: cover; }
+        .card-produto-swiper .card-info { padding: 12px; }
+        .card-produto-swiper .card-nome { font-weight: bold; color: var(--accent-color); margin-bottom: 5px; }
+        .card-produto-swiper .card-preco { font-weight: bold; color: var(--accent-color); }
+        .btn-comprar {
+            background: linear-gradient(135deg, var(--btn-bg), var(--btn-hover));
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .main-layout { display: flex; max-width: 1400px; margin: 20px auto; padding: 0 15px; gap: 30px; flex-wrap: wrap; }
+        .vitrine { flex: 3; min-width: 250px; }
+        .carrinho-sidebar {
+            flex: 1.2;
+            background: var(--sidebar-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        @media (max-width: 768px) { .carrinho-sidebar { position: static; } }
+        
+        .search-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 5px 15px;
+        }
+        .search-box input { flex: 1; padding: 10px 0; border: none; background: none; outline: none; }
+        
+        .item-carrinho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .btn-qtd { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f0e4da; cursor: pointer; }
+        .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; }
+        
+        .btn-finalizar-pedido {
+            width: 100%;
+            background: linear-gradient(135deg, #25d366, #128C7E);
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .carousel-container { position: relative; width: 100%; height: 350px; overflow: hidden; margin-bottom: 20px; }
+        @media (max-width: 768px) { .carousel-container { height: 180px; } }
+        .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.5s ease; }
+        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; padding: 10px; text-align: center; }
+        .carousel-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.5); color: white; border: none;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            z-index: 10;
+        }
+        .carousel-btn.prev { left: 5px; }
+        .carousel-btn.next { right: 5px; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; }
+        .toast { padding: 8px 16px; border-radius: 50px; margin-top: 8px; animation: fadeInUp 0.3s ease; font-size: 0.8rem; }
+        .toast.success { background: #27ae60; color: white; }
+        .toast.error { background: #e74c3c; color: white; }
+        .toast.warning { background: #f39c12; color: white; }
+        .toast.info { background: #3498db; color: white; }
+        
+        .form-produto, .form-categoria {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .form-produto .field, .form-categoria .field { flex: 1; min-width: 120px; }
+        .form-produto label, .form-categoria label { display: block; font-size: 0.65rem; font-weight: bold; color: var(--accent-color); margin-bottom: 3px; }
+        .form-produto input, .form-produto textarea, .form-categoria input, .form-categoria select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+        .btn-add { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .btn-salvar-todos { background: #27ae60; margin-top: 20px; padding: 10px 20px; border: none; border-radius: 25px; color: white; cursor: pointer; font-weight: bold; }
+        
+        .categoria-admin-item, .produto-admin-item {
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .categoria-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-nome { flex: 2; min-width: 150px; }
+        .produto-admin-item .campo-preco { width: 100px; }
+        .produto-admin-item .campo-categoria { width: 150px; }
+        .produto-admin-item input, .produto-admin-item select, .categoria-admin-item input {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+            width: 100%;
+        }
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px 8px; border-radius: 20px; }
+        .btn-salvar { color: #27ae60; }
+        .btn-excluir { color: #e74c3c; }
+        
+        .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-color); padding: 15px; border-radius: var(--border-radius); text-align: center; }
+        .stat-card .value { font-size: 1.3rem; font-weight: bold; color: var(--accent-color); }
+        
+        footer { background-color: #4a3b32; color: #fcf8f5; text-align: center; padding: 15px; margin-top: 40px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .swiper-button-next, .swiper-button-prev { color: var(--accent-color); background: var(--card-bg); width: 35px; height: 35px; border-radius: 50%; box-shadow: var(--shadow); }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 16px; }
+    </style>
+</head>
+<body>
 
-CREATE TABLE IF NOT EXISTS categorias (
-    id SERIAL PRIMARY KEY,
-    nome TEXT NOT NULL,
-    icone TEXT,
-    ordem INTEGER DEFAULT 0
-);
+<div class="toast-container" id="toastContainer"></div>
 
-CREATE TABLE IF NOT EXISTS produtos (
-    id SERIAL PRIMARY KEY,
-    nome TEXT NOT NULL,
-    descricao TEXT,
-    preco DECIMAL(10,2) NOT NULL,
-    estoque INTEGER DEFAULT 0,
-    categoria_id INTEGER REFERENCES categorias(id),
-    imagem TEXT
-);
+<div class="login-btn-container">
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+    <button class="btn-favoritos hidden" id="btnFavoritos">❤️ Favoritos</button>
+    <button class="btn-historico hidden" id="btnHistorico">📦 Histórico</button>
+    <div id="clienteButtonArea"></div>
+</div>
+<div class="admin-btn-container"><button class="btn-admin-float" id="btnAdminAcesso">🔧 Admin</button></div>
 
-CREATE TABLE IF NOT EXISTS slides (
-    id SERIAL PRIMARY KEY,
-    imagem TEXT NOT NULL,
-    titulo TEXT,
-    descricao TEXT,
-    ordem INTEGER DEFAULT 0
-);
+<header>
+    <h1>Doces Di</h1>
+    <p>A vida é mais doce quando compartilhada</p>
+</header>
 
-CREATE TABLE IF NOT EXISTS clientes (
-    id SERIAL PRIMARY KEY,
-    nome TEXT,
-    email TEXT UNIQUE,
-    telefone TEXT,
-    senha TEXT
-);
+<div class="carousel-container" id="carouselContainer">
+    <div class="carousel-slides" id="carouselSlides"></div>
+    <button class="carousel-btn prev" id="carouselPrev">❮</button>
+    <button class="carousel-btn next" id="carouselNext">❯</button>
+</div>
+
+<div class="categorias-container">
+    <div class="categorias-carrossel" id="categoriasCarrossel">
+        <span style="padding:8px 20px;">Carregando categorias...</span>
+    </div>
+</div>
+
+<div class="produtos-carrossel-wrapper" style="padding: 0 15px;">
+    <div class="swiper product-swiper" id="productSwiper">
+        <div class="swiper-wrapper" id="swiperProdutosWrapper"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</div>
+
+<div class="main-layout">
+    <main class="vitrine">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar produto...">
+                <button id="btnBuscar">Buscar</button>
+            </div>
+        </div>
+    </main>
+    <aside class="carrinho-sidebar">
+        <h3>🛒 Seu Pedido</h3>
+        <div id="itens-carrinho"><p style="text-align:center;">Carrinho vazio</p></div>
+        <div style="display:flex; justify-content:space-between; margin:15px 0; font-weight:bold;">
+            <span>Total:</span><span id="valor-total">R$ 0,00</span>
+        </div>
+        <button id="btn-finalizar" class="btn-finalizar-pedido">📦 FINALIZAR PEDIDO</button>
+    </aside>
+</div>
+
+<footer>
+    <p>© <span id="anoAtual">2026</span> Doces Di</p>
+</footer>
+
+<!-- MODAIS -->
+<div id="modalCliente" class="modal">
+    <div class="modal-content">
+        <h3>Login / Cadastro</h3>
+        <input type="text" id="loginEmail" placeholder="E-mail / Admin">
+        <input type="password" id="loginSenha" placeholder="Senha">
+        <button id="btnLogin" style="background:var(--accent-color); color:white; border:none; padding:10px; border-radius:25px; width:100%; margin-top:10px;">Entrar</button>
+        <hr style="margin:15px 0;">
+        <input type="text" id="cadNome" placeholder="Nome completo">
+        <input type="text" id="cadEmail" placeholder="E-mail">
+        <input type="text" id="cadTelefone" placeholder="WhatsApp">
+        <input type="password" id="cadSenha" placeholder="Senha">
+        <button id="btnCadastrar" style="background:#27ae60; color:white; border:none; padding:10px; border-radius:25px; width:100%; margin-top:10px;">Cadastrar</button>
+        <button id="btnComprarSemLogin" style="background:#999; color:white; border:none; padding:10px; border-radius:25px; width:100%; margin-top:10px;">Continuar sem login</button>
+    </div>
+</div>
+
+<div id="modalAdmin" class="modal">
+    <div class="modal-content" style="max-width:95%; width:95%; max-height:90vh;">
+        <h3>🔧 Área Administrativa</h3>
+        
+        <div class="admin-tabs-container" id="adminTabsContainer">
+            <div class="admin-tab ativo" data-tab="categorias">🏷️ Categorias</div>
+            <div class="admin-tab" data-tab="produtos">🍰 Produtos</div>
+            <div class="admin-tab" data-tab="slides">📸 Slides</div>
+            <div class="admin-tab" data-tab="dashboard">📊 Dashboard</div>
+        </div>
+        
+        <!-- Aba Categorias -->
+        <div id="tabCategorias" class="admin-tab-content ativo">
+            <div class="form-categoria">
+                <div class="field"><label>Nome da Categoria</label><input type="text" id="categoriaNome" placeholder="Ex: Bolos"></div>
+                <div class="field small"><label>Ícone</label><input type="text" id="categoriaIcone" placeholder="🍰"></div>
+                <div><button id="btnAddCategoria" class="btn-add">➕ Adicionar</button></div>
+            </div>
+            <h4>📋 Categorias</h4>
+            <div id="listaAdminCategorias"></div>
+            <button id="btnSalvarCategorias" class="btn-salvar-todos">💾 Salvar</button>
+        </div>
+        
+        <!-- Aba Produtos -->
+        <div id="tabProdutos" class="admin-tab-content">
+            <div class="form-produto">
+                <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Produto"></div>
+                <div class="field"><label>Descrição</label><textarea id="prodDesc" rows="2" placeholder="Descrição"></textarea></div>
+                <div class="field small"><label>Preço</label><input type="number" step="0.01" id="prodPreco" placeholder="0.00"></div>
+                <div class="field small"><label>Estoque</label><input type="number" id="prodEstoque" placeholder="10"></div>
+                <div class="field"><label>Categoria</label><select id="prodCategoria"></select></div>
+                <div class="field"><label>Imagem URL</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div><button id="btnAddProduto" class="btn-add">➕ Adicionar</button></div>
+            </div>
+            <h4>📋 Produtos</h4>
+            <div id="listaAdminProdutos"></div>
+            <button id="btnSalvarProdutos" class="btn-salvar-todos">💾 Salvar</button>
+        </div>
+        
+        <!-- Aba Slides -->
+        <div id="tabSlides" class="admin-tab-content">
+            <div class="form-produto">
+                <div class="field"><label>Imagem URL</label><input type="text" id="slideImagem" placeholder="https://..."></div>
+                <div class="field"><label>Título</label><input type="text" id="slideTitulo" placeholder="Título"></div>
+                <div class="field"><label>Descrição</label><input type="text" id="slideDesc" placeholder="Descrição"></div>
+                <div><button id="btnAddSlide" class="btn-add">➕ Adicionar</button></div>
+            </div>
+            <h4>📋 Slides</h4>
+            <div id="listaAdminSlides"></div>
+            <button id="btnSalvarSlides" class="btn-salvar-todos">💾 Salvar</button>
+        </div>
+        
+        <!-- Aba Dashboard -->
+        <div id="tabDashboard" class="admin-tab-content">
+            <div class="dashboard-stats" id="dashboardStats"></div>
+            <canvas id="vendasChart" style="max-height:300px;"></canvas>
+            <div id="topProdutos" style="margin-top:20px;"></div>
+        </div>
+        
+        <button id="btnCancelarAdmin" style="background:#e74c3c; margin-top:20px; padding:10px; border:none; border-radius:25px; color:white; cursor:pointer;">✖️ Fechar</button>
+    </div>
+</div>
+
+<script>
+    // CONFIGURAÇÕES
+    const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // DADOS
+    let categorias = [];
+    let produtos = [];
+    let slides = [];
+    let carrinho = [];
+    let usuarioLogado = null;
+    let usuarioTipo = null;
+    let swiperInstance = null;
+    let categoriaAtiva = null;
+    
+    // TOAST
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.getElementById('toastContainer').appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+    
+    // ==================== CATEGORIAS ====================
+    async function carregarCategorias() {
+        try {
+            const { data, error } = await supabase.from('categorias').select('*').order('ordem');
+            if (error) throw error;
+            if (data && data.length > 0) {
+                categorias = data;
+            } else {
+                // Dados padrão
+                const padrao = [
+                    { nome: 'Bolos', icone: '🍰', ordem: 1 },
+                    { nome: 'Tortas', icone: '🥧', ordem: 2 },
+                    { nome: 'Doces', icone: '🍬', ordem: 3 }
+                ];
+                for (const p of padrao) {
+                    await supabase.from('categorias').insert(p);
+                }
+                const { data: newData } = await supabase.from('categorias').select('*').order('ordem');
+                categorias = newData || [];
+            }
+            renderizarCategoriasFront();
+            renderizarAdminCategorias();
+            popularSelectCategorias();
+        } catch (error) {
+            showToast('Erro ao carregar categorias: ' + error.message, 'error');
+        }
+    }
+    
+    function renderizarCategoriasFront() {
+        const container = document.getElementById('categoriasCarrossel');
+        if (!container) return;
+        
+        if (categorias.length === 0) {
+            container.innerHTML = '<span style="padding:8px 20px;">Nenhuma categoria</span>';
+            return;
+        }
+        
+        container.innerHTML = categorias.map(cat => `
+            <span class="categoria-tab ${categoriaAtiva === cat.id ? 'ativo' : ''}" data-id="${cat.id}">
+                ${cat.icone || '📁'} ${cat.nome}
+            </span>
+        `).join('');
+        
+        document.querySelectorAll('.categoria-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                categoriaAtiva = parseInt(tab.dataset.id);
+                renderizarCategoriasFront();
+                carregarProdutosPorCategoria();
+            });
+        });
+        
+        if (!categoriaAtiva && categorias.length > 0) {
+            categoriaAtiva = categorias[0].id;
+            renderizarCategoriasFront();
+            carregarProdutosPorCategoria();
+        }
+    }
+    
+    function renderizarAdminCategorias() {
+        const container = document.getElementById('listaAdminCategorias');
+        if (!container) return;
+        
+        if (categorias.length === 0) {
+            container.innerHTML = '<p>Nenhuma categoria</p>';
+            return;
+        }
+        
+        container.innerHTML = categorias.map(cat => `
+            <div class="categoria-admin-item">
+                <div class="campo-nome"><input type="text" value="${cat.nome.replace(/"/g, '&quot;')}" data-id="${cat.id}" data-field="nome" placeholder="Nome"></div>
+                <div class="campo-icone"><input type="text" value="${cat.icone || '📁'}" data-id="${cat.id}" data-field="icone" placeholder="Ícone" style="width:80px"></div>
+                <div>
+                    <button class="btn-icon btn-salvar" onclick="salvarCategoria(${cat.id})" title="Salvar">💾</button>
+                    <button class="btn-icon btn-excluir" onclick="excluirCategoria(${cat.id})" title="Excluir">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    window.salvarCategoria = async function(id) {
+        const nomeInput = document.querySelector(`[data-id="${id}"][data-field="nome"]`);
+        const iconeInput = document.querySelector(`[data-id="${id}"][data-field="icone"]`);
+        if (!nomeInput) return;
+        
+        const nome = nomeInput.value;
+        const icone = iconeInput.value || '📁';
+        if (!nome) { showToast('Nome da categoria é obrigatório!', 'error'); return; }
+        
+        const { error } = await supabase.from('categorias').update({ nome, icone }).eq('id', id);
+        if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+        
+        showToast('Categoria salva!', 'success');
+        await carregarCategorias();
+    };
+    
+    window.excluirCategoria = async function(id) {
+        if (confirm('Excluir esta categoria? Produtos ficarão sem categoria.')) {
+            const { error } = await supabase.from('categorias').delete().eq('id', id);
+            if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); return; }
+            showToast('Categoria excluída!', 'success');
+            await carregarCategorias();
+            await carregarProdutos();
+        }
+    };
+    
+    async function adicionarCategoria() {
+        const nome = document.getElementById('categoriaNome').value.trim();
+        const icone = document.getElementById('categoriaIcone').value.trim() || '📁';
+        
+        if (!nome) {
+            showToast('Digite o nome da categoria!', 'error');
+            return;
+        }
+        
+        const novaOrdem = categorias.length + 1;
+        const { error } = await supabase.from('categorias').insert([{ nome, icone, ordem: novaOrdem }]);
+        
+        if (error) {
+            showToast('Erro ao adicionar: ' + error.message, 'error');
+            return;
+        }
+        
+        showToast(`Categoria "${nome}" adicionada!`, 'success');
+        document.getElementById('categoriaNome').value = '';
+        document.getElementById('categoriaIcone').value = '';
+        await carregarCategorias();
+    }
+    
+    async function salvarCategorias() {
+        for (const cat of categorias) {
+            await supabase.from('categorias').upsert(cat);
+        }
+        showToast('Categorias salvas!', 'success');
+    }
+    
+    function popularSelectCategorias() {
+        const select = document.getElementById('prodCategoria');
+        if (select) {
+            select.innerHTML = categorias.map(cat => `<option value="${cat.id}">${cat.icone || '📁'} ${cat.nome}</option>`).join('');
+        }
+    }
+    
+    // ==================== PRODUTOS ====================
+    async function carregarProdutos() {
+        try {
+            const { data, error } = await supabase.from('produtos').select('*');
+            if (error) throw error;
+            produtos = data || [];
+            renderizarAdminProdutos();
+            if (categoriaAtiva) carregarProdutosPorCategoria();
+        } catch (error) {
+            showToast('Erro ao carregar produtos: ' + error.message, 'error');
+        }
+    }
+    
+    async function carregarProdutosPorCategoria() {
+        const produtosCategoria = produtos.filter(p => p.categoria_id === categoriaAtiva);
+        renderizarProdutosSwiper(produtosCategoria);
+    }
+    
+    function renderizarProdutosSwiper(produtosLista) {
+        const wrapper = document.getElementById('swiperProdutosWrapper');
+        if (!wrapper) return;
+        
+        if (produtosLista.length === 0) {
+            wrapper.innerHTML = '<div class="swiper-slide" style="text-align:center;padding:40px;">Nenhum produto nesta categoria</div>';
+        } else {
+            wrapper.innerHTML = produtosLista.map(p => `
+                <div class="swiper-slide">
+                    <div class="card-produto-swiper">
+                        <img src="${p.imagem || 'https://placehold.co/600x400/f0e4da/d4a373?text=' + encodeURIComponent(p.nome)}" class="card-img" onerror="this.src='https://placehold.co/600x400/f0e4da/d4a373?text=Produto'">
+                        <div class="card-info">
+                            <div class="card-nome">${p.nome}</div>
+                            <div class="card-descricao" style="font-size:0.7rem; opacity:0.7;">${p.descricao || ''}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                                <span class="card-preco">R$ ${p.preco.toFixed(2)}</span>
+                                <span style="font-size:0.6rem;">📦 ${p.estoque || 0}</span>
+                            </div>
+                            <button class="btn-comprar" data-id="${p.id}" ${(p.estoque || 0) <= 0 ? 'disabled' : ''}>${(p.estoque || 0) > 0 ? '🛒 Adicionar' : 'Esgotado'}</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        if (swiperInstance) swiperInstance.destroy(true, true);
+        swiperInstance = new Swiper('.product-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } }
+        });
+        
+        document.querySelectorAll('.btn-comprar').forEach(btn => {
+            btn.addEventListener('click', () => adicionarAoCarrinho(parseInt(btn.dataset.id)));
+        });
+    }
+    
+    function renderizarAdminProdutos() {
+        const container = document.getElementById('listaAdminProdutos');
+        if (!container) return;
+        
+        if (produtos.length === 0) {
+            container.innerHTML = '<p>Nenhum produto</p>';
+            return;
+        }
+        
+        container.innerHTML = produtos.map(p => {
+            const catNome = categorias.find(c => c.id === p.categoria_id)?.nome || 'Sem categoria';
+            return `
+                <div class="produto-admin-item">
+                    <div class="campo-nome"><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-id="${p.id}" data-field="nome" placeholder="Nome"></div>
+                    <div class="campo-preco"><input type="number" step="0.01" value="${p.preco}" data-id="${p.id}" data-field="preco" placeholder="Preço" style="width:100px"></div>
+                    <div class="campo-categoria">
+                        <select data-id="${p.id}" data-field="categoria_id">
+                            ${categorias.map(cat => `<option value="${cat.id}" ${p.categoria_id === cat.id ? 'selected' : ''}>${cat.icone || '📁'} ${cat.nome}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn-icon btn-salvar" onclick="salvarProduto(${p.id})" title="Salvar">💾</button>
+                        <button class="btn-icon btn-excluir" onclick="excluirProduto(${p.id})" title="Excluir">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    window.salvarProduto = async function(id) {
+        const nomeInput = document.querySelector(`[data-id="${id}"][data-field="nome"]`);
+        const precoInput = document.querySelector(`[data-id="${id}"][data-field="preco"]`);
+        const categoriaSelect = document.querySelector(`[data-id="${id}"][data-field="categoria_id"]`);
+        
+        if (!nomeInput || !precoInput) return;
+        
+        const nome = nomeInput.value;
+        const preco = parseFloat(precoInput.value);
+        const categoria_id = categoriaSelect ? parseInt(categoriaSelect.value) : null;
+        
+        if (!nome || isNaN(preco)) {
+            showToast('Preencha nome e preço!', 'error');
+            return;
+        }
+        
+        const { error } = await supabase.from('produtos').update({ nome, preco, categoria_id }).eq('id', id);
+        if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+        
+        showToast('Produto salvo!', 'success');
+        await carregarProdutos();
+        if (categoriaAtiva) carregarProdutosPorCategoria();
+    };
+    
+    window.excluirProduto = async function(id) {
+        if (confirm('Excluir este produto?')) {
+            const { error } = await supabase.from('produtos').delete().eq('id', id);
+            if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); return; }
+            showToast('Produto excluído!', 'success');
+            await carregarProdutos();
+            if (categoriaAtiva) carregarProdutosPorCategoria();
+        }
+    };
+    
+    async function adicionarProduto() {
+        const nome = document.getElementById('prodNome').value.trim();
+        const descricao = document.getElementById('prodDesc').value.trim();
+        const preco = parseFloat(document.getElementById('prodPreco').value);
+        const estoque = parseInt(document.getElementById('prodEstoque').value) || 0;
+        const categoria_id = parseInt(document.getElementById('prodCategoria').value);
+        const imagem = document.getElementById('prodImagem').value.trim() || `https://placehold.co/600x400/f0e4da/d4a373?text=${encodeURIComponent(nome)}`;
+        
+        if (!nome || isNaN(preco)) {
+            showToast('Preencha nome e preço!', 'error');
+            return;
+        }
+        
+        const { error } = await supabase.from('produtos').insert([{ nome, descricao, preco, estoque, categoria_id, imagem }]);
+        
+        if (error) {
+            showToast('Erro ao adicionar: ' + error.message, 'error');
+            return;
+        }
+        
+        showToast(`Produto "${nome}" adicionado!`, 'success');
+        document.getElementById('prodNome').value = '';
+        document.getElementById('prodDesc').value = '';
+        document.getElementById('prodPreco').value = '';
+        document.getElementById('prodEstoque').value = '';
+        document.getElementById('prodImagem').value = '';
+        await carregarProdutos();
+        if (categoriaAtiva) carregarProdutosPorCategoria();
+    }
+    
+    async function salvarProdutos() {
+        for (const p of produtos) {
+            await supabase.from('produtos').upsert(p);
+        }
+        showToast('Produtos salvos!', 'success');
+    }
+    
+    // ==================== SLIDES ====================
+    async function carregarSlides() {
+        try {
+            const { data, error } = await supabase.from('slides').select('*').order('ordem');
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                slides = data;
+            } else {
+                const padrao = [
+                    { imagem: 'https://images.pexels.com/photos/3026807/pexels-photo-3026807.jpeg?w=1200', titulo: 'Doces Especiais', descricao: 'Os melhores da casa', ordem: 1 },
+                    { imagem: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?w=1200', titulo: 'Bolos Artesanais', descricao: 'Feitos com amor', ordem: 2 }
+                ];
+                for (const s of padrao) {
+                    await supabase.from('slides').insert(s);
+                }
+                const { data: newData } = await supabase.from('slides').select('*').order('ordem');
+                slides = newData || [];
+            }
+            renderizarCarrossel();
+            renderizarAdminSlides();
+        } catch (error) {
+            showToast('Erro ao carregar slides: ' + error.message, 'error');
+        }
+    }
+    
+    function renderizarCarrossel() {
+        const container = document.getElementById('carouselSlides');
+        if (!container) return;
+        
+        container.innerHTML = slides.map(slide => `
+            <div class="carousel-slide">
+                <img src="${slide.imagem}" onerror="this.src='https://placehold.co/1200x400'">
+                <div class="carousel-caption">
+                    <h3>${slide.titulo || ''}</h3>
+                    <p>${slide.descricao || ''}</p>
+                </div>
+            </div>
+        `).join('');
+        
+        slideIndex = 0;
+        atualizarCarrosselPosicao();
+        
+        if (window.carrosselInterval) clearInterval(window.carrosselInterval);
+        window.carrosselInterval = setInterval(() => {
+            slideIndex = (slideIndex + 1) % slides.length;
+            atualizarCarrosselPosicao();
+        }, 5000);
+    }
+    
+    function atualizarCarrosselPosicao() {
+        const container = document.getElementById('carouselSlides');
+        if (container) container.style.transform = `translateX(-${slideIndex * 100}%)`;
+    }
+    
+    function renderizarAdminSlides() {
+        const container = document.getElementById('listaAdminSlides');
+        if (!container) return;
+        
+        if (slides.length === 0) {
+            container.innerHTML = '<p>Nenhum slide</p>';
+            return;
+        }
+        
+        container.innerHTML = slides.map(s => `
+            <div class="produto-admin-item">
+                <div class="campo-nome"><input type="text" value="${s.imagem}" data-id="${s.id}" data-field="imagem" placeholder="URL"></div>
+                <div><input type="text" value="${s.titulo || ''}" data-id="${s.id}" data-field="titulo" placeholder="Título"></div>
+                <div><input type="text" value="${s.descricao || ''}" data-id="${s.id}" data-field="descricao" placeholder="Descrição"></div>
+                <div>
+                    <button class="btn-icon btn-salvar" onclick="salvarSlide(${s.id})">💾</button>
+                    <button class="btn-icon btn-excluir" onclick="excluirSlide(${s.id})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    window.salvarSlide = async function(id) {
+        const imagemInput = document.querySelector(`[data-id="${id}"][data-field="imagem"]`);
+        const tituloInput = document.querySelector(`[data-id="${id}"][data-field="titulo"]`);
+        const descricaoInput = document.querySelector(`[data-id="${id}"][data-field="descricao"]`);
+        
+        const imagem = imagemInput?.value;
+        if (!imagem) { showToast('URL da imagem é obrigatória!', 'error'); return; }
+        
+        const { error } = await supabase.from('slides').update({
+            imagem, titulo: tituloInput?.value || '', descricao: descricaoInput?.value || ''
+        }).eq('id', id);
+        
+        if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+        showToast('Slide salvo!', 'success');
+        await carregarSlides();
+    };
+    
+    window.excluirSlide = async function(id) {
+        if (confirm('Excluir este slide?')) {
+            const { error } = await supabase.from('slides').delete().eq('id', id);
+            if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); return; }
+            showToast('Slide excluído!', 'success');
+            await carregarSlides();
+        }
+    };
+    
+    async function adicionarSlide() {
+        const imagem = document.getElementById('slideImagem').value.trim();
+        const titulo = document.getElementById('slideTitulo').value.trim();
+        const descricao = document.getElementById('slideDesc').value.trim();
+        
+        if (!imagem) {
+            showToast('URL da imagem é obrigatória!', 'error');
+            return;
+        }
+        
+        const novaOrdem = slides.length + 1;
+        const { error } = await supabase.from('slides').insert([{ imagem, titulo, descricao, ordem: novaOrdem }]);
+        
+        if (error) {
+            showToast('Erro ao adicionar: ' + error.message, 'error');
+            return;
+        }
+        
+        showToast('Slide adicionado!', 'success');
+        document.getElementById('slideImagem').value = '';
+        document.getElementById('slideTitulo').value = '';
+        document.getElementById('slideDesc').value = '';
+        await carregarSlides();
+    }
+    
+    // ==================== DASHBOARD ====================
+    async function carregarDashboard() {
+        const totalProdutos = produtos.length;
+        const totalCategorias = categorias.length;
+        const valorEstoque = produtos.reduce((s, p) => s + (p.preco * (p.estoque || 0)), 0);
+        
+        document.getElementById('dashboardStats').innerHTML = `
+            <div class="stat-card"><h4>🍰 Produtos</h4><div class="value">${totalProdutos}</div></div>
+            <div class="stat-card"><h4>🏷️ Categorias</h4><div class="value">${totalCategorias}</div></div>
+            <div class="stat-card"><h4>💰 Estoque</h4><div class="value">R$ ${valorEstoque.toFixed(2)}</div></div>
+        `;
+        
+        const vendasPorCategoria = {};
+        produtos.forEach(p => {
+            const catNome = categorias.find(c => c.id === p.categoria_id)?.nome || 'Sem categoria';
+            vendasPorCategoria[catNome] = (vendasPorCategoria[catNome] || 0) + 1;
+        });
+        
+        const topCategorias = Object.entries(vendasPorCategoria).slice(0, 5);
+        document.getElementById('topProdutos').innerHTML = topCategorias.length ? 
+            topCategorias.map(([nome, qtd]) => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-color);"><span>${nome}</span><span>${qtd} produtos</span></div>`).join('') :
+            '<p>Nenhum dado</p>';
+    }
+    
+    // ==================== CARRINHO ====================
+    function adicionarAoCarrinho(id) {
+        const produto = produtos.find(p => p.id === id);
+        if (!produto || produto.estoque <= 0) {
+            showToast('Produto sem estoque!', 'error');
+            return;
+        }
+        
+        const existente = carrinho.find(i => i.id === id);
+        if (existente) {
+            if (existente.quantidade + 1 > produto.estoque) {
+                showToast(`Estoque máximo: ${produto.estoque}`, 'warning');
+                return;
+            }
+            existente.quantidade++;
+        } else {
+            carrinho.push({ id, nome: produto.nome, preco: produto.preco, quantidade: 1 });
+        }
+        
+        salvarCarrinho();
+        atualizarCarrinho();
+        showToast(`${produto.nome} adicionado!`, 'success');
+    }
+    
+    function atualizarCarrinho() {
+        const container = document.getElementById('itens-carrinho');
+        const totalSpan = document.getElementById('valor-total');
+        
+        if (carrinho.length === 0) {
+            container.innerHTML = '<p style="text-align:center;">Carrinho vazio</p>';
+            totalSpan.innerText = 'R$ 0,00';
+            return;
+        }
+        
+        let total = 0;
+        container.innerHTML = '';
+        carrinho.forEach(item => {
+            const subtotal = item.preco * item.quantidade;
+            total += subtotal;
+            container.innerHTML += `
+                <div class="item-carrinho">
+                    <div><strong>${item.nome}</strong><br>R$ ${item.preco.toFixed(2)}</div>
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        <button class="btn-qtd" onclick="alterarQuantidade(${item.id}, -1)">-</button>
+                        <span>${item.quantidade}</span>
+                        <button class="btn-qtd" onclick="alterarQuantidade(${item.id}, 1)">+</button>
+                        <button class="btn-remover" onclick="removerDoCarrinho(${item.id})">🗑️</button>
+                    </div>
+                    <span>R$ ${subtotal.toFixed(2)}</span>
+                </div>
+            `;
+        });
+        totalSpan.innerText = `R$ ${total.toFixed(2)}`;
+    }
+    
+    window.alterarQuantidade = function(id, delta) {
+        const item = carrinho.find(i => i.id === id);
+        const produto = produtos.find(p => p.id === id);
+        
+        if (item) {
+            if (delta === -1 && item.quantidade > 1) {
+                item.quantidade--;
+            } else if (delta === -1 && item.quantidade === 1) {
+                removerDoCarrinho(id);
+                return;
+            } else if (delta === 1 && produto && item.quantidade + 1 <= produto.estoque) {
+                item.quantidade++;
+            } else if (delta === 1) {
+                showToast(`Estoque máximo: ${produto.estoque}`, 'warning');
+                return;
+            }
+            salvarCarrinho();
+            atualizarCarrinho();
+        }
+    };
+    
+    window.removerDoCarrinho = function(id) {
+        carrinho = carrinho.filter(i => i.id !== id);
+        salvarCarrinho();
+        atualizarCarrinho();
+    };
+    
+    function salvarCarrinho() { localStorage.setItem('docesdi_carrinho', JSON.stringify(carrinho)); }
+    function carregarCarrinho() { const data = localStorage.getItem('docesdi_carrinho'); carrinho = data ? JSON.parse(data) : []; }
+    
+    function finalizarPedido() {
+        if (carrinho.length === 0) {
+            showToast('Carrinho vazio!', 'warning');
+            return;
+        }
+        
+        let msg = '🧁 *PEDIDO - Doces Di* 🧁\n';
+        msg += `👤 ${usuarioLogado?.nome || 'Cliente'}\n`;
+        carrinho.forEach(i => msg += `• ${i.quantidade}x ${i.nome} - R$ ${(i.preco * i.quantidade).toFixed(2)}\n`);
+        const total = carrinho.reduce((s, i) => s + i.preco * i.quantidade, 0);
+        msg += `💰 Total: R$ ${total.toFixed(2)}`;
+        
+        carrinho = [];
+        salvarCarrinho();
+        atualizarCarrinho();
+        
+        window.open(`https://wa.me/5521965783597?text=${encodeURIComponent(msg)}`, '_blank');
+        showToast('Pedido enviado!', 'success');
+    }
+    
+    // ==================== LOGIN ====================
+    async function fazerLogin(email, senha) {
+        const senhaHash = hashSenha(senha);
+        
+        if (email === 'admin' && senha === 'admin123') {
+            return { tipo: 'admin', dados: { nome: 'Administrador', email: 'admin' } };
+        }
+        
+        const { data } = await supabase.from('clientes').select('*').eq('email', email);
+        if (data && data.length > 0 && data[0].senha === senhaHash) {
+            return { tipo: 'cliente', dados: data[0] };
+        }
+        return null;
+    }
+    
+    function atualizarBotaoCliente() {
+        const area = document.getElementById('clienteButtonArea');
+        if (!area) return;
+        area.innerHTML = '';
+        
+        if (usuarioLogado) {
+            const nomeExibir = usuarioTipo === 'admin' ? '👑 Admin' : (usuarioLogado.nome || 'Cliente');
+            area.innerHTML = `
+                <div class="usuario-dropdown" id="usuarioDropdown">
+                    <div class="usuario-info" onclick="toggleDropdown()">👤 ${nomeExibir} ▼</div>
+                    <div class="dropdown-content">
+                        <button class="btn-sair-dropdown" onclick="fazerLogout()">🚪 Sair</button>
+                    </div>
+                </div>
+            `;
+        } else {
+            area.innerHTML = `<button class="btn-login" id="btnAbrirLogin">🔐 Login</button>`;
+            document.getElementById('btnAbrirLogin')?.addEventListener('click', () => {
+                document.getElementById('modalCliente').style.display = 'flex';
+            });
+        }
+    }
+    
+    function toggleDropdown() {
+        const dropdown = document.getElementById('usuarioDropdown');
+        if (dropdown) dropdown.classList.toggle('show');
+    }
+    
+    function fazerLogout() {
+        usuarioLogado = null;
+        usuarioTipo = null;
+        localStorage.removeItem('docesdi_usuario_logado');
+        localStorage.removeItem('docesdi_usuario_tipo');
+        atualizarBotaoCliente();
+        showToast('Saiu da conta!', 'info');
+    }
+    
+    async function cadastrarCliente() {
+        const nome = document.getElementById('cadNome').value.trim();
+        const email = document.getElementById('cadEmail').value.trim();
+        const telefone = document.getElementById('cadTelefone').value.trim();
+        const senha = document.getElementById('cadSenha').value;
+        
+        if (!nome || !email || !senha) {
+            showToast('Preencha nome, email e senha!', 'error');
+            return;
+        }
+        
+        if (senha.length < 6) {
+            showToast('Senha deve ter no mínimo 6 caracteres!', 'error');
+            return;
+        }
+        
+        const { error } = await supabase.from('clientes').insert([{
+            nome, email, telefone, senha: hashSenha(senha)
+        }]);
+        
+        if (error) {
+            if (error.message.includes('duplicate')) {
+                showToast('Email já cadastrado!', 'error');
+            } else {
+                showToast('Erro ao cadastrar: ' + error.message, 'error');
+            }
+            return;
+        }
+        
+        showToast('Cadastro realizado! Faça login.', 'success');
+        document.getElementById('cadNome').value = '';
+        document.getElementById('cadEmail').value = '';
+        document.getElementById('cadTelefone').value = '';
+        document.getElementById('cadSenha').value = '';
+        document.getElementById('modalCliente').style.display = 'none';
+    }
+    
+    // ==================== ADMIN ====================
+    function abrirAdmin() {
+        if (usuarioLogado && usuarioTipo === 'admin') {
+            document.getElementById('modalAdmin').style.display = 'flex';
+            carregarDashboard();
+        } else if (usuarioLogado && usuarioTipo === 'cliente') {
+            showToast('Você não tem permissão de administrador!', 'warning');
+        } else {
+            showToast('Faça login como administrador primeiro! (admin / admin123)', 'warning');
+            document.getElementById('modalCliente').style.display = 'flex';
+        }
+    }
+    
+    function fecharAdmin() { document.getElementById('modalAdmin').style.display = 'none'; }
+    
+    function initAdminTabs() {
+        const tabs = document.querySelectorAll('.admin-tab');
+        const contents = document.querySelectorAll('.admin-tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                tabs.forEach(t => t.classList.remove('ativo'));
+                tab.classList.add('ativo');
+                contents.forEach(c => c.classList.remove('ativo'));
+                const target = document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+                if (target) target.classList.add('ativo');
+                if (tabId === 'dashboard') carregarDashboard();
+            });
+        });
+    }
+    
+    // ==================== BUSCA ====================
+    function buscarProdutos() {
+        const termo = document.getElementById('searchInput').value.toLowerCase();
+        if (!termo) {
+            if (categoriaAtiva) carregarProdutosPorCategoria();
+            return;
+        }
+        
+        const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo));
+        renderizarProdutosSwiper(filtrados);
+    }
+    
+    // ==================== INICIALIZAR ====================
+    async function inicializar() {
+        const savedTheme = localStorage.getItem('docesdi_theme');
+        if (savedTheme === 'dark') document.body.classList.add('dark');
+        
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('docesdi_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        document.getElementById('carouselPrev')?.addEventListener('click', () => {
+            slideIndex = (slideIndex - 1 + slides.length) % slides.length;
+            atualizarCarrosselPosicao();
+        });
+        document.getElementById('carouselNext')?.addEventListener('click', () => {
+            slideIndex = (slideIndex + 1) % slides.length;
+            atualizarCarrosselPosicao();
+        });
+        
+        document.getElementById('btnBuscar')?.addEventListener('click', buscarProdutos);
+        document.getElementById('searchInput')?.addEventListener('keyup', (e) => { if(e.key === 'Enter') buscarProdutos(); });
+        document.getElementById('btn-finalizar')?.addEventListener('click', finalizarPedido);
+        document.getElementById('btnAdminAcesso')?.addEventListener('click', abrirAdmin);
+        document.getElementById('btnCancelarAdmin')?.addEventListener('click', fecharAdmin);
+        
+        document.getElementById('btnAddCategoria')?.addEventListener('click', adicionarCategoria);
+        document.getElementById('btnSalvarCategorias')?.addEventListener('click', salvarCategorias);
+        document.getElementById('btnAddProduto')?.addEventListener('click', adicionarProduto);
+        document.getElementById('btnSalvarProdutos')?.addEventListener('click', salvarProdutos);
+        document.getElementById('btnAddSlide')?.addEventListener('click', adicionarSlide);
+        document.getElementById('btnSalvarSlides')?.addEventListener('click', async () => { await carregarSlides(); showToast('Slides atualizados!', 'success'); });
+        
+        document.getElementById('btnLogin')?.addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            const resultado = await fazerLogin(email, senha);
+            if (resultado) {
+                usuarioLogado = resultado.dados;
+                usuarioTipo = resultado.tipo;
+                localStorage.setItem('docesdi_usuario_logado', JSON.stringify(usuarioLogado));
+                localStorage.setItem('docesdi_usuario_tipo', usuarioTipo);
+                atualizarBotaoCliente();
+                document.getElementById('modalCliente').style.display = 'none';
+                showToast(`Bem-vindo, ${usuarioLogado.nome || 'Admin'}!`, 'success');
+                if (usuarioTipo === 'admin') abrirAdmin();
+            } else {
+                showToast('Email ou senha incorretos!', 'error');
+            }
+        });
+        
+        document.getElementById('btnCadastrar')?.addEventListener('click', cadastrarCliente);
+        document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
+            document.getElementById('modalCliente').style.display = 'none';
+        });
+        
+        await carregarCategorias();
+        await carregarProdutos();
+        await carregarSlides();
+        carregarCarrinho();
+        atualizarCarrinho();
+        
+        const savedUser = localStorage.getItem('docesdi_usuario_logado');
+        const savedTipo = localStorage.getItem('docesdi_usuario_tipo');
+        if (savedUser && savedTipo) {
+            usuarioLogado = JSON.parse(savedUser);
+            usuarioTipo = savedTipo;
+            atualizarBotaoCliente();
+        }
+        
+        document.getElementById('anoAtual').innerText = new Date().getFullYear();
+        initAdminTabs();
+        
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('usuarioDropdown');
+            if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('show');
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                abrirAdmin();
+            }
+        });
+    }
+    
+    inicializar();
+</script>
+</body>
+</html>
