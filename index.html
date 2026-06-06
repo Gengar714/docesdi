@@ -454,7 +454,7 @@
         }
         .carousel-dot.active { background: var(--accent-color); transform: scale(1.2); }
         
-        /* ===== BUSCA ===== */
+        /* ===== BUSCA E FILTRO AVANÇADO ===== */
         .search-wrapper { padding: 0 15px; margin-bottom: 20px; }
         .search-container {
             background: var(--card-bg);
@@ -485,6 +485,22 @@
             cursor: pointer;
             font-weight: bold;
         }
+        
+        /* ===== MODAL DE FILTRO AVANÇADO ===== */
+        .filter-modal .modal-content { max-width: 450px; }
+        .filter-group { margin-bottom: 15px; }
+        .filter-group label { display: block; font-size: 0.75rem; font-weight: bold; color: var(--accent-color); margin-bottom: 5px; }
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+        .filter-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .filter-actions button { flex: 1; }
+        .btn-reset { background: #999 !important; }
         
         /* ===== TOAST ===== */
         .toast-container {
@@ -632,6 +648,43 @@
             <button id="btnBuscar">Buscar</button>
         </div>
         <button class="btn-filter" id="btnOpenFilter">🔧 Filtros</button>
+    </div>
+</div>
+
+<!-- MODAL DE FILTRO AVANÇADO -->
+<div id="modalFiltros" class="modal filter-modal">
+    <div class="modal-content">
+        <h3>🔍 Busca Avançada</h3>
+        <div class="filter-group">
+            <label>💰 Preço mínimo</label>
+            <input type="number" id="filterMinPrice" placeholder="R$ 0" step="0.01">
+        </div>
+        <div class="filter-group">
+            <label>💰 Preço máximo</label>
+            <input type="number" id="filterMaxPrice" placeholder="R$ 999" step="0.01">
+        </div>
+        <div class="filter-group">
+            <label>⭐ Avaliação mínima</label>
+            <select id="filterRating">
+                <option value="0">Todas</option>
+                <option value="4">4+ estrelas</option>
+                <option value="4.5">4.5+ estrelas</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>📦 Ordenar por</label>
+            <select id="filterSort">
+                <option value="nome">Nome (A-Z)</option>
+                <option value="preco_asc">Menor preço</option>
+                <option value="preco_desc">Maior preço</option>
+                <option value="avaliacao">Melhor avaliados</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button id="btnApplyFilters" class="btn-add">Aplicar Filtros</button>
+            <button id="btnResetFilters" class="btn-reset">Limpar</button>
+        </div>
+        <button id="btnCloseFilter" style="background:#999; margin-top:10px;">Fechar</button>
     </div>
 </div>
 
@@ -808,18 +861,22 @@
             <button id="btnSalvarCategorias" class="btn-add">💾 Salvar Categorias</button>
         </div>
         
-        <!-- Estoque -->
+        <!-- Estoque (com todas as abas: Resumo, Materiais, Entrada, Saída, Desperdício, Movimentações) -->
         <div id="tabEstoque" class="admin-tab-content">
             <div class="estoque-stats" id="estoqueStats"></div>
             <div class="estoque-tabs-container" id="estoqueTabsContainer">
                 <div class="estoque-tab ativo" data-estoque-panel="resumo">📊 Resumo</div>
                 <div class="estoque-tab" data-estoque-panel="materiais">📦 Materiais</div>
+                <div class="estoque-tab" data-estoque-panel="entrada">📥 Entrada</div>
+                <div class="estoque-tab" data-estoque-panel="saida">📤 Saída</div>
+                <div class="estoque-tab" data-estoque-panel="desperdicio">⚠️ Desperdício</div>
                 <div class="estoque-tab" data-estoque-panel="movimentacoes">📜 Movimentações</div>
             </div>
             <div id="estoquePanelResumo" class="estoque-panel ativo">
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <button class="btn-add" id="btnNovoMaterial">➕ Novo Material</button>
                 </div>
+                <p>Painel de resumo do estoque (em breve estatísticas consolidadas).</p>
             </div>
             <div id="estoquePanelMateriais" class="estoque-panel">
                 <div style="overflow-x:auto;">
@@ -829,6 +886,9 @@
                     </table>
                 </div>
             </div>
+            <div id="estoquePanelEntrada" class="estoque-panel"><div id="listaEntradas"></div></div>
+            <div id="estoquePanelSaida" class="estoque-panel"><div id="listaSaidas"></div></div>
+            <div id="estoquePanelDesperdicio" class="estoque-panel"><div id="listaDesperdicios"></div></div>
             <div id="estoquePanelMovimentacoes" class="estoque-panel"><div id="movimentacoesLista"></div></div>
         </div>
         
@@ -1379,6 +1439,12 @@
         atualizarCardsEstoque();
     }
     
+    // Funções para listar entrada/saída (exemplo simplificado)
+    async function carregarListaTipo(tipo) {
+        const container = document.getElementById(`lista${tipo.charAt(0).toUpperCase()+tipo.slice(1)}s`);
+        if(container) container.innerHTML = `<p>Nenhum registro de ${tipo} encontrado.</p>`;
+    }
+    
     // ==================== CARRINHO ====================
     function adicionarAoCarrinho(id){
         const prod = produtos.find(p=>p.id===id);
@@ -1576,6 +1642,9 @@
                 panels.forEach(p=>p.classList.remove('ativo'));
                 document.getElementById(`estoquePanel${panelId.charAt(0).toUpperCase()+panelId.slice(1)}`).classList.add('ativo');
                 if(panelId==='materiais') atualizarTabelaMateriais();
+                if(panelId==='entrada') carregarListaTipo('entrada');
+                if(panelId==='saida') carregarListaTipo('saida');
+                if(panelId==='desperdicio') carregarListaTipo('desperdicio');
             });
         });
     }
@@ -1605,12 +1674,42 @@
         }
     }
     
-    // ==================== FILTROS ====================
-    function buscarProdutosPorTexto(){
-        if(categoriaAtiva) carregarProdutosPorCategoria();
+    // ==================== FILTROS AVANÇADOS ====================
+    function aplicarFiltrosAvancados() {
+        const minPrice = parseFloat(document.getElementById('filterMinPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('filterMaxPrice').value) || Infinity;
+        const minRating = parseFloat(document.getElementById('filterRating').value) || 0;
+        const sortBy = document.getElementById('filterSort').value;
+        
+        if (!categoriaAtiva) return;
+        let filtrados = produtos.filter(p => p.categoria_id === categoriaAtiva);
+        filtrados = filtrados.filter(p => p.preco >= minPrice && p.preco <= maxPrice);
+        if (minRating > 0) {
+            filtrados = filtrados.filter(p => getMediaAvaliacoes(p.id) >= minRating);
+        }
+        if (sortBy === 'nome') filtrados.sort((a,b)=>a.nome.localeCompare(b.nome));
+        else if (sortBy === 'preco_asc') filtrados.sort((a,b)=>a.preco - b.preco);
+        else if (sortBy === 'preco_desc') filtrados.sort((a,b)=>b.preco - a.preco);
+        else if (sortBy === 'avaliacao') filtrados.sort((a,b)=>getMediaAvaliacoes(b.id) - getMediaAvaliacoes(a.id));
+        
+        renderizarProdutosSwiper(filtrados);
+        fecharModal();
+        showToast("Filtros aplicados!", 'success');
     }
-    function aplicarFiltrosAvancados(){ /* implementar se necessário */ }
-    function resetarFiltros(){ /* implementar */ }
+    
+    function resetarFiltros() {
+        document.getElementById('filterMinPrice').value = '';
+        document.getElementById('filterMaxPrice').value = '';
+        document.getElementById('filterRating').value = '0';
+        document.getElementById('filterSort').value = 'nome';
+        if (categoriaAtiva) carregarProdutosPorCategoria();
+        fecharModal();
+        showToast("Filtros resetados!", 'success');
+    }
+    
+    function buscarProdutosPorTexto(){
+        if (categoriaAtiva) carregarProdutosPorCategoria();
+    }
     
     // ==================== INICIALIZAÇÃO ====================
     async function inicializar(){
@@ -1638,11 +1737,15 @@
         atualizarBotaoCliente();
         document.getElementById('anoAtual').innerText = new Date().getFullYear();
         
+        // Eventos do carrossel
         document.getElementById('carouselPrev')?.addEventListener('click',()=>{ slideIndex=(slideIndex-1+slides.length)%slides.length; atualizarCarrossel(); });
         document.getElementById('carouselNext')?.addEventListener('click',()=>{ slideIndex=(slideIndex+1)%slides.length; atualizarCarrossel(); });
         document.getElementById('btnBuscar')?.addEventListener('click',buscarProdutosPorTexto);
         document.getElementById('searchInput')?.addEventListener('keyup',(e)=>{ if(e.key==='Enter') buscarProdutosPorTexto(); });
-        document.getElementById('btnOpenFilter')?.addEventListener('click',()=>{ alert("Filtro avançado em desenvolvimento"); });
+        document.getElementById('btnOpenFilter')?.addEventListener('click',()=>{ document.getElementById('modalFiltros').style.display='flex'; });
+        document.getElementById('btnApplyFilters')?.addEventListener('click',aplicarFiltrosAvancados);
+        document.getElementById('btnResetFilters')?.addEventListener('click',resetarFiltros);
+        document.getElementById('btnCloseFilter')?.addEventListener('click',()=>{ document.getElementById('modalFiltros').style.display='none'; });
         document.getElementById('btn-finalizar')?.addEventListener('click',finalizarPedido);
         document.getElementById('btnLimparCarrinho')?.addEventListener('click',limparCarrinho);
         document.getElementById('btnAdminAcesso')?.addEventListener('click',abrirAdmin);
