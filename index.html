@@ -6,7 +6,7 @@
     <title>Doces Di | Sistema Completo</title>
     <meta name="theme-color" content="#d4a373">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBR173YFP4\"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MBR173YFP4"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MBR173YFP4');</script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
@@ -53,18 +53,15 @@
         .hero-swiper { width: 100%; height: 220px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); }
         .hero-swiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Abas superiores do front */
         .tabs-container { max-width: 1200px; margin: 15px auto; padding: 0 15px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
         .tabs-container::-webkit-scrollbar { display: none; }
         .tab-btn { padding: 10px 20px; border: none; background: var(--card-bg); color: var(--text-color); border-radius: 20px; font-weight: 600; cursor: pointer; white-space: nowrap; box-shadow: var(--shadow); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
         .tab-btn.active { background: var(--accent-color); color: white; }
         
-        /* Container estrutural principal ajustado */
         .produtos-carrossel-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 15px; display: flex; flex-direction: column; gap: 30px; }
         .categoria-vitrine-secao { width: 100%; display: block; clear: both; }
         .categoria-vitrine-secao h2 { margin-bottom: 15px; font-size: 1.35rem; font-weight: 700; color: var(--text-color); display: flex; align-items: center; gap: 8px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
         
-        /* Configuração Swiper Corrigida */
         .product-swiper { width: 100%; padding-bottom: 35px !important; overflow: hidden; position: relative; }
         .card-produto-swiper { background: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); height: 100%; display: flex; flex-direction: column; transition: var(--transition); border: 1px solid rgba(0,0,0,0.03); position: relative; }
         .card-produto-swiper:hover { transform: translateY(-5px); }
@@ -81,13 +78,11 @@
         .btn-comprar { width: 100%; padding: 10px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: auto; }
         .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
         
-        /* Menu Inferior Fixo */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + var(--safe-bottom)); background: var(--card-bg); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: var(--safe-bottom); z-index: 99; transition: var(--transition); border-top: 1px solid rgba(0,0,0,0.02); }
         .nav-item { display: flex; flex-direction: column; align-items: center; background: none; border: none; color: var(--text-color); opacity: 0.6; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--transition); gap: 4px; }
         .nav-item i { font-size: 1.3rem; }
         .nav-item.active { opacity: 1; color: var(--accent-color); }
         
-        /* Modais */
         .modal { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; padding: 10px; }
         .modal.ativo { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--bg-color); width: 100%; max-width: 500px; border-radius: 24px 24px 12px 12px; padding: 20px; box-shadow: var(--shadow); max-height: 85vh; overflow-y: auto; transform: translateY(100px); transition: transform 0.3s ease; position: relative; color: var(--text-color); }
@@ -95,7 +90,6 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
         .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
         
-        /* Formulários */
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-size: 0.9rem; font-weight: 600; }
         .form-control { width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-color); border-radius: 12px; font-size: 1rem; transition: var(--transition); }
@@ -103,7 +97,6 @@
         .form-control:focus { outline: none; border-color: var(--accent-color); }
         .btn-block { width: 100%; padding: 12px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1rem; }
         
-        /* Painel Administrativo */
         .admin-section { max-width: 1200px; margin: 15px auto; padding: 0 15px; display: none; }
         .admin-section.ativo { display: block; }
         .admin-nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
@@ -115,7 +108,6 @@
         .admin-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: 10px; border: 1px solid rgba(0,0,0,0.03); }
         
-        /* Lista de Produtos Admin */
         .produto-admin-item { display: grid; grid-template-columns: 2fr 3fr 1.2fr 1fr 2fr 2fr auto; gap: 10px; align-items: center; background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); }
         @media(max-width: 768px){
             .produto-admin-item { grid-template-columns: 1fr; gap: 8px; }
@@ -126,19 +118,16 @@
         .btn-salvar { color: #2a9d8f; }
         .btn-excluir { color: #e63946; }
         
-        /* Toast Notification */
         .toast { position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; display: none; font-weight: 600; animation: slideIn 0.3s ease; }
         .toast.error { background: #e63946; }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        /* Carrinho */
         .carrinho-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .carrinho-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         .carrinho-details { flex-grow: 1; }
         .carrinho-qtd-control { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
         .btn-qtd { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); background: var(--card-bg); color: var(--text-color); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
-        /* User Menu Dropdown */
         .user-menu-container { position: relative; display: inline-block; }
         .user-dropdown { position: absolute; top: 100%; right: 0; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); display: none; min-width: 160px; z-index: 150; border: 1px solid rgba(0,0,0,0.05); overflow: hidden; padding: 5px 0; }
         .user-dropdown.show { display: block; }
@@ -181,7 +170,6 @@
         </div>
 
         <div class="tabs-container" id="tabsCategoriasFront"></div>
-
         <div class="produtos-carrossel-wrapper"></div>
     </main>
 
@@ -400,11 +388,14 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://gqfbywqqguzvkgbeorrd.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxZmJ5d3FxZ3V6dmtnYmVvcnJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzNTcxMjAsImV4cCI6MjA1NDkzMzEyMH0.b6Z7o2L-f_Ff2xG9xG9xG9xG9xG9xG9xG9xG9xG9xG9";
+        // === ATUALIZADO: Usando o ID de projeto correto extraído das suas fotos ===
+        const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
+        
+        // ATENÇÃO: Substitua os caracteres abaixo pela sua nova Anon Key do projeto 'opixfppyhbiyqrilebfb'
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const mpInstance = new MercadoPago('APP_USR-8c3ba50c-e1fc-463d-82d2-8b9816bfbcf1', { locale: 'pt-BR' });
+        const mpInstance = new MercadoPago('APP_USR-d01d8748-97f4-4faa-aeab-a2c680b00aec', { locale: 'pt-BR' });
 
         let categorias = [];
         let produtos = [];
@@ -422,7 +413,7 @@
         function showToast(mensagem, tipo = 'success') {
             const toast = document.getElementById('toastNotification');
             if(!toast) return;
-            toast.innerText = mensagem;
+            toast.innerText = mensaje || mensagem;
             toast.className = `toast ${tipo}`;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3500);
@@ -527,7 +518,6 @@
             return `${estrelasHtml} <span style="font-size:0.75rem; color:#888; margin-left:3px;">(${notas.length || 1})</span>`;
         }
 
-        // ===== CORREÇÃO DO SELETOR: MULTIPLOS CARROSSEIS SEM CONFLITO =====
         function renderizarPaginaPrincipalPorCategorias() {
             const wrapperPrincipal = document.querySelector('.produtos-carrossel-wrapper');
             if(!wrapperPrincipal) return;
@@ -591,7 +581,6 @@
                 wrapperPrincipal.appendChild(secaoElemento);
 
                 if(produtosFiltrados.length > 0) {
-                    // Inicialização apontando diretamente para o ID único do container injetado
                     carrosseisInstanciados[cat.id] = new Swiper(`#${idSwiperElemento}`, {
                         slidesPerView: 1.2,
                         spaceBetween: 14,
@@ -647,7 +636,6 @@
             sel.innerHTML = materiais.map(m => `<option value="${m.id}">${m.nome} (${m.unidade_medida})</option>`).join('');
         }
 
-        // ===== ADICIONAR CATEGORIA RETORNANDO ID CORRETO =====
         async function adicionarCategoria() {
             const nomeInput = document.getElementById('categoriaNome');
             const iconeInput = document.getElementById('categoriaIcone');
@@ -655,34 +643,22 @@
             const icone = iconeInput.value;
 
             if(!nome) { showToast("Preencha o nome da categoria!", 'error'); return; }
-
             const payload = { nome, icone, ordem: categorias.length + 1 };
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('categorias')
-                    .insert([payload])
-                    .select();
-
+                const { data, error } = await supabaseClient.from('categorias').insert([payload]).select();
                 if(error) throw error;
-
                 if(data && data.length > 0) {
                     categorias.push(data[0]);
                     localStorage.setItem('docesdi_categorias', JSON.stringify(categorias));
                     showToast(`Categoria "${nome}" salva com sucesso!`);
-                    
                     nomeInput.value = '';
-                    iconeInput.selectedIndex = 0;
-
                     renderizarCategoriasFront();
                     renderizarAdminCategorias();
                     popularSelectCategorias();
                     renderizarPaginaPrincipalPorCategorias(); 
                 }
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao gravar categoria no banco de dados!", 'error');
-            }
+            } catch(e) { showToast("Erro ao gravar categoria!", 'error'); }
         }
 
         function renderizarAdminCategorias() {
@@ -736,17 +712,15 @@
             } catch(e) { showToast("Não foi possível excluir.", 'error'); }
         }
 
-        // --- GERENCIAMENTO DE PRODUTOS ---
         async function adicionarProduto() {
             const nome = document.getElementById('prodNome').value.trim();
             const preco = parseFloat(document.getElementById('prodPreco').value);
-            const  estoque = parseInt(document.getElementById('prodEstoque').value) || 0;
+            const estoque = parseInt(document.getElementById('prodEstoque').value) || 0;
             const categoria_id = parseInt(document.getElementById('prodCategoria').value);
             const imagem = document.getElementById('prodImagem').value.trim();
             const descricao = document.getElementById('prodDescricao').value.trim();
 
             if(!nome || isNaN(preco)) { showToast("Preencha Nome e Preço!", 'error'); return; }
-
             const payload = { nome, preco, estoque, categoria_id, imagem, descricao };
 
             try {
@@ -756,20 +730,17 @@
                     produtos.push(data[0]);
                     localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
                     showToast("Produto cadastrado com sucesso!");
-                    
                     document.getElementById('prodNome').value = '';
                     document.getElementById('prodPreco').value = '';
                     document.getElementById('prodEstoque').value = '';
                     document.getElementById('prodImagem').value = '';
                     document.getElementById('prodDescricao').value = '';
-
                     renderizarAdminProdutos();
                     renderizarPaginaPrincipalPorCategorias();
                 }
             } catch(e) { showToast("Erro ao cadastrar produto.", 'error'); }
         }
 
-        // ===== EDICAO ATIVA NA LINHA DO ADMIN COM SALVAMENTO INDIVIDUAL =====
         function renderizarAdminProdutos() {
             const container = document.getElementById('listaAdminProdutos');
             if(!container) return;
@@ -780,29 +751,19 @@
 
             container.innerHTML = produtos.map(p => `
                 <div class="produto-admin-item" data-id="${p.id}">
-                    <div>
-                        <input type="text" value="${p.nome}" data-field="nome" placeholder="Nome">
-                    </div>
-                    <div>
-                        <textarea rows="1" data-field="descricao" placeholder="Descrição">${p.descricao || ''}</textarea>
-                    </div>
-                    <div>
-                        <input type="number" step="0.01" value="${p.preco}" data-field="preco" placeholder="Preço">
-                    </div>
-                    <div>
-                        <input type="number" value="${p.estoque || 0}" data-field="estoque" placeholder="Estoque">
-                    </div>
+                    <div><input type="text" value="${p.nome}" data-field="nome" placeholder="Nome"></div>
+                    <div><textarea rows="1" data-field="descricao" placeholder="Descrição">${p.descricao || ''}</textarea></div>
+                    <div><input type="number" step="0.01" value="${p.preco}" data-field="preco" placeholder="Preço"></div>
+                    <div><input type="number" value="${p.estoque || 0}" data-field="estoque" placeholder="Estoque"></div>
                     <div>
                         <select data-field="categoria_id">
                             ${categorias.map(cat => `<option value="${cat.id}" ${cat.id == p.categoria_id ? 'selected' : ''}>${cat.icone || '📁'} ${cat.nome}</option>`).join('')}
                         </select>
                     </div>
-                    <div>
-                        <input type="text" value="${p.imagem || ''}" data-field="imagem" placeholder="URL da imagem">
-                    </div>
+                    <div><input type="text" value="${p.imagem || ''}" data-field="imagem" placeholder="URL da imagem"></div>
                     <div style="display:flex; gap:5px;">
-                        <button class="btn-icon btn-salvar" onclick="salvarLinhaProdutoAdmin(${p.id})" title="Salvar Alterações"><i class="fa-solid fa-floppy-disk"></i></button>
-                        <button class="btn-icon btn-excluir" onclick="excluirLinhaProdutoAdmin(${p.id})" title="Excluir Produto"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-icon btn-salvar" onclick="salvarLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-floppy-disk"></i></button>
+                        <button class="btn-icon btn-excluir" onclick="excluirLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -829,20 +790,12 @@
         window.salvarLinhaProdutoAdmin = async function(id) {
             const produtoParaSalvar = produtos.find(p => p.id === id);
             if(!produtoParaSalvar) return;
-
             try {
-                const { error } = await supabaseClient
-                    .from('produtos')
-                    .upsert(produtoParaSalvar)
-                    .eq('id', id);
-
+                const { error } = await supabaseClient.from('produtos').upsert(produtoParaSalvar).eq('id', id);
                 if(error) throw error;
                 showToast(`Produto "${produtoParaSalvar.nome}" atualizado!`);
                 renderizarPaginaPrincipalPorCategorias(); 
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao sincronizar com o banco!", 'error');
-            }
+            } catch(e) { showToast("Erro ao sincronizar com o banco!", 'error'); }
         };
 
         window.excluirLinhaProdutoAdmin = async function(id) {
@@ -858,7 +811,6 @@
             } catch(e) { showToast("Erro ao deletar produto.", 'error'); }
         };
 
-        // --- GESTÃO DE ESTOQUE/MATERIAIS ---
         async function adicionarMaterial() {
             const nome = document.getElementById('matNome').value.trim();
             const quantidade = parseFloat(document.getElementById('matQtd').value) || 0;
@@ -895,7 +847,6 @@
             popularSelectMateriaisFicha();
         }
 
-        // --- FICHA TÉCNICA ---
         async function carregarFichaTecnicaProduto() {
             const pId = document.getElementById('fichaSelProduto').value;
             const container = document.getElementById('listaItensFichaTecnica');
@@ -927,7 +878,6 @@
             carregarFichaTecnicaProduto();
         }
 
-        // --- BANNERS / SLIDES ---
         async function adicionarSlide() {
             const url = document.getElementById('slideUrl').value.trim();
             if(!url) return;
@@ -959,7 +909,6 @@
             renderizarAdminSlides();
         }
 
-        // --- CARRINHO DE COMPRAS ---
         function carregarCarrinho() {
             const local = localStorage.getItem('docesdi_carrinho');
             if(local) { carrinho = JSON.parse(local); atualizarBadgeCarrinho(); }
@@ -1031,7 +980,6 @@
             document.getElementById('carrinhoCamposEndereco').style.display = (val === 'entrega') ? 'block' : 'none';
         }
 
-        // --- FINALIZAR PEDIDO MERCADO PAGO ---
         async function avancarParaPagamento() {
             if(carrinho.length === 0) return;
             if(!usuarioLogado) {
@@ -1117,7 +1065,6 @@
             showToast("Código Pix copiado!");
         }
 
-        // --- IDENTIFICAÇÃO E LOGIN ---
         function verificarIdentificacaoCliente() {
             const tel = document.getElementById('cadTelefone').value.replace(/\D/g,'');
             if(tel.length < 10) { showToast("Insira um telefone válido!", 'error'); return; }
@@ -1169,7 +1116,6 @@
             showToast("Você saiu.");
         }
 
-        // --- PEDIDOS CLIENTE & ADMIN ---
         async function abrirMeusPedidos() {
             if(!usuarioLogado) return;
             const container = document.getElementById('listaPedidosCliente');
@@ -1231,7 +1177,6 @@
             carregarPedidosAdmin();
         }
 
-        // --- INICIALIZAÇÃO CORE ---
         async function inicializar() {
             const savedTheme = localStorage.getItem('docesdi_theme');
             if(savedTheme === 'dark') {
