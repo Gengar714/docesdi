@@ -51,7 +51,6 @@
         .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
         .btn-perfil { background: var(--accent-color); color: white; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); }
         
-        /* Termômetro estilo */
         .thermometer-bar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 10px 20px;
@@ -63,7 +62,6 @@
             flex-wrap: wrap;
             gap: 15px;
             box-shadow: var(--shadow);
-            transition: var(--transition);
         }
         .thermometer-info {
             display: flex;
@@ -79,25 +77,11 @@
             padding: 5px 15px;
             border-radius: 40px;
         }
-        .temp-display i {
-            font-size: 1.5rem;
-        }
-        .temp-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        .temp-unit {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        .weather-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .weather-status i {
-            font-size: 1.3rem;
-        }
+        .temp-display i { font-size: 1.5rem; }
+        .temp-value { font-size: 1.8rem; font-weight: bold; }
+        .temp-unit { font-size: 1rem; opacity: 0.8; }
+        .weather-status { display: flex; align-items: center; gap: 8px; }
+        .weather-status i { font-size: 1.3rem; }
         .suggestion-card {
             background: rgba(255,255,255,0.2);
             padding: 5px 15px;
@@ -108,17 +92,9 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        .suggestion-card:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.02);
-        }
-        .suggestion-card i {
-            font-size: 1.3rem;
-        }
-        .suggestion-text {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+        .suggestion-card:hover { background: rgba(255,255,255,0.3); transform: scale(1.02); }
+        .suggestion-card i { font-size: 1.3rem; }
+        .suggestion-text { font-weight: 500; font-size: 0.9rem; }
         .refresh-weather {
             background: rgba(255,255,255,0.2);
             border: none;
@@ -126,11 +102,8 @@
             padding: 8px 12px;
             border-radius: 30px;
             cursor: pointer;
-            transition: var(--transition);
         }
-        .refresh-weather:hover {
-            background: rgba(255,255,255,0.3);
-        }
+        .refresh-weather:hover { background: rgba(255,255,255,0.3); }
         
         .hero-slider { margin: 15px auto; max-width: 1200px; padding: 0 15px; }
         .hero-swiper { width: 100%; height: 220px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); }
@@ -162,7 +135,6 @@
         .btn-comprar { width: 100%; padding: 10px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: auto; }
         .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
         
-        /* Footer */
         .site-footer {
             background: var(--card-bg);
             margin-top: 50px;
@@ -195,9 +167,7 @@
             text-decoration: none;
             transition: var(--transition);
         }
-        .footer-item a:hover {
-            color: var(--accent-color);
-        }
+        .footer-item a:hover { color: var(--accent-color); }
         .footer-copyright {
             text-align: center;
             padding-top: 25px;
@@ -240,9 +210,7 @@
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: 10px; border: 1px solid rgba(0,0,0,0.03); }
         
         .produto-admin-item { display: grid; grid-template-columns: 2fr 3fr 1.2fr 1fr 2fr 2fr auto; gap: 10px; align-items: center; background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); }
-        @media(max-width: 768px){
-            .produto-admin-item { grid-template-columns: 1fr; gap: 8px; }
-        }
+        @media(max-width: 768px){ .produto-admin-item { grid-template-columns: 1fr; gap: 8px; } }
         .produto-admin-item input, .produto-admin-item textarea, .produto-admin-item select { width: 100%; padding: 8px; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-color); border-radius: 6px; font-size: 0.9rem; }
         
         .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
@@ -268,10 +236,7 @@
         .user-dropdown button:hover { background: rgba(0,0,0,0.03); }
         body.dark .user-dropdown button:hover { background: rgba(255,255,255,0.05); }
         
-        .highlight-product {
-            box-shadow: 0 0 0 3px var(--accent-color) !important;
-            transition: box-shadow 0.3s ease;
-        }
+        .highlight-product { box-shadow: 0 0 0 3px var(--accent-color) !important; transition: box-shadow 0.3s ease; }
     </style>
 </head>
 <body>
@@ -302,7 +267,6 @@
         </div>
     </header>
 
-    <!-- TERMÔMETRO E SUGESTÃO DE SOBREMESA -->
     <div class="thermometer-bar" id="weatherBar">
         <div class="thermometer-info">
             <div class="temp-display">
@@ -336,7 +300,6 @@
         <div class="produtos-carrossel-wrapper" id="produtosWrapper"></div>
     </main>
 
-    <!-- Footer -->
     <footer class="site-footer" id="siteFooter">
         <div class="footer-grid" id="footerContent"></div>
         <div class="footer-copyright" id="footerCopyright">
@@ -595,377 +558,12 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const mp = new MercadoPago('APP_USR-8c3ba50c-e1fc-463d-82d2-8b9816bfbcf1', { locale: 'pt-BR' });
 
-        let categorias = [];
-        let produtos = [];
-        let slides = [];
-        let clientes = [];
-        let avaliacoes = [];
-        let materiais = [];
-        let fichaTecnica = [];
-        let carrinho = [];
-
-        let usuarioLogado = null; 
-        let heroSwiperInstance = null;
-        let carrosseisInstanciados = {}; 
-
-        // Configurações personalizadas
+        let categorias = [], produtos = [], slides = [], clientes = [], avaliacoes = [], materiais = [], fichaTecnica = [], carrinho = [];
+        let usuarioLogado = null, heroSwiperInstance = null, carrosseisInstanciados = {};
+        let temperaturaAtual = null, sugestaoAtual = { id: null, nome: null, tipo: null, categoria_id: null };
         let configCabecalho = { logo_url: '', nome_loja: 'Doces Di' };
-        let configRodape = {
-            whatsapp: { enabled: false, value: '' },
-            email: { enabled: false, value: '' },
-            instagram: { enabled: false, value: '' },
-            facebook: { enabled: false, value: '' },
-            endereco: { enabled: false, value: '' },
-            horario: { enabled: false, value: '' }
-        };
+        let configRodape = { whatsapp: { enabled: false, value: '' }, email: { enabled: false, value: '' }, instagram: { enabled: false, value: '' }, facebook: { enabled: false, value: '' }, endereco: { enabled: false, value: '' }, horario: { enabled: false, value: '' } };
         let palavrasChaveClima = { quentes: [], amenas: [], frias: [] };
-
-        // ========== VARIÁVEIS DO CLIMA ==========
-        let temperaturaAtual = null;
-        let sugestaoAtual = { id: null, nome: null, tipo: null, categoria_id: null };
-
-        // ========== CARREGAR CONFIGURAÇÕES DO SUPABASE ==========
-        async function carregarConfiguracoes() {
-            try {
-                const { data, error } = await supabaseClient.from('configuracoes').select('*');
-                if(!error && data) {
-                    for(let config of data) {
-                        if(config.chave === 'cabecalho') {
-                            configCabecalho = config.valor;
-                            aplicarConfigCabecalho();
-                        }
-                        if(config.chave === 'rodape') {
-                            configRodape = config.valor;
-                            renderizarRodape();
-                        }
-                        if(config.chave === 'palavras_chave') {
-                            palavrasChaveClima = config.valor;
-                        }
-                    }
-                }
-            } catch(e) { console.log('Erro ao carregar configurações:', e); }
-            
-            // Valores padrão se não existirem
-            if(!palavrasChaveClima.quentes || palavrasChaveClima.quentes.length === 0) {
-                palavrasChaveClima = {
-                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante', 'smoothie', 'frozen', 'slush', 'granizado', 'sorbet'],
-                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus', 'laranja', 'morango', 'manga', 'maracujá', 'pêssego'],
-                    frias: ['café', 'chocolate quente', 'quentinho', 'cappuccino', 'latte', 'bolo', 'torta', 'pão de queijo', 'especial', 'quente']
-                };
-            }
-        }
-
-        function aplicarConfigCabecalho() {
-            const logoImg = document.getElementById('headerLogo');
-            const storeNameSpan = document.getElementById('storeNameSpan');
-            if(logoImg && configCabecalho.logo_url) {
-                logoImg.src = configCabecalho.logo_url;
-            }
-            if(storeNameSpan && configCabecalho.nome_loja) {
-                storeNameSpan.innerText = configCabecalho.nome_loja;
-            }
-        }
-
-        function renderizarRodape() {
-            const footerContainer = document.getElementById('footerContent');
-            if(!footerContainer) return;
-            
-            let html = '';
-            
-            if(configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) {
-                const whatsNum = configRodape.whatsapp.value.replace(/\D/g, '');
-                html += `
-                    <div class="footer-item">
-                        <i class="fab fa-whatsapp"></i>
-                        <a href="https://wa.me/${whatsNum}" target="_blank">${configRodape.whatsapp.value}</a>
-                    </div>
-                `;
-            }
-            
-            if(configRodape.email?.enabled && configRodape.email?.value) {
-                html += `
-                    <div class="footer-item">
-                        <i class="far fa-envelope"></i>
-                        <a href="mailto:${configRodape.email.value}">${configRodape.email.value}</a>
-                    </div>
-                `;
-            }
-            
-            if(configRodape.instagram?.enabled && configRodape.instagram?.value) {
-                const instaUser = configRodape.instagram.value.replace('@', '');
-                html += `
-                    <div class="footer-item">
-                        <i class="fab fa-instagram"></i>
-                        <a href="https://instagram.com/${instaUser}" target="_blank">@${instaUser}</a>
-                    </div>
-                `;
-            }
-            
-            if(configRodape.facebook?.enabled && configRodape.facebook?.value) {
-                html += `
-                    <div class="footer-item">
-                        <i class="fab fa-facebook"></i>
-                        <a href="${configRodape.facebook.value}" target="_blank">Facebook</a>
-                    </div>
-                `;
-            }
-            
-            if(configRodape.endereco?.enabled && configRodape.endereco?.value) {
-                html += `
-                    <div class="footer-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${configRodape.endereco.value}</span>
-                    </div>
-                `;
-            }
-            
-            if(configRodape.horario?.enabled && configRodape.horario?.value) {
-                html += `
-                    <div class="footer-item">
-                        <i class="far fa-clock"></i>
-                        <span>${configRodape.horario.value}</span>
-                    </div>
-                `;
-            }
-            
-            footerContainer.innerHTML = html || '<div class="footer-item">Doces Di - Doces especiais para você!</div>';
-        }
-
-        function abrirWhatsApp() {
-            let numero = '';
-            if(configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) {
-                numero = configRodape.whatsapp.value.replace(/\D/g, '');
-            }
-            if(!numero) {
-                numero = '5551996147492';
-            }
-            window.open(`https://wa.me/${numero}`, '_blank');
-        }
-
-        // ========== FUNÇÃO PARA SUGERIR BASEADO APENAS NO CARDÁPIO ==========
-        function gerarSugestaoPorClima() {
-            const suggestionText = document.getElementById('suggestionText');
-            const suggestionIcon = document.getElementById('suggestionIcon');
-            
-            if (temperaturaAtual === null) {
-                suggestionText.innerText = 'Carregando cardápio...';
-                return;
-            }
-            
-            if (produtos.length === 0) {
-                suggestionText.innerText = 'Adicione produtos ao cardápio!';
-                return;
-            }
-            
-            const produtosDisponiveis = produtos.filter(p => p.estoque > 0);
-            
-            if (produtosDisponiveis.length === 0) {
-                suggestionText.innerText = 'Produtos em breve!';
-                return;
-            }
-            
-            let produtosSugeridos = [];
-            let tipoSugestao = '';
-            let iconClass = '';
-            let iconColor = '';
-            
-            const palavrasGeladas = palavrasChaveClima.quentes || [];
-            const palavrasFrescas = palavrasChaveClima.amenas || [];
-            const palavrasQuentes = palavrasChaveClima.frias || [];
-            
-            if (temperaturaAtual >= 26) {
-                tipoSugestao = 'gelada';
-                iconClass = 'fa-solid fa-ice-cream';
-                iconColor = '#4ecdc4';
-                
-                produtosSugeridos = produtosDisponiveis.filter(p => {
-                    const nomeLower = p.nome.toLowerCase();
-                    const descLower = (p.descricao || '').toLowerCase();
-                    const cat = categorias.find(c => c.id === p.categoria_id);
-                    const catNome = cat ? cat.nome.toLowerCase() : '';
-                    
-                    return palavrasGeladas.some(palavra => 
-                        nomeLower.includes(palavra) || 
-                        descLower.includes(palavra) || 
-                        catNome.includes(palavra)
-                    );
-                });
-                
-            } else if (temperaturaAtual >= 20 && temperaturaAtual < 26) {
-                tipoSugestao = 'refrescante';
-                iconClass = 'fa-solid fa-lemon';
-                iconColor = '#ffb703';
-                
-                produtosSugeridos = produtosDisponiveis.filter(p => {
-                    const nomeLower = p.nome.toLowerCase();
-                    const descLower = (p.descricao || '').toLowerCase();
-                    const cat = categorias.find(c => c.id === p.categoria_id);
-                    const catNome = cat ? cat.nome.toLowerCase() : '';
-                    
-                    return palavrasFrescas.some(palavra => 
-                        nomeLower.includes(palavra) || 
-                        descLower.includes(palavra) || 
-                        catNome.includes(palavra)
-                    );
-                });
-                
-            } else {
-                tipoSugestao = 'quente';
-                iconClass = 'fa-solid fa-mug-hot';
-                iconColor = '#ff6b6b';
-                
-                produtosSugeridos = produtosDisponiveis.filter(p => {
-                    const nomeLower = p.nome.toLowerCase();
-                    const descLower = (p.descricao || '').toLowerCase();
-                    const cat = categorias.find(c => c.id === p.categoria_id);
-                    const catNome = cat ? cat.nome.toLowerCase() : '';
-                    
-                    return palavrasQuentes.some(palavra => 
-                        nomeLower.includes(palavra) || 
-                        descLower.includes(palavra) || 
-                        catNome.includes(palavra)
-                    );
-                });
-            }
-            
-            if (produtosSugeridos.length === 0) {
-                produtosSugeridos = [...produtosDisponiveis];
-            }
-            
-            const produtoEscolhido = produtosSugeridos[Math.floor(Math.random() * produtosSugeridos.length)];
-            
-            let mensagem = '';
-            if (produtoEscolhido) {
-                if (tipoSugestao === 'gelada') {
-                    mensagem = `🍦 Que tal ${produtoEscolhido.nome} geladinho?`;
-                } else if (tipoSugestao === 'refrescante') {
-                    mensagem = `🍋 Experimente ${produtoEscolhido.nome} refrescante!`;
-                } else {
-                    mensagem = `☕ Um ${produtoEscolhido.nome} quentinho cai bem!`;
-                }
-                sugestaoAtual = { 
-                    id: produtoEscolhido.id, 
-                    nome: produtoEscolhido.nome, 
-                    tipo: tipoSugestao,
-                    categoria_id: produtoEscolhido.categoria_id
-                };
-            } else if (produtosDisponiveis[0]) {
-                mensagem = `🍰 Que tal experimentar ${produtosDisponiveis[0].nome}?`;
-                sugestaoAtual = { 
-                    id: produtosDisponiveis[0].id, 
-                    nome: produtosDisponiveis[0].nome, 
-                    tipo: 'geral',
-                    categoria_id: produtosDisponiveis[0].categoria_id
-                };
-            }
-            
-            suggestionIcon.className = iconClass;
-            suggestionIcon.style.color = iconColor;
-            suggestionText.innerText = mensagem;
-        }
-
-        function scrollToSugestao() {
-            if (sugestaoAtual.id) {
-                const produtoCard = document.querySelector(`.card-produto-swiper[data-produto-id="${sugestaoAtual.id}"]`);
-                
-                if (produtoCard) {
-                    produtoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    produtoCard.classList.add('highlight-product');
-                    setTimeout(() => {
-                        produtoCard.classList.remove('highlight-product');
-                    }, 2000);
-                    showToast(`🍰 ${sugestaoAtual.nome} - encontrado!`, 'success');
-                } else {
-                    const categoriaSecao = document.getElementById(`secao-front-cat-${sugestaoAtual.categoria_id}`);
-                    if (categoriaSecao) {
-                        categoriaSecao.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        showToast(`🔍 ${sugestaoAtual.nome} está na categoria de produtos!`, 'success');
-                    } else {
-                        showToast(`🍰 Encontre nosso ${sugestaoAtual.nome} em nosso cardápio!`, 'success');
-                    }
-                }
-            } else {
-                if (temperaturaAtual >= 26) {
-                    showToast('🍦 Explore nossas opções geladas na seção de sobremesas!', 'success');
-                } else if (temperaturaAtual <= 18) {
-                    showToast('☕ Temos opções quentinhas para te aquecer!', 'success');
-                } else {
-                    showToast('🍰 Confira nossas delícias no cardápio acima!', 'success');
-                }
-            }
-        }
-
-        // ========== FUNÇÃO PARA BUSCAR CLIMA ==========
-        async function buscarClima() {
-            const suggestionCard = document.getElementById('suggestionCard');
-            if(suggestionCard) suggestionCard.style.opacity = '0.7';
-            
-            try {
-                const posicao = await new Promise((resolve, reject) => {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-                    } else {
-                        reject(new Error('Geolocalização não suportada'));
-                    }
-                });
-
-                const lat = posicao.coords.latitude;
-                const lon = posicao.coords.longitude;
-                
-                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`);
-                const data = await response.json();
-                
-                if (data.current_weather) {
-                    temperaturaAtual = data.current_weather.temperature;
-                    atualizarTermometroUI();
-                    gerarSugestaoPorClima();
-                } else {
-                    throw new Error('Dados de clima não disponíveis');
-                }
-            } catch (error) {
-                console.log('Erro ao obter localização, usando localização padrão (São Paulo)', error);
-                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=-23.5505&longitude=-46.6333&current_weather=true&timezone=auto`);
-                const data = await response.json();
-                if (data.current_weather) {
-                    temperaturaAtual = data.current_weather.temperature;
-                    atualizarTermometroUI();
-                    gerarSugestaoPorClima();
-                } else {
-                    temperaturaAtual = 22;
-                    atualizarTermometroUI();
-                    gerarSugestaoPorClima();
-                }
-            }
-            if(suggestionCard) suggestionCard.style.opacity = '1';
-        }
-
-        function atualizarTermometroUI() {
-            const tempValue = document.getElementById('tempValue');
-            const tempIcon = document.getElementById('tempIcon');
-            const weatherDesc = document.getElementById('weatherDesc');
-            
-            if (temperaturaAtual !== null) {
-                tempValue.innerText = Math.round(temperaturaAtual);
-                
-                if (temperaturaAtual >= 28) {
-                    tempIcon.className = 'fa-solid fa-temperature-high';
-                    tempIcon.style.color = 'var(--hot-color)';
-                    weatherDesc.innerText = '🌞 Muito calor!';
-                } else if (temperaturaAtual >= 22) {
-                    tempIcon.className = 'fa-solid fa-temperature-high';
-                    tempIcon.style.color = '#ffb703';
-                    weatherDesc.innerText = '☀️ Clima agradável';
-                } else if (temperaturaAtual >= 15) {
-                    tempIcon.className = 'fa-solid fa-temperature-low';
-                    tempIcon.style.color = '#4ecdc4';
-                    weatherDesc.innerText = '🌤️ Temperatura amena';
-                } else {
-                    tempIcon.className = 'fa-solid fa-temperature-low';
-                    tempIcon.style.color = 'var(--cold-color)';
-                    weatherDesc.innerText = '❄️ Está friozinho!';
-                }
-            }
-        }
 
         // ========== FUNÇÕES AUXILIARES ==========
         function showToast(mensagem, tipo = 'success') {
@@ -980,6 +578,195 @@
         function abrirModal(idModal) { document.getElementById(idModal)?.classList.add('ativo'); }
         function fecharModal(idModal) { document.getElementById(idModal)?.classList.remove('ativo'); }
         function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+
+        // ========== CONFIGURAÇÕES ==========
+        async function carregarConfiguracoes() {
+            try {
+                const { data, error } = await supabaseClient.from('configuracoes').select('*');
+                if (!error && data) {
+                    for (let config of data) {
+                        if (config.chave === 'cabecalho') { configCabecalho = config.valor; aplicarConfigCabecalho(); }
+                        if (config.chave === 'rodape') { configRodape = config.valor; renderizarRodape(); }
+                        if (config.chave === 'palavras_chave') { palavrasChaveClima = config.valor; }
+                    }
+                }
+            } catch(e) { console.log(e); }
+            if (!palavrasChaveClima.quentes || palavrasChaveClima.quentes.length === 0) {
+                palavrasChaveClima = {
+                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante', 'smoothie'],
+                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus'],
+                    frias: ['café', 'chocolate quente', 'quentinho', 'cappuccino', 'bolo', 'torta']
+                };
+            }
+        }
+
+        function aplicarConfigCabecalho() {
+            const logoImg = document.getElementById('headerLogo');
+            const storeSpan = document.getElementById('storeNameSpan');
+            if (logoImg && configCabecalho.logo_url) logoImg.src = configCabecalho.logo_url;
+            if (storeSpan && configCabecalho.nome_loja) storeSpan.innerText = configCabecalho.nome_loja;
+        }
+
+        function renderizarRodape() {
+            const container = document.getElementById('footerContent');
+            if (!container) return;
+            let html = '';
+            if (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) {
+                const num = configRodape.whatsapp.value.replace(/\D/g, '');
+                html += `<div class="footer-item"><i class="fab fa-whatsapp"></i><a href="https://wa.me/${num}" target="_blank">${configRodape.whatsapp.value}</a></div>`;
+            }
+            if (configRodape.email?.enabled && configRodape.email?.value) {
+                html += `<div class="footer-item"><i class="far fa-envelope"></i><a href="mailto:${configRodape.email.value}">${configRodape.email.value}</a></div>`;
+            }
+            if (configRodape.instagram?.enabled && configRodape.instagram?.value) {
+                const user = configRodape.instagram.value.replace('@', '');
+                html += `<div class="footer-item"><i class="fab fa-instagram"></i><a href="https://instagram.com/${user}" target="_blank">@${user}</a></div>`;
+            }
+            if (configRodape.facebook?.enabled && configRodape.facebook?.value) {
+                html += `<div class="footer-item"><i class="fab fa-facebook"></i><a href="${configRodape.facebook.value}" target="_blank">Facebook</a></div>`;
+            }
+            if (configRodape.endereco?.enabled && configRodape.endereco?.value) {
+                html += `<div class="footer-item"><i class="fas fa-map-marker-alt"></i><span>${configRodape.endereco.value}</span></div>`;
+            }
+            if (configRodape.horario?.enabled && configRodape.horario?.value) {
+                html += `<div class="footer-item"><i class="far fa-clock"></i><span>${configRodape.horario.value}</span></div>`;
+            }
+            container.innerHTML = html || '<div class="footer-item">Doces Di - Doces especiais para você!</div>';
+        }
+
+        function abrirWhatsApp() {
+            let numero = '';
+            if (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) numero = configRodape.whatsapp.value.replace(/\D/g, '');
+            if (!numero) numero = '5551996147492';
+            window.open(`https://wa.me/${numero}`, '_blank');
+        }
+
+        // ========== GÊNERO E CONCORDÂNCIA ==========
+        function generoDoProduto(nome) {
+            const femininas = ['canjica', 'pamonha', 'tapioca', 'cuca', 'broa', 'fubá', 'curau', 'mousse', 'pavê', 'rabanada'];
+            const masculinas = ['bolo', 'sorvete', 'milkshake', 'picolé', 'smoothie', 'café', 'chocolate', 'quente', 'biscoito', 'donut', 'cupcake', 'pirulito', 'salgado', 'pão', 'doce', 'torta'];
+            const nomeLower = nome.toLowerCase();
+            if (femininas.includes(nomeLower)) return 'feminino';
+            if (masculinas.includes(nomeLower)) return 'masculino';
+            if (nomeLower.endsWith('a') || nomeLower.endsWith('ção') || nomeLower.endsWith('ade')) return 'feminino';
+            if (nomeLower.endsWith('o') || nomeLower.endsWith('e') || nomeLower.endsWith('l') || nomeLower.endsWith('r')) return 'masculino';
+            return 'masculino';
+        }
+
+        function artigoEAdjetivo(genero, adjetivoBase) {
+            let artigo = genero === 'feminino' ? 'uma' : 'um';
+            let adjetivo = adjetivoBase;
+            if (genero === 'feminino' && adjetivoBase.endsWith('o')) adjetivo = adjetivoBase.slice(0, -1) + 'a';
+            else if (genero === 'feminino' && adjetivoBase === 'quentinho') adjetivo = 'quentinha';
+            else if (genero === 'feminino' && adjetivoBase === 'geladinho') adjetivo = 'geladinha';
+            return { artigo, adjetivo };
+        }
+
+        // ========== SUGESTÃO COM CONCORDÂNCIA ==========
+        function gerarSugestaoPorClima() {
+            const suggestionText = document.getElementById('suggestionText');
+            const suggestionIcon = document.getElementById('suggestionIcon');
+            if (temperaturaAtual === null) { suggestionText.innerText = 'Carregando cardápio...'; return; }
+            if (produtos.length === 0) { suggestionText.innerText = 'Adicione produtos ao cardápio!'; return; }
+            const produtosDisponiveis = produtos.filter(p => p.estoque > 0);
+            if (produtosDisponiveis.length === 0) { suggestionText.innerText = 'Produtos em breve!'; return; }
+
+            let produtosSugeridos = [], tipoSugestao = '', iconClass = '', iconColor = '', adjetivoBase = '';
+            const palavrasGeladas = palavrasChaveClima.quentes || [];
+            const palavrasFrescas = palavrasChaveClima.amenas || [];
+            const palavrasQuentes = palavrasChaveClima.frias || [];
+
+            if (temperaturaAtual >= 26) {
+                tipoSugestao = 'gelada'; iconClass = 'fa-solid fa-ice-cream'; iconColor = '#4ecdc4'; adjetivoBase = 'geladinho';
+                produtosSugeridos = produtosDisponiveis.filter(p => {
+                    const nomeLower = p.nome.toLowerCase(), descLower = (p.descricao || '').toLowerCase();
+                    const cat = categorias.find(c => c.id === p.categoria_id);
+                    const catNome = cat ? cat.nome.toLowerCase() : '';
+                    return palavrasGeladas.some(palavra => nomeLower.includes(palavra) || descLower.includes(palavra) || catNome.includes(palavra));
+                });
+            } else if (temperaturaAtual >= 20) {
+                tipoSugestao = 'refrescante'; iconClass = 'fa-solid fa-lemon'; iconColor = '#ffb703'; adjetivoBase = 'refrescante';
+                produtosSugeridos = produtosDisponiveis.filter(p => {
+                    const nomeLower = p.nome.toLowerCase(), descLower = (p.descricao || '').toLowerCase();
+                    const cat = categorias.find(c => c.id === p.categoria_id);
+                    const catNome = cat ? cat.nome.toLowerCase() : '';
+                    return palavrasFrescas.some(palavra => nomeLower.includes(palavra) || descLower.includes(palavra) || catNome.includes(palavra));
+                });
+            } else {
+                tipoSugestao = 'quente'; iconClass = 'fa-solid fa-mug-hot'; iconColor = '#ff6b6b'; adjetivoBase = 'quentinho';
+                produtosSugeridos = produtosDisponiveis.filter(p => {
+                    const nomeLower = p.nome.toLowerCase(), descLower = (p.descricao || '').toLowerCase();
+                    const cat = categorias.find(c => c.id === p.categoria_id);
+                    const catNome = cat ? cat.nome.toLowerCase() : '';
+                    return palavrasQuentes.some(palavra => nomeLower.includes(palavra) || descLower.includes(palavra) || catNome.includes(palavra));
+                });
+            }
+            if (produtosSugeridos.length === 0) produtosSugeridos = [...produtosDisponiveis];
+            const produtoEscolhido = produtosSugeridos[Math.floor(Math.random() * produtosSugeridos.length)];
+            const genero = generoDoProduto(produtoEscolhido.nome);
+            const { artigo, adjetivo } = artigoEAdjetivo(genero, adjetivoBase);
+            let mensagem = '';
+            if (tipoSugestao === 'gelada') mensagem = `🍦 ${artigo.charAt(0).toUpperCase() + artigo.slice(1)} ${produtoEscolhido.nome} ${adjetivo} cai bem!`;
+            else if (tipoSugestao === 'refrescante') mensagem = `🍋 ${artigo.charAt(0).toUpperCase() + artigo.slice(1)} ${produtoEscolhido.nome} ${adjetivo} é perfeito!`;
+            else mensagem = `☕ ${artigo.charAt(0).toUpperCase() + artigo.slice(1)} ${produtoEscolhido.nome} ${adjetivo} te aquece!`;
+            sugestaoAtual = { id: produtoEscolhido.id, nome: produtoEscolhido.nome, tipo: tipoSugestao, categoria_id: produtoEscolhido.categoria_id };
+            suggestionIcon.className = iconClass; suggestionIcon.style.color = iconColor;
+            suggestionText.innerText = mensagem;
+        }
+
+        function scrollToSugestao() {
+            if (sugestaoAtual.id) {
+                const produtoCard = document.querySelector(`.card-produto-swiper[data-produto-id="${sugestaoAtual.id}"]`);
+                if (produtoCard) {
+                    produtoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    produtoCard.classList.add('highlight-product');
+                    setTimeout(() => produtoCard.classList.remove('highlight-product'), 2000);
+                    showToast(`🍰 ${sugestaoAtual.nome} - encontrado!`, 'success');
+                } else {
+                    const categoriaSecao = document.getElementById(`secao-front-cat-${sugestaoAtual.categoria_id}`);
+                    if (categoriaSecao) categoriaSecao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    else showToast(`🍰 Encontre nosso ${sugestaoAtual.nome} em nosso cardápio!`, 'success');
+                }
+            } else {
+                if (temperaturaAtual >= 26) showToast('🍦 Explore nossas opções geladas!', 'success');
+                else if (temperaturaAtual <= 18) showToast('☕ Temos opções quentinhas para te aquecer!', 'success');
+                else showToast('🍰 Confira nossas delícias!', 'success');
+            }
+        }
+
+        async function buscarClima() {
+            const suggestionCard = document.getElementById('suggestionCard');
+            if (suggestionCard) suggestionCard.style.opacity = '0.7';
+            try {
+                const posicao = await new Promise((resolve, reject) => {
+                    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                    else reject(new Error('Geolocalização não suportada'));
+                });
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${posicao.coords.latitude}&longitude=${posicao.coords.longitude}&current_weather=true&timezone=auto`);
+                const data = await res.json();
+                if (data.current_weather) { temperaturaAtual = data.current_weather.temperature; atualizarTermometroUI(); gerarSugestaoPorClima(); }
+                else throw new Error();
+            } catch (error) {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=-23.5505&longitude=-46.6333&current_weather=true&timezone=auto`);
+                const data = await res.json();
+                temperaturaAtual = data.current_weather?.temperature || 22;
+                atualizarTermometroUI(); gerarSugestaoPorClima();
+            }
+            if (suggestionCard) suggestionCard.style.opacity = '1';
+        }
+
+        function atualizarTermometroUI() {
+            const tempValue = document.getElementById('tempValue');
+            const tempIcon = document.getElementById('tempIcon');
+            const weatherDesc = document.getElementById('weatherDesc');
+            if (temperaturaAtual !== null) {
+                tempValue.innerText = Math.round(temperaturaAtual);
+                if (temperaturaAtual >= 28) { tempIcon.className = 'fa-solid fa-temperature-high'; tempIcon.style.color = 'var(--hot-color)'; weatherDesc.innerText = '🌞 Muito calor!'; }
+                else if (temperaturaAtual >= 22) { tempIcon.className = 'fa-solid fa-temperature-high'; tempIcon.style.color = '#ffb703'; weatherDesc.innerText = '☀️ Clima agradável'; }
+                else if (temperaturaAtual >= 15) { tempIcon.className = 'fa-solid fa-temperature-low'; tempIcon.style.color = '#4ecdc4'; weatherDesc.innerText = '🌤️ Temperatura amena'; }
+                else { tempIcon.className = 'fa-solid fa-temperature-low'; tempIcon.style.color = 'var(--cold-color)'; weatherDesc.innerText = '❄️ Está friozinho!'; }
+            }
+        }
 
         // ========== CARREGAMENTO DE DADOS ==========
         async function carregarCategorias() {
@@ -1006,9 +793,7 @@
                 renderizarPaginaPrincipalPorCategorias();
                 renderizarAdminProdutos();
                 popularSelectProdutosFicha();
-                if (temperaturaAtual !== null) {
-                    gerarSugestaoPorClima();
-                }
+                if (temperaturaAtual !== null) gerarSugestaoPorClima();
             } catch(e) {
                 const local = localStorage.getItem('docesdi_produtos');
                 if(local) { produtos = JSON.parse(local); renderizarPaginaPrincipalPorCategorias(); renderizarAdminProdutos(); popularSelectProdutosFicha(); }
@@ -1289,13 +1074,11 @@
 
             try {
                 const FUNCTION_URL = "https://opixfppyhbiyqrilebfb.supabase.co/functions/v1/rapid-processor";
-                
                 const response = await fetch(FUNCTION_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ items, payer, back_urls })
                 });
-
                 const data = await response.json();
 
                 if(data.init_point) {
@@ -1912,7 +1695,6 @@
                     showToast("Endereço preenchido!");
                 } catch(e) { showToast("Erro ao buscar CEP.", 'error'); }
             });
-            
             await carregarConfiguracoes();
             await carregarCategorias();
             await carregarProdutos();
@@ -1922,13 +1704,11 @@
             await carregarMateriais();
             carregarCarrinho();
             carregarLembrar();
-            
             const savedUser = localStorage.getItem('docesdi_usuario_logado');
             if(savedUser) {
                 usuarioLogado = JSON.parse(savedUser);
                 atualizarInterfaceUsuario();
             }
-            
             initDragDropTabs();
             initAdminTabs();
             initEstoqueTabs();
@@ -1941,7 +1721,6 @@
             document.addEventListener('keydown', (e) => {
                 if(e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); abrirAdmin(); }
             });
-            
             await buscarClima();
         }
 
