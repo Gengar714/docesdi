@@ -54,6 +54,8 @@
         .full-width-input{width:100%;}
         .flex-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
         .flex-grow{flex-grow:1;}
+        .slide-edit-fields{display:flex; flex-wrap:wrap; gap:10px; align-items:center; flex:3;}
+        .slide-edit-fields input{flex:1; min-width:120px;}
     </style>
 </head>
 <body>
@@ -164,7 +166,7 @@
             </table>
         </div>
 
-        <!-- Aba Slides com campo URL maior e upload local -->
+        <!-- Aba Slides com campos de título e descrição -->
         <div id="tabSlides" class="admin-tab-content">
             <h3>Gerenciar Banners Iniciais (Slides)</h3>
             <div style="background:var(--bg-color); padding:15px; border-radius:var(--border-radius); margin-bottom:20px;">
@@ -172,6 +174,16 @@
                     <div style="flex:3; min-width:250px;">
                         <label>URL da imagem (ou use upload)</label>
                         <input type="text" id="slideUrl" class="form-control full-width-input" placeholder="https://exemplo.com/imagem.jpg" style="width:100%;">
+                    </div>
+                </div>
+                <div class="flex-row" style="margin-bottom:10px;">
+                    <div style="flex:1;">
+                        <label>Título do banner</label>
+                        <input type="text" id="slideTitulo" class="form-control" placeholder="Ex: Promoção de Páscoa">
+                    </div>
+                    <div style="flex:2;">
+                        <label>Descrição (opcional)</label>
+                        <input type="text" id="slideDescricao" class="form-control" placeholder="Texto curto sobre o banner">
                     </div>
                 </div>
                 <div class="flex-row">
@@ -185,7 +197,7 @@
                     </div>
                 </div>
             </div>
-            <h4>📸 Slides Atuais (clique em ✏️ para editar a URL)</h4>
+            <h4>📸 Slides Atuais (edite título, descrição e URL)</h4>
             <div id="listaAdminSlides" class="admin-list-container"></div>
         </div>
 
@@ -196,7 +208,7 @@
     </div>
 
     <script>
-        // Configuração correta do Supabase (API key incluída)
+        // Configuração do Supabase
         const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -215,6 +227,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        // --- Segurança: mensagem genérica sem revelar a senha ---
         function verificarSenhaAdmin() {
             const senha = document.getElementById('adminPassword').value;
             if(senha === 'admin123') {
@@ -222,7 +235,7 @@
                 document.getElementById('adminContent').style.display = 'block';
                 inicializarAdmin();
             } else {
-                showToast("Senha incorreta! Tente admin123", 'error');
+                showToast("Senha incorreta!", 'error');  // <-- NÃO revela a senha correta
             }
         }
 
@@ -259,16 +272,12 @@
             }
         }
 
-        // Dashboard com filtro
+        // Dashboard
         async function carregarDashboard(startDate = null, endDate = null) {
             try {
                 let query = supabaseClient.from('pedidos').select('*');
-                if(startDate) {
-                    query = query.gte('created_at', startDate + 'T00:00:00');
-                }
-                if(endDate) {
-                    query = query.lte('created_at', endDate + 'T23:59:59');
-                }
+                if(startDate) query = query.gte('created_at', startDate + 'T00:00:00');
+                if(endDate) query = query.lte('created_at', endDate + 'T23:59:59');
                 const { data: pedidosData, error } = await query;
                 if(error) throw error;
                 pedidos = pedidosData || [];
@@ -334,10 +343,9 @@
             carregarDashboard();
         }
 
-        // Slides: carregar, adicionar (com upload local), editar, excluir
+        // Slides com título e descrição
         async function carregarSlides() {
             try {
-                // Usando coluna 'url' (nome correto no Supabase)
                 const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
                 if(!error && data) slides = data;
                 else slides = [];
@@ -348,7 +356,6 @@
             }
         }
 
-        // Converter arquivo local para Base64
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -365,6 +372,8 @@
 
         async function adicionarSlideAdmin() {
             const urlInput = document.getElementById('slideUrl');
+            const tituloInput = document.getElementById('slideTitulo');
+            const descricaoInput = document.getElementById('slideDescricao');
             const fileInput = document.getElementById('slideUpload');
             let imageUrl = urlInput.value.trim();
             
@@ -379,13 +388,16 @@
             }
             
             if(!imageUrl) { showToast("Informe a URL da imagem ou selecione um arquivo local!", 'error'); return; }
+            const titulo = tituloInput.value.trim();
+            const descricao = descricaoInput.value.trim();
             
             try {
-                // Usando coluna 'url' em vez de 'url_imagem'
-                const { data, error } = await supabaseClient.from('slides').insert([{ url: imageUrl }]).select();
+                const { data, error } = await supabaseClient.from('slides').insert([{ url: imageUrl, titulo: titulo, descricao: descricao }]).select();
                 if(!error && data) {
                     slides.push(data[0]);
                     urlInput.value = '';
+                    tituloInput.value = '';
+                    descricaoInput.value = '';
                     fileInput.value = '';
                     renderizarAdminSlides();
                     showToast("Slide adicionado com sucesso!");
@@ -399,14 +411,17 @@
             }
         }
 
-        async function editarSlideAdmin(id, novaUrl) {
+        async function editarSlideAdmin(id, novaUrl, novoTitulo, novaDescricao) {
             if(!novaUrl) { showToast("URL inválida", 'error'); return; }
             try {
-                // Usando coluna 'url'
-                const { error } = await supabaseClient.from('slides').update({ url: novaUrl }).eq('id', id);
+                const { error } = await supabaseClient.from('slides').update({ url: novaUrl, titulo: novoTitulo, descricao: novaDescricao }).eq('id', id);
                 if(!error) {
                     const slide = slides.find(s => s.id === id);
-                    if(slide) slide.url = novaUrl;
+                    if(slide) {
+                        slide.url = novaUrl;
+                        slide.titulo = novoTitulo;
+                        slide.descricao = novaDescricao;
+                    }
                     renderizarAdminSlides();
                     showToast("Slide atualizado!");
                 } else { 
@@ -436,18 +451,20 @@
             container.innerHTML = slides.map(s => `
                 <div class="admin-item-row" style="flex-wrap:wrap; gap:10px;">
                     <img src="${s.url}" class="slide-preview" onerror="this.src='https://placehold.co/80x50?text=Erro'">
-                    <div style="flex:2; min-width:200px;">
-                        <input type="text" id="edit-url-${s.id}" value="${(s.url || '').replace(/"/g, '&quot;')}" class="form-control slide-edit-input" style="width:100%;">
+                    <div class="slide-edit-fields">
+                        <input type="text" id="edit-url-${s.id}" value="${(s.url || '').replace(/"/g, '&quot;')}" class="form-control slide-edit-input" placeholder="URL" style="flex:2;">
+                        <input type="text" id="edit-titulo-${s.id}" value="${(s.titulo || '').replace(/"/g, '&quot;')}" class="form-control" placeholder="Título" style="flex:1;">
+                        <input type="text" id="edit-desc-${s.id}" value="${(s.descricao || '').replace(/"/g, '&quot;')}" class="form-control" placeholder="Descrição" style="flex:1.5;">
                     </div>
                     <div style="display:flex; gap:5px;">
-                        <button class="btn-icon btn-salvar" onclick="editarSlideAdmin(${s.id}, document.getElementById('edit-url-${s.id}').value)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                        <button class="btn-icon btn-salvar" onclick="editarSlideAdmin(${s.id}, document.getElementById('edit-url-${s.id}').value, document.getElementById('edit-titulo-${s.id}').value, document.getElementById('edit-desc-${s.id}').value)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                         <button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Demais funções (produtos, categorias, estoque, clientes) mantidas
+        // Demais funções (produtos, categorias, estoque, clientes) - mantidas
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
