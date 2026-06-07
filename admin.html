@@ -9,8 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* (estilos mantidos iguais ao original, apenas copiados para completude) */
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-color:#fcf8f5;--text-color:#4a3b32;--card-bg:white;--border-color:#f0e4da;--shadow:0 4px 15px rgba(0,0,0,0.05);--input-bg:white;--btn-bg:#d4a373;--btn-hover:#c49a6c;--accent-color:#d4a373;--border-radius:20px;--success:#27ae60;--error:#e74c3c;--warning:#f39c12}
         body{background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:20px}
@@ -55,24 +55,16 @@
         .chart-container{max-height:300px;margin-top:20px}
         canvas{max-height:300px}
         .slide-preview{width:80px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px}
-        .full-width-input{width:100%;}
         .flex-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-        .slide-edit-fields{display:flex; flex-wrap:wrap; gap:10px; align-items:center; flex:3;}
-        .slide-edit-fields input{flex:1; min-width:120px;}
         .logo-preview{width:60px;height:60px;border-radius:50%;object-fit:cover;background:#f0e4da;}
         .keyword-tag{display:inline-block;background:var(--accent-color);color:white;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;cursor:default;}
         .keyword-tag .remove{color:white;margin-left:8px;cursor:pointer;opacity:0.7}
         .keyword-tag .remove:hover{opacity:1}
         .keyword-input-group{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
-        .keyword-input-group input{flex:1;}
-        .toggle-group{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-        .toggle-group input[type="checkbox"]{width:18px;height:18px;cursor:pointer;}
         .admin-user-card{background:var(--bg-color);padding:15px;border-radius:var(--border-radius);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
         .admin-user-card .user-info{flex:1}
-        .admin-user-card .user-actions{display:flex;gap:10px}
         .badge-admin{background:var(--accent-color);color:white;padding:2px 8px;border-radius:20px;font-size:0.7rem}
         .form-usuario{background:var(--bg-color);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}
-        .form-usuario h4{margin-bottom:15px}
         .form-usuario .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
         .error-message{color:var(--error);font-size:0.85rem;margin-top:10px;display:none}
         .chart-wrapper { margin-bottom: 25px; border: 1px solid var(--border-color); border-radius: 20px; background: var(--card-bg); overflow: hidden; }
@@ -136,7 +128,6 @@
                 <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="limparFiltroDashboard()" style="background:#999;">Limpar</button></div>
             </div>
             <div class="dashboard-stats" id="dashboardStats">Carregando...</div>
-            
             <div class="chart-wrapper">
                 <div class="chart-header" onclick="toggleChart('vendasChartBody')">
                     <h4>📈 Evolução de Vendas</h4>
@@ -146,7 +137,6 @@
                     <canvas id="vendasChart"></canvas>
                 </div>
             </div>
-
             <div class="chart-wrapper">
                 <div class="chart-header" onclick="toggleChart('avaliacoesChartBody')">
                     <h4>⭐ Distribuição de Avaliações</h4>
@@ -156,7 +146,6 @@
                     <canvas id="avaliacoesChart"></canvas>
                 </div>
             </div>
-
             <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
 
@@ -205,10 +194,7 @@
                 <input type="number" id="materialEstoque" step="0.001" placeholder="Estoque" style="flex:1; padding:8px; border-radius:20px; border:1px solid var(--border-color);">
                 <button class="btn-add" onclick="adicionarMaterialAdmin()" style="margin:0;">+ Insumo</button>
             </div>
-            <table class="tabela-estoque" id="tabelaMateriais">
-                <thead><tr><th>Material</th><th>Unidade</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
-                <tbody></tbody>
-            </table>
+            <table class="tabela-estoque" id="tabelaMateriais"><thead><tr><th>Material</th><th>Unidade</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead><tbody></tbody></table>
         </div>
 
         <!-- SLIDES -->
@@ -232,7 +218,7 @@
             <div id="listaAdminSlides"></div>
         </div>
 
-        <!-- AVALIAÇÕES -->
+        <!-- AVALIAÇÕES (corrigido) -->
         <div id="tabAvaliacoes" class="admin-tab-content">
             <h3>⭐ Gerenciar Avaliações dos Clientes</h3>
             <div class="filtro-avaliacao">
@@ -244,9 +230,10 @@
             <div id="listaAvaliacoesAdmin" class="admin-list-container">Carregando avaliações...</div>
         </div>
 
-        <!-- PERSONALIZAÇÃO -->
+        <!-- PERSONALIZAÇÃO (com delivery toggle) -->
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
+            <!-- Cabeçalho -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🖼️ Cabeçalho</h4>
                 <div class="flex-row" style="margin-top:15px;">
@@ -263,6 +250,7 @@
                 <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color);">💾 Salvar Cabeçalho</button>
             </div>
 
+            <!-- Rodapé -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>📞 Rodapé</h4>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px;">
@@ -276,6 +264,7 @@
                 <button class="btn-add" onclick="salvarConfiguracoesRodape()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Rodapé</button>
             </div>
 
+            <!-- Delivery -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🚚 Delivery (Entrega em Domicílio)</h4>
                 <div class="flex-row" style="margin-top:10px; align-items:center;">
@@ -294,6 +283,7 @@
                 <button class="btn-add" onclick="salvarConfiguracoesDelivery()" style="background:var(--accent-color); margin-top:10px;">💾 Salvar Configurações de Delivery</button>
             </div>
 
+            <!-- Palavras-chave por clima -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius);">
                 <h4>🌡️ Palavras-chave por Clima</h4>
                 <div style="margin-bottom:15px;">
@@ -371,15 +361,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
         function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
 
         // ========== LOGIN ADMIN ==========
         async function verificarLoginAdmin() {
@@ -759,9 +740,7 @@
                     data: { labels: ['⭐ 1', '⭐ 2', '⭐ 3', '⭐ 4', '⭐ 5'], datasets: [{ label: 'Quantidade de avaliações', data: distribuicao, backgroundColor: '#d4a373', borderRadius: 10 }] },
                     options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, stepSize: 1, precision: 0 } } }
                 });
-            } catch (err) {
-                console.error('Erro no gráfico de avaliações:', err);
-            }
+            } catch (err) { console.error('Erro no gráfico de avaliações:', err); }
         }
 
         async function carregarAvaliacoesAdmin(dataInicio = null, dataFim = null) {
@@ -772,23 +751,16 @@
                 let query = supabaseClient.from('avaliacoes').select('*');
                 if (dataInicio) query = query.gte('created_at', dataInicio + 'T00:00:00');
                 if (dataFim) query = query.lte('created_at', dataFim + 'T23:59:59');
-                const { data: avaliacoesData, error: avaliacoesError } = await query;
-                if (avaliacoesError) throw avaliacoesError;
-
+                const { data: avaliacoesData, error } = await query;
+                if (error) throw error;
                 if (!avaliacoesData || avaliacoesData.length === 0) {
                     container.innerHTML = '<p>Nenhuma avaliação encontrada.</p>';
                     return;
                 }
-
-                // Buscar clientes e produtos para fazer JOIN manual
                 const { data: clientesData } = await supabaseClient.from('clientes').select('id, nome');
                 const { data: produtosData } = await supabaseClient.from('produtos').select('id, nome');
-
-                const clientesMap = new Map();
-                const produtosMap = new Map();
-                if (clientesData) clientesData.forEach(c => clientesMap.set(c.id, c.nome));
-                if (produtosData) produtosData.forEach(p => produtosMap.set(p.id, p.nome));
-
+                const clientesMap = new Map(clientesData?.map(c => [c.id, c.nome]) || []);
+                const produtosMap = new Map(produtosData?.map(p => [p.id, p.nome]) || []);
                 container.innerHTML = avaliacoesData.map(av => {
                     const nomeCliente = clientesMap.get(av.cliente_id) || 'Cliente não encontrado';
                     const nomeProduto = produtosMap.get(av.produto_id) || 'Produto não encontrado';
@@ -803,27 +775,64 @@
                     `;
                 }).join('');
             } catch (err) {
-                console.error('Erro ao carregar avaliações:', err);
-                container.innerHTML = '<p style="color:red;">Erro ao carregar avaliações. Verifique a conexão com o banco.</p>';
+                console.error(err);
+                container.innerHTML = '<p style="color:red;">Erro ao carregar avaliações.</p>';
             }
         }
-
-        function filtrarAvaliacoesAdmin() {
-            const inicio = document.getElementById('avaliacaoDataInicio').value;
-            const fim = document.getElementById('avaliacaoDataFim').value;
-            carregarAvaliacoesAdmin(inicio || null, fim || null);
-        }
-        function limparFiltroAvaliacoes() {
-            document.getElementById('avaliacaoDataInicio').value = '';
-            document.getElementById('avaliacaoDataFim').value = '';
-            carregarAvaliacoesAdmin();
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+        function filtrarAvaliacoesAdmin() { carregarAvaliacoesAdmin(document.getElementById('avaliacaoDataInicio').value, document.getElementById('avaliacaoDataFim').value); }
+        function limparFiltroAvaliacoes() { document.getElementById('avaliacaoDataInicio').value=''; document.getElementById('avaliacaoDataFim').value=''; carregarAvaliacoesAdmin(); }
         async function excluirAvaliacaoAdmin(id) {
-            if (!confirm("Excluir esta avaliação permanentemente?")) return;
+            if (!confirm("Excluir esta avaliação?")) return;
             await supabaseClient.from('avaliacoes').delete().eq('id', id);
             showToast("Avaliação removida!");
-            filtrarAvaliacoesAdmin();
+            carregarAvaliacoesAdmin();
             carregarGraficoAvaliacoes();
+        }
+
+        // ========== PEDIDOS ==========
+        async function carregarPedidosAdmin() {
+            const container = document.getElementById('listaAdminPedidos');
+            if (!container) {
+                // Se não existir, criamos dinamicamente (caso a aba pedidos não tenha sido adicionada)
+                const pedidosPanel = document.getElementById('panelPedidos');
+                if (pedidosPanel) {
+                    const listDiv = document.createElement('div');
+                    listDiv.id = 'listaAdminPedidos';
+                    listDiv.className = 'admin-list-container';
+                    pedidosPanel.appendChild(listDiv);
+                }
+                return;
+            }
+            const { data, error } = await supabaseClient.from('pedidos').select('*, clientes(nome)').order('id', { ascending: false });
+            if (error) return;
+            container.innerHTML = data.map(p => `
+                <div class="admin-item-row" style="flex-direction:column;">
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <span>Pedido <strong>#${p.id}</strong> - ${p.clientes?.nome || 'Visitante'}</span>
+                        <strong>R$ ${p.valor_total?.toFixed(2)}</strong>
+                    </div>
+                    <div>Entrega: ${p.tipo_entrega} | ${p.endereco_entrega || 'Retirada'}</div>
+                    <div>Agendamento: ${p.data_agendamento || '--'} ${p.horario_agendamento || ''}</div>
+                    <select class="form-control" style="width:auto;" data-pedido="${p.id}">
+                        <option value="pendente" ${p.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+                        <option value="preparando" ${p.status === 'preparando' ? 'selected' : ''}>Preparando</option>
+                        <option value="entregando" ${p.status === 'entregando' ? 'selected' : ''}>Saiu p/ entrega</option>
+                        <option value="finalizado" ${p.status === 'finalizado' ? 'selected' : ''}>Finalizado</option>
+                    </select>
+                </div>
+            `).join('');
+            // Adicionar evento de mudança de status
+            document.querySelectorAll('#listaAdminPedidos select').forEach(sel => {
+                sel.addEventListener('change', async (e) => {
+                    const pedidoId = parseInt(sel.dataset.pedido);
+                    const novoStatus = e.target.value;
+                    await supabaseClient.from('pedidos').update({ status: novoStatus }).eq('id', pedidoId);
+                    showToast(`Pedido #${pedidoId} atualizado para ${novoStatus}`);
+                    carregarPedidosAdmin(); // recarregar para refletir
+                    carregarDashboard(); // atualizar dash
+                });
+            });
         }
 
         // ========== USUÁRIOS ADMIN ==========
@@ -943,6 +952,7 @@
             await carregarUsuariosAdmin();
             await carregarGraficoAvaliacoes();
             await carregarAvaliacoesAdmin();
+            await carregarPedidosAdmin();
             initSortableTabs();
             carregarOrdemAbas();
             document.querySelectorAll('.admin-tab').forEach(tab => {
@@ -953,8 +963,9 @@
                     const tabName = tab.dataset.tab;
                     const elementId = `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
                     document.getElementById(elementId).classList.add('ativo');
-                    if (tabName === 'dashboard') carregarDashboard();
+                    if (tabName === 'dashboard') { carregarDashboard(); carregarGraficoAvaliacoes(); }
                     if (tabName === 'avaliacoes') { carregarAvaliacoesAdmin(); carregarGraficoAvaliacoes(); }
+                    if (tabName === 'pedidos') carregarPedidosAdmin();
                 });
             });
         }
