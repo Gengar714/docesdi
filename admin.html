@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        /* (mantido o mesmo estilo do original) */
+        /* (estilos mantidos iguais ao original, apenas copiados para completude) */
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-color:#fcf8f5;--text-color:#4a3b32;--card-bg:white;--border-color:#f0e4da;--shadow:0 4px 15px rgba(0,0,0,0.05);--input-bg:white;--btn-bg:#d4a373;--btn-hover:#c49a6c;--accent-color:#d4a373;--border-radius:20px;--success:#27ae60;--error:#e74c3c;--warning:#f39c12}
         body{background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:20px}
@@ -83,46 +83,12 @@
         .btn-minimize { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--accent-color); }
         .filtro-avaliacao { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
         .filtro-avaliacao .field { flex: 1; min-width: 150px; }
-        /* Switch para delivery */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 26px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .3s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: var(--accent-color);
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
+        .switch { position: relative; display: inline-block; width: 52px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
@@ -278,10 +244,9 @@
             <div id="listaAvaliacoesAdmin" class="admin-list-container">Carregando avaliações...</div>
         </div>
 
-        <!-- PERSONALIZAÇÃO (com a nova seção de Delivery) -->
+        <!-- PERSONALIZAÇÃO -->
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
-            <!-- Cabeçalho -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🖼️ Cabeçalho</h4>
                 <div class="flex-row" style="margin-top:15px;">
@@ -298,7 +263,6 @@
                 <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color);">💾 Salvar Cabeçalho</button>
             </div>
 
-            <!-- Rodapé -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>📞 Rodapé</h4>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px;">
@@ -312,7 +276,6 @@
                 <button class="btn-add" onclick="salvarConfiguracoesRodape()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Rodapé</button>
             </div>
 
-            <!-- NOVA SEÇÃO: Configuração de Delivery -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🚚 Delivery (Entrega em Domicílio)</h4>
                 <div class="flex-row" style="margin-top:10px; align-items:center;">
@@ -325,16 +288,12 @@
                     </label>
                 </div>
                 <div class="flex-row" style="margin-top:15px;">
-                    <div style="flex:1;">
-                        <label>Taxa de entrega (R$) - opcional</label>
-                        <input type="number" step="0.01" id="deliveryTax" class="form-control" placeholder="0,00">
-                    </div>
+                    <div style="flex:1;"><label>Taxa de entrega (R$) - opcional</label><input type="number" step="0.01" id="deliveryTax" class="form-control" placeholder="0,00"></div>
                 </div>
-                <p style="font-size:0.8rem; color:#666; margin-top:10px;">✔️ Se desativado, a opção "Receber por Delivery" não aparecerá para o cliente.<br>✔️ A taxa de entrega poderá ser usada futuramente para cálculo automático no carrinho.</p>
+                <p style="font-size:0.8rem; color:#666; margin-top:10px;">✔️ Se desativado, a opção "Receber por Delivery" não aparecerá para o cliente.</p>
                 <button class="btn-add" onclick="salvarConfiguracoesDelivery()" style="background:var(--accent-color); margin-top:10px;">💾 Salvar Configurações de Delivery</button>
             </div>
 
-            <!-- Palavras-chave por clima -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius);">
                 <h4>🌡️ Palavras-chave por Clima</h4>
                 <div style="margin-bottom:15px;">
@@ -412,6 +371,15 @@
             setTimeout(() => toast.remove(), 3000);
         }
         function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
         // ========== LOGIN ADMIN ==========
         async function verificarLoginAdmin() {
@@ -461,7 +429,7 @@
             }
         }
 
-        // ========== CONFIGURAÇÕES (incluindo Delivery) ==========
+        // ========== CONFIGURAÇÕES ==========
         async function carregarConfiguracoes() {
             try {
                 const { data, error } = await supabaseClient.from('configuracoes').select('*');
@@ -567,7 +535,7 @@
             } else showToast("Selecione uma imagem!", 'error');
         }
 
-        // ========== DEMAIS FUNÇÕES (produtos, categorias, slides, etc) ==========
+        // ========== DEMAIS FUNÇÕES ==========
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
@@ -593,7 +561,7 @@
                     <div><textarea rows="1" data-field="descricao">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
                     <div><input type="number" step="0.01" value="${p.preco}" data-field="preco"></div>
                     <div><input type="number" value="${p.estoque || 0}" data-field="estoque"></div>
-                    <div><select data-field="categoria_id">${categorias.map(c => `<option value="${c.id}" ${c.id==p.categoria_id?'selected':''}>${c.icone} ${c.nome}</option>`).join('')}</select></div>
+                    <div><select data-field="categoria_id">${categorias.map(cat => `<option value="${cat.id}" ${cat.id==p.categoria_id?'selected':''}>${cat.icone} ${cat.nome}</option>`).join('')}</select></div>
                     <div><input type="text" value="${p.imagem || ''}" data-field="imagem"></div>
                     <div><button class="btn-icon btn-salvar" onclick="salvarProdutoAdmin(${p.id})"><i class="fa-solid fa-save"></i></button><button class="btn-icon btn-excluir" onclick="excluirProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
@@ -737,6 +705,127 @@
         }
         function limparUploadLocal(){ document.getElementById('slideUpload').value=''; showToast("Upload limpo!"); }
 
+        // ========== DASHBOARD E GRÁFICOS ==========
+        async function carregarDashboard(startDate=null, endDate=null){
+            let query = supabaseClient.from('pedidos').select('*');
+            if(startDate) query = query.gte('created_at', startDate+'T00:00:00');
+            if(endDate) query = query.lte('created_at', endDate+'T23:59:59');
+            const {data, error} = await query;
+            if(error) return;
+            pedidos = data || [];
+            const total = pedidos.reduce((s,p)=>s+(p.valor_total||0),0);
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div>
+                <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
+                <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
+            // Gráfico de vendas
+            const vendasPorData = {};
+            pedidos.forEach(p => { const data = new Date(p.created_at).toLocaleDateString('pt-BR'); vendasPorData[data] = (vendasPorData[data]||0) + (p.valor_total||0); });
+            const labels = Object.keys(vendasPorData).slice(-14);
+            const valores = labels.map(l=>vendasPorData[l]);
+            const ctx = document.getElementById('vendasChart').getContext('2d');
+            if(chartVendas) chartVendas.destroy();
+            chartVendas = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ label:'Vendas (R$)', data:valores, borderColor:'#d4a373', backgroundColor:'rgba(212,163,115,0.1)', fill:true, tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:true } });
+            // Top produtos
+            const vendasProdutos = {};
+            pedidos.forEach(p => { if(p.itens && Array.isArray(p.itens)) p.itens.forEach(item => { vendasProdutos[item.nome || item.produto_nome] = (vendasProdutos[item.nome || item.produto_nome]||0) + (item.quantidade||1); }); });
+            const top = Object.entries(vendasProdutos).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            document.getElementById('topProdutos').innerHTML = top.length ? `<h3>🥇 Produtos mais vendidos</h3>`+top.map(([n,q])=>`<div class="admin-item-row"><span>${n}</span><span>${q} unidades</span></div>`).join('') : '<p>Sem dados de produtos vendidos.</p>';
+        }
+        function aplicarFiltroDashboard(){ carregarDashboard(document.getElementById('dataInicio').value, document.getElementById('dataFim').value); }
+        function limparFiltroDashboard(){ document.getElementById('dataInicio').value=''; document.getElementById('dataFim').value=''; carregarDashboard(); }
+
+        // ========== AVALIAÇÕES (CORRIGIDO) ==========
+        async function carregarGraficoAvaliacoes() {
+            try {
+                const { data, error } = await supabaseClient.from('avaliacoes').select('nota');
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    const ctx = document.getElementById('avaliacoesChart').getContext('2d');
+                    if (chartAvaliacoes) chartAvaliacoes.destroy();
+                    chartAvaliacoes = new Chart(ctx, {
+                        type: 'bar',
+                        data: { labels: ['⭐ 1', '⭐ 2', '⭐ 3', '⭐ 4', '⭐ 5'], datasets: [{ label: 'Quantidade', data: [0,0,0,0,0], backgroundColor: '#d4a373' }] },
+                        options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, stepSize: 1, precision: 0 } } }
+                    });
+                    return;
+                }
+                const distribuicao = [0,0,0,0,0];
+                data.forEach(a => { if (a.nota >= 1 && a.nota <= 5) distribuicao[a.nota - 1]++; });
+                const ctx = document.getElementById('avaliacoesChart').getContext('2d');
+                if (chartAvaliacoes) chartAvaliacoes.destroy();
+                chartAvaliacoes = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels: ['⭐ 1', '⭐ 2', '⭐ 3', '⭐ 4', '⭐ 5'], datasets: [{ label: 'Quantidade de avaliações', data: distribuicao, backgroundColor: '#d4a373', borderRadius: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, stepSize: 1, precision: 0 } } }
+                });
+            } catch (err) {
+                console.error('Erro no gráfico de avaliações:', err);
+            }
+        }
+
+        async function carregarAvaliacoesAdmin(dataInicio = null, dataFim = null) {
+            const container = document.getElementById('listaAvaliacoesAdmin');
+            if (!container) return;
+            container.innerHTML = '<p>Carregando avaliações...</p>';
+            try {
+                let query = supabaseClient.from('avaliacoes').select('*');
+                if (dataInicio) query = query.gte('created_at', dataInicio + 'T00:00:00');
+                if (dataFim) query = query.lte('created_at', dataFim + 'T23:59:59');
+                const { data: avaliacoesData, error: avaliacoesError } = await query;
+                if (avaliacoesError) throw avaliacoesError;
+
+                if (!avaliacoesData || avaliacoesData.length === 0) {
+                    container.innerHTML = '<p>Nenhuma avaliação encontrada.</p>';
+                    return;
+                }
+
+                // Buscar clientes e produtos para fazer JOIN manual
+                const { data: clientesData } = await supabaseClient.from('clientes').select('id, nome');
+                const { data: produtosData } = await supabaseClient.from('produtos').select('id, nome');
+
+                const clientesMap = new Map();
+                const produtosMap = new Map();
+                if (clientesData) clientesData.forEach(c => clientesMap.set(c.id, c.nome));
+                if (produtosData) produtosData.forEach(p => produtosMap.set(p.id, p.nome));
+
+                container.innerHTML = avaliacoesData.map(av => {
+                    const nomeCliente = clientesMap.get(av.cliente_id) || 'Cliente não encontrado';
+                    const nomeProduto = produtosMap.get(av.produto_id) || 'Produto não encontrado';
+                    return `
+                        <div class="admin-item-row" style="flex-direction:column; align-items:flex-start;">
+                            <div><strong>${escapeHtml(nomeCliente)}</strong> - ${new Date(av.created_at).toLocaleDateString()}</div>
+                            <div>Produto: ${escapeHtml(nomeProduto)}</div>
+                            <div>Nota: ${'⭐'.repeat(av.nota)} (${av.nota})</div>
+                            <div>Comentário: ${escapeHtml(av.comentario || '<em>sem comentário</em>')}</div>
+                            <button class="btn-icon btn-excluir" onclick="excluirAvaliacaoAdmin(${av.id})"><i class="fa-solid fa-trash"></i> Excluir</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Erro ao carregar avaliações:', err);
+                container.innerHTML = '<p style="color:red;">Erro ao carregar avaliações. Verifique a conexão com o banco.</p>';
+            }
+        }
+
+        function filtrarAvaliacoesAdmin() {
+            const inicio = document.getElementById('avaliacaoDataInicio').value;
+            const fim = document.getElementById('avaliacaoDataFim').value;
+            carregarAvaliacoesAdmin(inicio || null, fim || null);
+        }
+        function limparFiltroAvaliacoes() {
+            document.getElementById('avaliacaoDataInicio').value = '';
+            document.getElementById('avaliacaoDataFim').value = '';
+            carregarAvaliacoesAdmin();
+        }
+        async function excluirAvaliacaoAdmin(id) {
+            if (!confirm("Excluir esta avaliação permanentemente?")) return;
+            await supabaseClient.from('avaliacoes').delete().eq('id', id);
+            showToast("Avaliação removida!");
+            filtrarAvaliacoesAdmin();
+            carregarGraficoAvaliacoes();
+        }
+
         // ========== USUÁRIOS ADMIN ==========
         async function carregarUsuariosAdmin() {
             try {
@@ -798,82 +887,6 @@
                 await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
                 showToast(`Senha de @${username} atualizada!`);
             } else if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
-        }
-
-        // ========== DASHBOARD E GRÁFICOS ==========
-        async function carregarDashboard(startDate=null, endDate=null){
-            let query = supabaseClient.from('pedidos').select('*');
-            if(startDate) query = query.gte('created_at', startDate+'T00:00:00');
-            if(endDate) query = query.lte('created_at', endDate+'T23:59:59');
-            const {data, error} = await query;
-            if(error) return;
-            pedidos = data || [];
-            const total = pedidos.reduce((s,p)=>s+(p.valor_total||0),0);
-            document.getElementById('dashboardStats').innerHTML = `
-                <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div>
-                <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
-                <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
-            // Gráfico de vendas
-            const vendasPorData = {};
-            pedidos.forEach(p => { const data = new Date(p.created_at).toLocaleDateString('pt-BR'); vendasPorData[data] = (vendasPorData[data]||0) + (p.valor_total||0); });
-            const labels = Object.keys(vendasPorData).slice(-14);
-            const valores = labels.map(l=>vendasPorData[l]);
-            const ctx = document.getElementById('vendasChart').getContext('2d');
-            if(chartVendas) chartVendas.destroy();
-            chartVendas = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ label:'Vendas (R$)', data:valores, borderColor:'#d4a373', backgroundColor:'rgba(212,163,115,0.1)', fill:true, tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:true } });
-            // Top produtos
-            const vendasProdutos = {};
-            pedidos.forEach(p => { if(p.itens && Array.isArray(p.itens)) p.itens.forEach(item => { vendasProdutos[item.nome || item.produto_nome] = (vendasProdutos[item.nome || item.produto_nome]||0) + (item.quantidade||1); }); });
-            const top = Object.entries(vendasProdutos).sort((a,b)=>b[1]-a[1]).slice(0,5);
-            document.getElementById('topProdutos').innerHTML = top.length ? `<h3>🥇 Produtos mais vendidos</h3>`+top.map(([n,q])=>`<div class="admin-item-row"><span>${n}</span><span>${q} unidades</span></div>`).join('') : '<p>Sem dados de produtos vendidos.</p>';
-        }
-        function aplicarFiltroDashboard(){ carregarDashboard(document.getElementById('dataInicio').value, document.getElementById('dataFim').value); }
-        function limparFiltroDashboard(){ document.getElementById('dataInicio').value=''; document.getElementById('dataFim').value=''; carregarDashboard(); }
-
-        // ========== AVALIAÇÕES ==========
-        async function carregarGraficoAvaliacoes() {
-            const { data } = await supabaseClient.from('avaliacoes').select('nota');
-            if (!data || data.length === 0) return;
-            const distribuicao = [0,0,0,0,0];
-            data.forEach(a => { if (a.nota>=1 && a.nota<=5) distribuicao[a.nota-1]++; });
-            const ctx = document.getElementById('avaliacoesChart').getContext('2d');
-            if (chartAvaliacoes) chartAvaliacoes.destroy();
-            chartAvaliacoes = new Chart(ctx, { type:'bar', data:{ labels:['⭐ 1','⭐ 2','⭐ 3','⭐ 4','⭐ 5'], datasets:[{ label:'Quantidade de avaliações', data:distribuicao, backgroundColor:'#d4a373', borderRadius:10 }] }, options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ beginAtZero:true, stepSize:1, precision:0 } } } });
-        }
-        async function carregarAvaliacoesAdmin(dataInicio=null, dataFim=null) {
-            let query = supabaseClient.from('avaliacoes').select('*, clientes(nome), produtos(nome)');
-            if (dataInicio) query = query.gte('created_at', dataInicio+'T00:00:00');
-            if (dataFim) query = query.lte('created_at', dataFim+'T23:59:59');
-            const { data, error } = await query;
-            if (error) { showToast("Erro ao carregar avaliações", 'error'); return; }
-            const container = document.getElementById('listaAvaliacoesAdmin');
-            if (!data || data.length === 0) { container.innerHTML = '<p>Nenhuma avaliação encontrada.</p>'; return; }
-            container.innerHTML = data.map(av => `
-                <div class="admin-item-row" style="flex-direction:column; align-items:flex-start;">
-                    <div><strong>${av.clientes?.nome || 'Cliente'}</strong> - ${new Date(av.created_at).toLocaleDateString()}</div>
-                    <div>Produto: ${av.produtos?.nome || 'Produto'}</div>
-                    <div>Nota: ${'⭐'.repeat(av.nota)} (${av.nota})</div>
-                    <div>Comentário: ${av.comentario || '<em>sem comentário</em>'}</div>
-                    <button class="btn-icon btn-excluir" onclick="excluirAvaliacaoAdmin(${av.id})"><i class="fa-solid fa-trash"></i> Excluir</button>
-                </div>
-            `).join('');
-        }
-        function filtrarAvaliacoesAdmin() {
-            const inicio = document.getElementById('avaliacaoDataInicio').value;
-            const fim = document.getElementById('avaliacaoDataFim').value;
-            carregarAvaliacoesAdmin(inicio || null, fim || null);
-        }
-        function limparFiltroAvaliacoes() {
-            document.getElementById('avaliacaoDataInicio').value = '';
-            document.getElementById('avaliacaoDataFim').value = '';
-            carregarAvaliacoesAdmin();
-        }
-        async function excluirAvaliacaoAdmin(id) {
-            if (!confirm("Excluir esta avaliação permanentemente?")) return;
-            await supabaseClient.from('avaliacoes').delete().eq('id', id);
-            showToast("Avaliação removida!");
-            filtrarAvaliacoesAdmin();
-            carregarGraficoAvaliacoes();
         }
 
         // ========== DRAG AND DROP DAS ABAS ==========
