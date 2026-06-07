@@ -49,6 +49,8 @@
         .btn-filter{background:var(--accent-color);color:white;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold}
         .chart-container{max-height:300px;margin-top:20px}
         canvas{max-height:300px}
+        .slide-preview{width:80px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px}
+        .slide-edit-input{flex:2;min-width:200px}
     </style>
 </head>
 <body>
@@ -159,14 +161,21 @@
             </table>
         </div>
 
-        <!-- Aba Slides restaurada -->
+        <!-- Aba Slides com upload e edição -->
         <div id="tabSlides" class="admin-tab-content">
             <h3>Gerenciar Banners Iniciais (Slides)</h3>
-            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                <input type="text" id="slideUrl" class="form-control" placeholder="URL da Imagem" style="flex:3; min-width:250px;">
+            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; align-items:flex-end;">
+                <div style="flex:3; min-width:250px;">
+                    <label>URL da imagem (ou use upload)</label>
+                    <input type="text" id="slideUrl" class="form-control" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+                <div>
+                    <label>Ou enviar arquivo local</label>
+                    <input type="file" id="slideUpload" accept="image/*" class="form-control" style="padding:8px;">
+                </div>
                 <button class="btn-add" onclick="adicionarSlideAdmin()" style="margin:0;">➕ Adicionar Slide</button>
             </div>
-            <h4 style="margin-top:20px;">📸 Slides Atuais</h4>
+            <h4 style="margin-top:20px;">📸 Slides Atuais (clique em ✏️ para editar a URL)</h4>
             <div id="listaAdminSlides" class="admin-list-container"></div>
         </div>
 
@@ -177,6 +186,7 @@
     </div>
 
     <script>
+        // Configuração correta do Supabase (API key incluída)
         const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -314,6 +324,7 @@
             carregarDashboard();
         }
 
+        // Slides: carregar, adicionar (com upload local), editar, excluir
         async function carregarSlides() {
             try {
                 const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
@@ -323,17 +334,58 @@
             } catch(e) { slides = []; }
         }
 
+        // Converter arquivo local para Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         async function adicionarSlideAdmin() {
-            const url = document.getElementById('slideUrl').value.trim();
-            if(!url) { showToast("Informe a URL da imagem!", 'error'); return; }
+            const urlInput = document.getElementById('slideUrl');
+            const fileInput = document.getElementById('slideUpload');
+            let imageUrl = urlInput.value.trim();
+            
+            if(fileInput.files && fileInput.files[0]) {
+                try {
+                    const base64 = await fileToBase64(fileInput.files[0]);
+                    imageUrl = base64;
+                } catch(e) {
+                    showToast("Erro ao processar imagem local", 'error');
+                    return;
+                }
+            }
+            
+            if(!imageUrl) { showToast("Informe a URL da imagem ou selecione um arquivo local!", 'error'); return; }
+            
             try {
-                const { data, error } = await supabaseClient.from('slides').insert([{ url_imagem: url }]).select();
+                const { data, error } = await supabaseClient.from('slides').insert([{ url_imagem: imageUrl }]).select();
                 if(!error && data) {
                     slides.push(data[0]);
-                    document.getElementById('slideUrl').value = '';
+                    urlInput.value = '';
+                    fileInput.value = '';
                     renderizarAdminSlides();
                     showToast("Slide adicionado com sucesso!");
-                } else { showToast("Erro ao adicionar slide.", 'error'); }
+                } else { 
+                    console.error(error);
+                    showToast("Erro ao adicionar slide: " + (error?.message || "desconhecido"), 'error'); 
+                }
+            } catch(e) { showToast("Erro de conexão.", 'error'); }
+        }
+
+        async function editarSlideAdmin(id, novaUrl) {
+            if(!novaUrl) { showToast("URL inválida", 'error'); return; }
+            try {
+                const { error } = await supabaseClient.from('slides').update({ url_imagem: novaUrl }).eq('id', id);
+                if(!error) {
+                    const slide = slides.find(s => s.id === id);
+                    if(slide) slide.url_imagem = novaUrl;
+                    renderizarAdminSlides();
+                    showToast("Slide atualizado!");
+                } else { showToast("Erro ao editar slide.", 'error'); }
             } catch(e) { showToast("Erro de conexão.", 'error'); }
         }
 
@@ -355,13 +407,20 @@
                 return;
             }
             container.innerHTML = slides.map(s => `
-                <div class="admin-item-row">
-                    <img src="${s.url_imagem}" style="height:50px; border-radius:8px; max-width:100px; object-fit:cover;">
-                    <button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                <div class="admin-item-row" style="flex-wrap:wrap; gap:10px;">
+                    <img src="${s.url_imagem}" class="slide-preview" onerror="this.src='https://placehold.co/80x50?text=Erro'">
+                    <div style="flex:2; min-width:200px;">
+                        <input type="text" id="edit-url-${s.id}" value="${s.url_imagem.replace(/"/g, '&quot;')}" class="form-control slide-edit-input" style="width:100%;">
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-icon btn-salvar" onclick="editarSlideAdmin(${s.id}, document.getElementById('edit-url-${s.id}').value)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                        <button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
 
+        // Demais funções (produtos, categorias, estoque, clientes) mantidas
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
@@ -378,7 +437,6 @@
             popularSelectCategorias();
         }
 
-        // Produtos com edição inline (categoria funcionando)
         function renderizarProdutosInline(){
             const container = document.getElementById('listaAdminProdutos');
             if(produtos.length === 0) { container.innerHTML = "<p>Nenhum produto cadastrado.</p>"; return; }
