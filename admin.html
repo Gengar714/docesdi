@@ -37,7 +37,7 @@
         .tabela-estoque{width:100%;border-collapse:collapse;margin-top:15px}
         .tabela-estoque th,.tabela-estoque td{padding:10px;text-align:left;border-bottom:1px solid var(--border-color)}
         .tabela-estoque th{background:var(--accent-color);color:white}
-        .admin-item-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-color);border-radius:10px;margin-bottom:8px;border:1px solid var(--border-color)}
+        .admin-item-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-color);border-radius:10px;margin-bottom:8px;border:1px solid var(--border-color);flex-wrap:wrap;gap:10px}
         .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000}
         .login-box{background:var(--card-bg);padding:30px;border-radius:var(--border-radius);width:90%;max-width:350px;text-align:center}
         .login-box input{padding:12px;margin:10px 0;width:100%;border-radius:30px;border:1px solid var(--border-color)}
@@ -56,6 +56,12 @@
         .flex-grow{flex-grow:1;}
         .slide-edit-fields{display:flex; flex-wrap:wrap; gap:10px; align-items:center; flex:3;}
         .slide-edit-fields input{flex:1; min-width:120px;}
+        .logo-preview{width:60px;height:60px;border-radius:50%;object-fit:cover;background:#f0e4da;}
+        .keyword-tag{display:inline-block;background:var(--accent-color);color:white;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;}
+        .keyword-input-group{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+        .keyword-input-group input{flex:1;}
+        .toggle-group{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+        .toggle-group input[type="checkbox"]{width:18px;height:18px;cursor:pointer;}
     </style>
 </head>
 <body>
@@ -81,10 +87,11 @@
             <div class="admin-tab" data-tab="categorias">🏷️ Categorias</div>
             <div class="admin-tab" data-tab="estoque">📦 Insumos / Estoque</div>
             <div class="admin-tab" data-tab="slides">📸 Banners / Slides</div>
+            <div class="admin-tab" data-tab="personalizacao">🎨 Personalização</div>
             <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
         </div>
 
-        <!-- Dashboard com filtro de datas -->
+        <!-- Dashboard -->
         <div id="tabDashboard" class="admin-tab-content ativo">
             <div class="filter-box">
                 <div class="field">
@@ -111,6 +118,7 @@
             <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
 
+        <!-- Produtos -->
         <div id="tabProdutos" class="admin-tab-content">
             <div class="form-produto">
                 <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Ex: Bolo de Chocolate"></div>
@@ -125,6 +133,7 @@
             <div id="listaAdminProdutos"></div>
         </div>
 
+        <!-- Categorias -->
         <div id="tabCategorias" class="admin-tab-content">
             <div class="form-categoria">
                 <div class="field"><label>Nome</label><input type="text" id="categoriaNome"></div>
@@ -149,6 +158,7 @@
             <div id="listaAdminCategorias"></div>
         </div>
 
+        <!-- Estoque -->
         <div id="tabEstoque" class="admin-tab-content">
             <h4>📦 Controle de Materiais e Insumos</h4>
             <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
@@ -159,14 +169,12 @@
                 <button class="btn-add" onclick="adicionarMaterialAdmin()" style="margin:0;">+ Insumo</button>
             </div>
             <table class="tabela-estoque" id="tabelaMateriais">
-                <thead>
-                    <tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Ações</th></tr>
-                </thead>
+                <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
 
-        <!-- Aba Slides com campos de título e descrição -->
+        <!-- Slides -->
         <div id="tabSlides" class="admin-tab-content">
             <h3>Gerenciar Banners Iniciais (Slides)</h3>
             <div style="background:var(--bg-color); padding:15px; border-radius:var(--border-radius); margin-bottom:20px;">
@@ -201,6 +209,136 @@
             <div id="listaAdminSlides" class="admin-list-container"></div>
         </div>
 
+        <!-- PERSONALIZAÇÃO: Cabeçalho, Rodapé e Palavras-chave para Clima -->
+        <div id="tabPersonalizacao" class="admin-tab-content">
+            <h3>🎨 Personalização da Loja</h3>
+            
+            <!-- Cabeçalho -->
+            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
+                <h4>🖼️ Cabeçalho</h4>
+                <div class="flex-row" style="margin-top:15px;">
+                    <div style="flex:1;">
+                        <label>Logo (URL da imagem)</label>
+                        <input type="text" id="headerLogoUrl" class="form-control" placeholder="https://exemplo.com/logo.jpg">
+                        <small style="display:block; margin-top:5px;">Use uma URL de imagem quadrada (recomendado 200x200)</small>
+                    </div>
+                    <div style="text-align:center;">
+                        <img id="logoPreview" class="logo-preview" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80" alt="Preview Logo">
+                    </div>
+                </div>
+                <div class="flex-row" style="margin-top:15px;">
+                    <div style="flex:1;">
+                        <label>Nome da Loja</label>
+                        <input type="text" id="storeName" class="form-control" placeholder="Doces Di">
+                    </div>
+                </div>
+                <div class="flex-row" style="margin-top:15px;">
+                    <div style="flex:2;">
+                        <label>Ou enviar arquivo local (será convertido para base64)</label>
+                        <input type="file" id="logoUpload" accept="image/*" class="form-control">
+                    </div>
+                    <div>
+                        <button class="btn-add" onclick="uploadLogoLocal()" style="background:var(--accent-color);">📤 Usar esta imagem</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Cabeçalho</button>
+            </div>
+
+            <!-- Rodapé com toggles -->
+            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
+                <h4>📞 Rodapé - Contatos e Informações</h4>
+                <p style="font-size:0.8rem; margin-bottom:15px; opacity:0.7;">✅ Marque o checkbox ao lado de cada informação para exibi-la no site</p>
+                
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:15px; margin-top:15px;">
+                    <!-- WhatsApp -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerWhatsappEnabled">
+                            <label style="font-weight:bold;">📱 WhatsApp</label>
+                        </div>
+                        <input type="text" id="footerWhatsapp" class="form-control" placeholder="(11) 99999-9999">
+                    </div>
+                    <!-- E-mail -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerEmailEnabled">
+                            <label style="font-weight:bold;">✉️ E-mail</label>
+                        </div>
+                        <input type="email" id="footerEmail" class="form-control" placeholder="contato@docesdi.com">
+                    </div>
+                    <!-- Instagram -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerInstagramEnabled">
+                            <label style="font-weight:bold;">📸 Instagram</label>
+                        </div>
+                        <input type="text" id="footerInstagram" class="form-control" placeholder="@docesdi">
+                    </div>
+                    <!-- Facebook -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerFacebookEnabled">
+                            <label style="font-weight:bold;">📘 Facebook</label>
+                        </div>
+                        <input type="text" id="footerFacebook" class="form-control" placeholder="https://facebook.com/docesdi">
+                    </div>
+                    <!-- Endereço -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerEnderecoEnabled">
+                            <label style="font-weight:bold;">📍 Endereço</label>
+                        </div>
+                        <input type="text" id="footerEndereco" class="form-control" placeholder="Rua Exemplo, 123 - Centro">
+                    </div>
+                    <!-- Horário -->
+                    <div>
+                        <div class="toggle-group">
+                            <input type="checkbox" id="footerHorarioEnabled">
+                            <label style="font-weight:bold;">🕒 Horário de Funcionamento</label>
+                        </div>
+                        <input type="text" id="footerHorario" class="form-control" placeholder="Seg-Sex: 8h às 18h | Sáb: 8h às 14h">
+                    </div>
+                </div>
+                <button class="btn-add" onclick="salvarConfiguracoesRodape()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Rodapé</button>
+            </div>
+
+            <!-- Palavras-chave para sugestão climática -->
+            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
+                <h4>🌡️ Palavras-chave para Sugestão por Clima</h4>
+                <p style="font-size:0.85rem; margin-bottom:15px; opacity:0.7;">O sistema usa estas palavras para sugerir produtos baseado na temperatura. Quanto mais palavras, mais precisa a sugestão!</p>
+                
+                <div style="margin-bottom:20px;">
+                    <h5>🔥 Clima Quente (≥ 26°C) - Produtos gelados/refrescantes</h5>
+                    <div id="palavrasQuentesContainer" style="margin:10px 0;"></div>
+                    <div class="keyword-input-group">
+                        <input type="text" id="novaPalavraQuente" class="form-control" placeholder="Nova palavra (ex: sorvete, milkshake, açaí)">
+                        <button class="btn-add" onclick="adicionarPalavraQuente()" style="margin:0;">+ Adicionar</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h5>🍃 Clima Ameno (20-26°C) - Produtos refrescantes</h5>
+                    <div id="palavrasAmenasContainer" style="margin:10px 0;"></div>
+                    <div class="keyword-input-group">
+                        <input type="text" id="novaPalavraAmena" class="form-control" placeholder="Nova palavra (ex: suco, limonada, fruta)">
+                        <button class="btn-add" onclick="adicionarPalavraAmena()" style="margin:0;">+ Adicionar</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h5>❄️ Clima Frio (< 20°C) - Produtos quentes/aconchegantes</h5>
+                    <div id="palavrasFriasContainer" style="margin:10px 0;"></div>
+                    <div class="keyword-input-group">
+                        <input type="text" id="novaPalavraFria" class="form-control" placeholder="Nova palavra (ex: café, chocolate quente, bolo)">
+                        <button class="btn-add" onclick="adicionarPalavraFria()" style="margin:0;">+ Adicionar</button>
+                    </div>
+                </div>
+
+                <button class="btn-add" onclick="salvarPalavrasChave()" style="background:var(--accent-color);">💾 Salvar Palavras-chave</button>
+            </div>
+        </div>
+
+        <!-- Clientes -->
         <div id="tabClientes" class="admin-tab-content">
             <h4>👥 Clientes Cadastrados</h4>
             <div id="listaClientesAdmin">Carregando lista de clientes...</div>
@@ -214,6 +352,18 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [], slides = [];
+        let configuracoes = {
+            cabecalho: { logo_url: '', nome_loja: 'Doces Di' },
+            rodape: {
+                whatsapp: { enabled: false, value: '' },
+                email: { enabled: false, value: '' },
+                instagram: { enabled: false, value: '' },
+                facebook: { enabled: false, value: '' },
+                endereco: { enabled: false, value: '' },
+                horario: { enabled: false, value: '' }
+            },
+            palavrasChave: { quentes: [], amenas: [], frias: [] }
+        };
         let chartInstance = null;
         let currentStartDate = null;
         let currentEndDate = null;
@@ -227,7 +377,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // --- Segurança: mensagem genérica sem revelar a senha ---
         function verificarSenhaAdmin() {
             const senha = document.getElementById('adminPassword').value;
             if(senha === 'admin123') {
@@ -235,11 +384,212 @@
                 document.getElementById('adminContent').style.display = 'block';
                 inicializarAdmin();
             } else {
-                showToast("Senha incorreta!", 'error');  // <-- NÃO revela a senha correta
+                showToast("Senha incorreta!", 'error');
             }
         }
 
-        // Sortable para as abas principais
+        // Carregar configurações do Supabase
+        async function carregarConfiguracoes() {
+            try {
+                const { data, error } = await supabaseClient.from('configuracoes').select('*');
+                if(!error && data) {
+                    for(let config of data) {
+                        if(config.chave === 'cabecalho') configuracoes.cabecalho = config.valor;
+                        if(config.chave === 'rodape') configuracoes.rodape = config.valor;
+                        if(config.chave === 'palavras_chave') configuracoes.palavrasChave = config.valor;
+                    }
+                }
+            } catch(e) { console.log('Erro ao carregar configurações:', e); }
+            
+            if(!configuracoes.palavrasChave.quentes || configuracoes.palavrasChave.quentes.length === 0) {
+                configuracoes.palavrasChave = {
+                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante', 'smoothie', 'frozen', 'slush', 'granizado', 'sorbet'],
+                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus', 'laranja', 'morango', 'manga', 'maracujá', 'pêssego'],
+                    frias: ['café', 'chocolate quente', 'quentinho', 'cappuccino', 'latte', 'bolo', 'torta', 'pão de queijo', 'especial', 'quente']
+                };
+                await salvarPalavrasChave();
+            }
+            
+            renderizarPalavrasChaveUI();
+        }
+
+        function renderizarPalavrasChaveUI() {
+            const quentesContainer = document.getElementById('palavrasQuentesContainer');
+            const amenasContainer = document.getElementById('palavrasAmenasContainer');
+            const friasContainer = document.getElementById('palavrasFriasContainer');
+            
+            if(quentesContainer) {
+                quentesContainer.innerHTML = configuracoes.palavrasChave.quentes.map((p, i) => 
+                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('quentes', ${i})">&times;</span></span>`
+                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
+            }
+            if(amenasContainer) {
+                amenasContainer.innerHTML = configuracoes.palavrasChave.amenas.map((p, i) => 
+                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('amenas', ${i})">&times;</span></span>`
+                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
+            }
+            if(friasContainer) {
+                friasContainer.innerHTML = configuracoes.palavrasChave.frias.map((p, i) => 
+                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('frias', ${i})">&times;</span></span>`
+                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
+            }
+        }
+
+        function adicionarPalavraQuente() {
+            const input = document.getElementById('novaPalavraQuente');
+            const palavra = input.value.trim().toLowerCase();
+            if(palavra && !configuracoes.palavrasChave.quentes.includes(palavra)) {
+                configuracoes.palavrasChave.quentes.push(palavra);
+                renderizarPalavrasChaveUI();
+                input.value = '';
+            } else if(configuracoes.palavrasChave.quentes.includes(palavra)) {
+                showToast("Palavra já existe!", 'error');
+            }
+        }
+
+        function adicionarPalavraAmena() {
+            const input = document.getElementById('novaPalavraAmena');
+            const palavra = input.value.trim().toLowerCase();
+            if(palavra && !configuracoes.palavrasChave.amenas.includes(palavra)) {
+                configuracoes.palavrasChave.amenas.push(palavra);
+                renderizarPalavrasChaveUI();
+                input.value = '';
+            } else if(configuracoes.palavrasChave.amenas.includes(palavra)) {
+                showToast("Palavra já existe!", 'error');
+            }
+        }
+
+        function adicionarPalavraFria() {
+            const input = document.getElementById('novaPalavraFria');
+            const palavra = input.value.trim().toLowerCase();
+            if(palavra && !configuracoes.palavrasChave.frias.includes(palavra)) {
+                configuracoes.palavrasChave.frias.push(palavra);
+                renderizarPalavrasChaveUI();
+                input.value = '';
+            } else if(configuracoes.palavrasChave.frias.includes(palavra)) {
+                showToast("Palavra já existe!", 'error');
+            }
+        }
+
+        function removerPalavra(tipo, index) {
+            configuracoes.palavrasChave[tipo].splice(index, 1);
+            renderizarPalavrasChaveUI();
+        }
+
+        async function salvarPalavrasChave() {
+            try {
+                const { error } = await supabaseClient.from('configuracoes').upsert({ 
+                    chave: 'palavras_chave', 
+                    valor: configuracoes.palavrasChave 
+                }, { onConflict: 'chave' });
+                if(!error) {
+                    showToast("Palavras-chave salvas com sucesso!");
+                    localStorage.setItem('docesdi_palavras_chave', JSON.stringify(configuracoes.palavrasChave));
+                } else throw error;
+            } catch(e) { showToast("Erro ao salvar palavras-chave", 'error'); }
+        }
+
+        // Configurações de Cabeçalho
+        function previewLogo() {
+            const url = document.getElementById('headerLogoUrl').value;
+            const preview = document.getElementById('logoPreview');
+            if(url && preview) preview.src = url;
+        }
+        
+        document.getElementById('headerLogoUrl')?.addEventListener('input', previewLogo);
+        
+        function uploadLogoLocal() {
+            const fileInput = document.getElementById('logoUpload');
+            if(fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    document.getElementById('headerLogoUrl').value = base64;
+                    document.getElementById('logoPreview').src = base64;
+                    showToast("Logo carregada! Clique em 'Salvar Cabeçalho' para finalizar.");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                showToast("Selecione uma imagem primeiro!", 'error');
+            }
+        }
+
+        async function salvarConfiguracoesCabecalho() {
+            const logoUrl = document.getElementById('headerLogoUrl').value;
+            const nomeLoja = document.getElementById('storeName').value;
+            configuracoes.cabecalho = { logo_url: logoUrl, nome_loja: nomeLoja };
+            try {
+                const { error } = await supabaseClient.from('configuracoes').upsert({ 
+                    chave: 'cabecalho', 
+                    valor: configuracoes.cabecalho 
+                }, { onConflict: 'chave' });
+                if(!error) {
+                    showToast("Cabeçalho salvo com sucesso!");
+                    localStorage.setItem('docesdi_config_cabecalho', JSON.stringify(configuracoes.cabecalho));
+                } else throw error;
+            } catch(e) { showToast("Erro ao salvar cabeçalho", 'error'); }
+        }
+
+        async function salvarConfiguracoesRodape() {
+            configuracoes.rodape = {
+                whatsapp: {
+                    enabled: document.getElementById('footerWhatsappEnabled')?.checked || false,
+                    value: document.getElementById('footerWhatsapp').value
+                },
+                email: {
+                    enabled: document.getElementById('footerEmailEnabled')?.checked || false,
+                    value: document.getElementById('footerEmail').value
+                },
+                instagram: {
+                    enabled: document.getElementById('footerInstagramEnabled')?.checked || false,
+                    value: document.getElementById('footerInstagram').value
+                },
+                facebook: {
+                    enabled: document.getElementById('footerFacebookEnabled')?.checked || false,
+                    value: document.getElementById('footerFacebook').value
+                },
+                endereco: {
+                    enabled: document.getElementById('footerEnderecoEnabled')?.checked || false,
+                    value: document.getElementById('footerEndereco').value
+                },
+                horario: {
+                    enabled: document.getElementById('footerHorarioEnabled')?.checked || false,
+                    value: document.getElementById('footerHorario').value
+                }
+            };
+            try {
+                const { error } = await supabaseClient.from('configuracoes').upsert({ 
+                    chave: 'rodape', 
+                    valor: configuracoes.rodape 
+                }, { onConflict: 'chave' });
+                if(!error) {
+                    showToast("Rodapé salvo com sucesso!");
+                    localStorage.setItem('docesdi_config_rodape', JSON.stringify(configuracoes.rodape));
+                } else throw error;
+            } catch(e) { showToast("Erro ao salvar rodapé", 'error'); }
+        }
+
+        function carregarConfiguracoesUI() {
+            document.getElementById('headerLogoUrl').value = configuracoes.cabecalho?.logo_url || '';
+            document.getElementById('storeName').value = configuracoes.cabecalho?.nome_loja || 'Doces Di';
+            document.getElementById('logoPreview').src = configuracoes.cabecalho?.logo_url || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80';
+            
+            const rodape = configuracoes.rodape || {};
+            document.getElementById('footerWhatsappEnabled').checked = rodape.whatsapp?.enabled || false;
+            document.getElementById('footerWhatsapp').value = rodape.whatsapp?.value || '';
+            document.getElementById('footerEmailEnabled').checked = rodape.email?.enabled || false;
+            document.getElementById('footerEmail').value = rodape.email?.value || '';
+            document.getElementById('footerInstagramEnabled').checked = rodape.instagram?.enabled || false;
+            document.getElementById('footerInstagram').value = rodape.instagram?.value || '';
+            document.getElementById('footerFacebookEnabled').checked = rodape.facebook?.enabled || false;
+            document.getElementById('footerFacebook').value = rodape.facebook?.value || '';
+            document.getElementById('footerEnderecoEnabled').checked = rodape.endereco?.enabled || false;
+            document.getElementById('footerEndereco').value = rodape.endereco?.value || '';
+            document.getElementById('footerHorarioEnabled').checked = rodape.horario?.enabled || false;
+            document.getElementById('footerHorario').value = rodape.horario?.value || '';
+        }
+
+        // Sortable para as abas
         function initSortableTabs() {
             const container = document.getElementById('adminTabsContainer');
             if(container && !window.sortableInstance) {
@@ -343,17 +693,14 @@
             carregarDashboard();
         }
 
-        // Slides com título e descrição
+        // Slides
         async function carregarSlides() {
             try {
                 const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
                 if(!error && data) slides = data;
                 else slides = [];
                 renderizarAdminSlides();
-            } catch(e) { 
-                console.error("Erro ao carregar slides:", e);
-                slides = []; 
-            }
+            } catch(e) { console.error("Erro ao carregar slides:", e); slides = []; }
         }
 
         function fileToBase64(file) {
@@ -405,10 +752,7 @@
                     console.error(error);
                     showToast("Erro ao adicionar slide: " + (error?.message || "desconhecido"), 'error'); 
                 }
-            } catch(e) { 
-                console.error(e);
-                showToast("Erro de conexão.", 'error'); 
-            }
+            } catch(e) { console.error(e); showToast("Erro de conexão.", 'error'); }
         }
 
         async function editarSlideAdmin(id, novaUrl, novoTitulo, novaDescricao) {
@@ -424,10 +768,7 @@
                     }
                     renderizarAdminSlides();
                     showToast("Slide atualizado!");
-                } else { 
-                    console.error(error);
-                    showToast("Erro ao editar slide.", 'error'); 
-                }
+                } else { console.error(error); showToast("Erro ao editar slide.", 'error'); }
             } catch(e) { showToast("Erro de conexão.", 'error'); }
         }
 
@@ -464,7 +805,7 @@
             `).join('');
         }
 
-        // Demais funções (produtos, categorias, estoque, clientes) - mantidas
+        // Produtos, Categorias, Estoque, Clientes
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
@@ -671,22 +1012,25 @@
         async function inicializarAdmin() {
             await carregarDadosBasicos();
             await carregarSlides();
+            await carregarConfiguracoes();
+            carregarConfiguracoesUI();
             await carregarDashboard();
             initSortableTabs();
             carregarOrdemAbas();
-            // Navegação das abas
+            
             document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('ativo'));
                     document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('ativo'));
                     tab.classList.add('ativo');
-                    document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('ativo');
-                    if(tab.dataset.tab === 'dashboard') carregarDashboard(currentStartDate, currentEndDate);
+                    const tabName = tab.dataset.tab;
+                    const elementId = `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
+                    document.getElementById(elementId).classList.add('ativo');
+                    if(tabName === 'dashboard') carregarDashboard(currentStartDate, currentEndDate);
                 });
             });
         }
 
-        // Injetar Font Awesome
         if(!document.querySelector('link[href*="font-awesome"]')) {
             const link = document.createElement('link');
             link.rel = "stylesheet";
