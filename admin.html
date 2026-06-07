@@ -51,6 +51,9 @@
         canvas{max-height:300px}
         .slide-preview{width:80px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px}
         .slide-edit-input{flex:2;min-width:200px}
+        .full-width-input{width:100%;}
+        .flex-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+        .flex-grow{flex-grow:1;}
     </style>
 </head>
 <body>
@@ -161,21 +164,28 @@
             </table>
         </div>
 
-        <!-- Aba Slides com upload e edição -->
+        <!-- Aba Slides com campo URL maior e upload local -->
         <div id="tabSlides" class="admin-tab-content">
             <h3>Gerenciar Banners Iniciais (Slides)</h3>
-            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; align-items:flex-end;">
-                <div style="flex:3; min-width:250px;">
-                    <label>URL da imagem (ou use upload)</label>
-                    <input type="text" id="slideUrl" class="form-control" placeholder="https://exemplo.com/imagem.jpg">
+            <div style="background:var(--bg-color); padding:15px; border-radius:var(--border-radius); margin-bottom:20px;">
+                <div class="flex-row" style="margin-bottom:10px;">
+                    <div style="flex:3; min-width:250px;">
+                        <label>URL da imagem (ou use upload)</label>
+                        <input type="text" id="slideUrl" class="form-control full-width-input" placeholder="https://exemplo.com/imagem.jpg" style="width:100%;">
+                    </div>
                 </div>
-                <div>
-                    <label>Ou enviar arquivo local</label>
-                    <input type="file" id="slideUpload" accept="image/*" class="form-control" style="padding:8px;">
+                <div class="flex-row">
+                    <div style="flex:2;">
+                        <label>Ou enviar arquivo local</label>
+                        <input type="file" id="slideUpload" accept="image/*" class="form-control" style="padding:8px; width:100%;">
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:flex-end;">
+                        <button class="btn-add" onclick="limparUploadLocal()" style="background:#999; margin:0;">🗑️ Limpar</button>
+                        <button class="btn-add" onclick="adicionarSlideAdmin()" style="margin:0;">➕ Adicionar Slide</button>
+                    </div>
                 </div>
-                <button class="btn-add" onclick="adicionarSlideAdmin()" style="margin:0;">➕ Adicionar Slide</button>
             </div>
-            <h4 style="margin-top:20px;">📸 Slides Atuais (clique em ✏️ para editar a URL)</h4>
+            <h4>📸 Slides Atuais (clique em ✏️ para editar a URL)</h4>
             <div id="listaAdminSlides" class="admin-list-container"></div>
         </div>
 
@@ -327,11 +337,15 @@
         // Slides: carregar, adicionar (com upload local), editar, excluir
         async function carregarSlides() {
             try {
+                // Usando coluna 'url' (nome correto no Supabase)
                 const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
                 if(!error && data) slides = data;
                 else slides = [];
                 renderizarAdminSlides();
-            } catch(e) { slides = []; }
+            } catch(e) { 
+                console.error("Erro ao carregar slides:", e);
+                slides = []; 
+            }
         }
 
         // Converter arquivo local para Base64
@@ -342,6 +356,11 @@
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = error => reject(error);
             });
+        }
+
+        function limparUploadLocal() {
+            document.getElementById('slideUpload').value = '';
+            showToast("Arquivo removido do campo de upload.", 'success');
         }
 
         async function adicionarSlideAdmin() {
@@ -362,7 +381,8 @@
             if(!imageUrl) { showToast("Informe a URL da imagem ou selecione um arquivo local!", 'error'); return; }
             
             try {
-                const { data, error } = await supabaseClient.from('slides').insert([{ url_imagem: imageUrl }]).select();
+                // Usando coluna 'url' em vez de 'url_imagem'
+                const { data, error } = await supabaseClient.from('slides').insert([{ url: imageUrl }]).select();
                 if(!error && data) {
                     slides.push(data[0]);
                     urlInput.value = '';
@@ -373,19 +393,26 @@
                     console.error(error);
                     showToast("Erro ao adicionar slide: " + (error?.message || "desconhecido"), 'error'); 
                 }
-            } catch(e) { showToast("Erro de conexão.", 'error'); }
+            } catch(e) { 
+                console.error(e);
+                showToast("Erro de conexão.", 'error'); 
+            }
         }
 
         async function editarSlideAdmin(id, novaUrl) {
             if(!novaUrl) { showToast("URL inválida", 'error'); return; }
             try {
-                const { error } = await supabaseClient.from('slides').update({ url_imagem: novaUrl }).eq('id', id);
+                // Usando coluna 'url'
+                const { error } = await supabaseClient.from('slides').update({ url: novaUrl }).eq('id', id);
                 if(!error) {
                     const slide = slides.find(s => s.id === id);
-                    if(slide) slide.url_imagem = novaUrl;
+                    if(slide) slide.url = novaUrl;
                     renderizarAdminSlides();
                     showToast("Slide atualizado!");
-                } else { showToast("Erro ao editar slide.", 'error'); }
+                } else { 
+                    console.error(error);
+                    showToast("Erro ao editar slide.", 'error'); 
+                }
             } catch(e) { showToast("Erro de conexão.", 'error'); }
         }
 
@@ -408,9 +435,9 @@
             }
             container.innerHTML = slides.map(s => `
                 <div class="admin-item-row" style="flex-wrap:wrap; gap:10px;">
-                    <img src="${s.url_imagem}" class="slide-preview" onerror="this.src='https://placehold.co/80x50?text=Erro'">
+                    <img src="${s.url}" class="slide-preview" onerror="this.src='https://placehold.co/80x50?text=Erro'">
                     <div style="flex:2; min-width:200px;">
-                        <input type="text" id="edit-url-${s.id}" value="${s.url_imagem.replace(/"/g, '&quot;')}" class="form-control slide-edit-input" style="width:100%;">
+                        <input type="text" id="edit-url-${s.id}" value="${(s.url || '').replace(/"/g, '&quot;')}" class="form-control slide-edit-input" style="width:100%;">
                     </div>
                     <div style="display:flex; gap:5px;">
                         <button class="btn-icon btn-salvar" onclick="editarSlideAdmin(${s.id}, document.getElementById('edit-url-${s.id}').value)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
