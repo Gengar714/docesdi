@@ -73,6 +73,7 @@
             <div class="admin-tab" data-tab="produtos">🍰 Produtos</div>
             <div class="admin-tab" data-tab="categorias">🏷️ Categorias</div>
             <div class="admin-tab" data-tab="estoque">📦 Insumos / Estoque</div>
+            <div class="admin-tab" data-tab="slides">📸 Banners / Slides</div>
             <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
         </div>
 
@@ -127,13 +128,17 @@
                         <option value="🍬">🍬 Doce</option>
                         <option value="🍪">🍪 Biscoito</option>
                         <option value="🧁">🧁 Cupcake</option>
+                        <option value="🍩">🍩 Donut</option>
+                        <option value="🍫">🍫 Chocolate</option>
+                        <option value="🍭">🍭 Pirulito</option>
+                        <option value="🍦">🍦 Sorvete</option>
                         <option value="🥨">🥨 Salgado</option>
                         <option value="☕">☕ Café</option>
                     </select>
                 </div>
                 <button id="btnAddCategoria" class="btn-add">➕ Adicionar</button>
             </div>
-            <h4>📋 Categorias Cadastradas</h4>
+            <h4>📋 Categorias Cadastradas (arraste para reordenar)</h4>
             <div id="listaAdminCategorias"></div>
         </div>
 
@@ -154,6 +159,17 @@
             </table>
         </div>
 
+        <!-- Aba Slides restaurada -->
+        <div id="tabSlides" class="admin-tab-content">
+            <h3>Gerenciar Banners Iniciais (Slides)</h3>
+            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                <input type="text" id="slideUrl" class="form-control" placeholder="URL da Imagem" style="flex:3; min-width:250px;">
+                <button class="btn-add" onclick="adicionarSlideAdmin()" style="margin:0;">➕ Adicionar Slide</button>
+            </div>
+            <h4 style="margin-top:20px;">📸 Slides Atuais</h4>
+            <div id="listaAdminSlides" class="admin-list-container"></div>
+        </div>
+
         <div id="tabClientes" class="admin-tab-content">
             <h4>👥 Clientes Cadastrados</h4>
             <div id="listaClientesAdmin">Carregando lista de clientes...</div>
@@ -165,7 +181,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [];
+        let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [], slides = [];
         let chartInstance = null;
         let currentStartDate = null;
         let currentEndDate = null;
@@ -190,7 +206,7 @@
             }
         }
 
-        // Sortable para as abas
+        // Sortable para as abas principais
         function initSortableTabs() {
             const container = document.getElementById('adminTabsContainer');
             if(container && !window.sortableInstance) {
@@ -223,7 +239,7 @@
             }
         }
 
-        // Dashboard com filtro de datas
+        // Dashboard com filtro
         async function carregarDashboard(startDate = null, endDate = null) {
             try {
                 let query = supabaseClient.from('pedidos').select('*');
@@ -251,13 +267,12 @@
                     <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticket.toFixed(2)}</div></div>
                 `;
 
-                // Gráfico de vendas por dia/mês
                 const vendasPorData = {};
                 pedidos.forEach(p => {
                     const data = new Date(p.created_at).toLocaleDateString('pt-BR');
                     vendasPorData[data] = (vendasPorData[data] || 0) + (p.valor_total || 0);
                 });
-                const labels = Object.keys(vendasPorData).slice(-14); // últimos 14 dias
+                const labels = Object.keys(vendasPorData).slice(-14);
                 const valores = labels.map(l => vendasPorData[l]);
                 
                 const ctx = document.getElementById('vendasChart').getContext('2d');
@@ -268,7 +283,6 @@
                     options: { responsive: true, maintainAspectRatio: true }
                 });
 
-                // Top produtos mais vendidos
                 const vendasProdutos = {};
                 pedidos.forEach(p => {
                     if(p.itens && Array.isArray(p.itens)) {
@@ -298,6 +312,54 @@
             currentStartDate = null;
             currentEndDate = null;
             carregarDashboard();
+        }
+
+        async function carregarSlides() {
+            try {
+                const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
+                if(!error && data) slides = data;
+                else slides = [];
+                renderizarAdminSlides();
+            } catch(e) { slides = []; }
+        }
+
+        async function adicionarSlideAdmin() {
+            const url = document.getElementById('slideUrl').value.trim();
+            if(!url) { showToast("Informe a URL da imagem!", 'error'); return; }
+            try {
+                const { data, error } = await supabaseClient.from('slides').insert([{ url_imagem: url }]).select();
+                if(!error && data) {
+                    slides.push(data[0]);
+                    document.getElementById('slideUrl').value = '';
+                    renderizarAdminSlides();
+                    showToast("Slide adicionado com sucesso!");
+                } else { showToast("Erro ao adicionar slide.", 'error'); }
+            } catch(e) { showToast("Erro de conexão.", 'error'); }
+        }
+
+        async function excluirSlideAdmin(id) {
+            if(!confirm("Remover este slide?")) return;
+            try {
+                await supabaseClient.from('slides').delete().eq('id', id);
+                slides = slides.filter(s => s.id !== id);
+                renderizarAdminSlides();
+                showToast("Slide removido.");
+            } catch(e) { showToast("Erro ao excluir.", 'error'); }
+        }
+
+        function renderizarAdminSlides() {
+            const container = document.getElementById('listaAdminSlides');
+            if(!container) return;
+            if(slides.length === 0) {
+                container.innerHTML = '<p>Nenhum slide cadastrado. Adicione um banner acima.</p>';
+                return;
+            }
+            container.innerHTML = slides.map(s => `
+                <div class="admin-item-row">
+                    <img src="${s.url_imagem}" style="height:50px; border-radius:8px; max-width:100px; object-fit:cover;">
+                    <button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
         }
 
         async function carregarDadosBasicos(){
@@ -481,7 +543,7 @@
 
         function renderizarInsumos() {
             const tbody = document.querySelector('#tabelaMateriais tbody');
-            if(materiais.length === 0) { tbody.innerHTML = "<td><td colspan='5' style='text-align:center;'>Nenhum insumo cadastrado.</td></tr>"; return; }
+            if(materiais.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Nenhum insumo cadastrado.</td></tr>"; return; }
             tbody.innerHTML = materiais.map(m => `
                 <tr>
                     <td>${m.nome}</td>
@@ -506,7 +568,8 @@
 
         async function inicializarAdmin() {
             await carregarDadosBasicos();
-            await carregarDashboard(); // sem filtro inicial
+            await carregarSlides();
+            await carregarDashboard();
             initSortableTabs();
             carregarOrdemAbas();
             // Navegação das abas
