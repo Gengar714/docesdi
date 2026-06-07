@@ -47,6 +47,7 @@
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .btn-header { background: none; border: none; font-size: 1.4rem; color: var(--text-color); cursor: pointer; position: relative; transition: var(--transition); }
         .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
+        .btn-perfil { background: var(--accent-color); color: white; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); }
         
         .hero-slider { margin: 15px auto; max-width: 1200px; padding: 0 15px; }
         .hero-swiper { width: 100%; height: 220px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); }
@@ -95,6 +96,8 @@
         body.dark .form-control { border-color: rgba(255,255,255,0.1); }
         .form-control:focus { outline: none; border-color: var(--accent-color); }
         .btn-block { width: 100%; padding: 12px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1rem; }
+        .btn-secondary { background: #999; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
         
         .admin-section { max-width: 1200px; margin: 15px auto; padding: 0 15px; display: none; }
         .admin-section.ativo { display: block; }
@@ -149,6 +152,9 @@
                 <i class="fa-solid fa-shopping-bag"></i>
                 <span class="badge" id="carrinhoBadge">0</span>
             </button>
+            <div id="perfilButtonArea" style="display: none;">
+                <button class="btn-perfil" id="btnAbrirPerfil"><i class="fa-solid fa-user-circle"></i> Minha Conta</button>
+            </div>
             <div class="user-menu-container">
                 <button class="btn-header" id="btnUserMenu"><i class="fa-solid fa-user"></i></button>
                 <div class="user-dropdown" id="usuarioDropdown">
@@ -326,7 +332,14 @@
                     <label>Senha:</label>
                     <input type="password" id="cadSenha" class="form-control" placeholder="Sua senha">
                 </div>
-                <div id="camposCadastroAdicionais" style="display:none;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMeCheckbox">
+                    <label for="rememberMeCheckbox">Lembrar-me</label>
+                </div>
+                <button class="btn-block" id="btnAcaoCliente" onclick="verificarIdentificacaoCliente()" style="margin-top:10px;">Entrar</button>
+                <button class="btn-block btn-secondary" id="btnEsqueciSenha" style="margin-top:10px;">Esqueci minha senha</button>
+                <button class="btn-block" id="btnComprarSemLogin" style="background:none; color:var(--text-color); font-size:0.85rem; border:1px solid rgba(0,0,0,0.1); margin-top:10px;">Continuar como Visitante</button>
+                <div id="camposCadastroAdicionais" style="display:none; margin-top:15px;">
                     <div class="form-group">
                         <label>Seu Nome:</label>
                         <input type="text" id="cadNome" class="form-control" placeholder="Nome Sobrenome">
@@ -347,12 +360,52 @@
                         <input type="text" id="cadEndereco" class="form-control" placeholder="Rua, Número, Bairro">
                     </div>
                 </div>
-                <button class="btn-block" id="btnAcaoCliente" onclick="verificarIdentificacaoCliente()" style="margin-top:10px;">Entrar</button>
-                <button class="btn-block" id="btnComprarSemLogin" style="background:none; color:var(--text-color); font-size:0.85rem; border:1px solid rgba(0,0,0,0.1); margin-top:10px;">Continuar como Visitante</button>
             </div>
             <div id="panelMeusPedidos" style="display:none;">
                 <h3 style="margin-bottom:12px;">Seus Pedidos</h3>
                 <div class="admin-list-container" id="listaPedidosCliente"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalPerfil">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Minha Conta</h2>
+                <button class="modal-close" onclick="fecharModal('modalPerfil')">&times;</button>
+            </div>
+            <div id="perfilContent">
+                <div class="form-group">
+                    <label>Nome completo</label>
+                    <input type="text" id="perfilNome" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="perfilTelefone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>CEP</label>
+                    <input type="text" id="perfilCep" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Endereço</label>
+                    <input type="text" id="perfilEndereco" class="form-control">
+                </div>
+                <hr style="margin: 15px 0;">
+                <h4>Alterar senha</h4>
+                <div class="form-group">
+                    <label>Senha atual</label>
+                    <input type="password" id="perfilSenhaAtual" class="form-control" placeholder="Digite sua senha atual">
+                </div>
+                <div class="form-group">
+                    <label>Nova senha</label>
+                    <input type="password" id="perfilNovaSenha" class="form-control" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar nova senha</label>
+                    <input type="password" id="perfilConfirmarSenha" class="form-control" placeholder="Repita a nova senha">
+                </div>
+                <button class="btn-block" onclick="salvarPerfil()">Salvar alterações</button>
             </div>
         </div>
     </div>
@@ -430,7 +483,6 @@
                 if(error) throw error;
                 produtos = data || [];
                 localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
-                // Recria a página principal com os produtos carregados
                 renderizarPaginaPrincipalPorCategorias();
                 renderizarAdminProdutos();
                 popularSelectProdutosFicha();
@@ -506,33 +558,24 @@
             return `${estrelasHtml} <span style="font-size:0.75rem; color:#888; margin-left:3px;">(${notas.length || 1})</span>`;
         }
 
-        // Função principal que cria os carrosséis por categoria (CORRIGIDA E ROBUSTA)
         function renderizarPaginaPrincipalPorCategorias() {
             const wrapperPrincipal = document.querySelector('.produtos-carrossel-wrapper');
             if(!wrapperPrincipal) return;
-
             wrapperPrincipal.innerHTML = ''; 
-            
-            // Destroi todos os Swipers anteriores
             for(let key in carrosseisInstanciados) {
                 if(carrosseisInstanciados[key]) carrosseisInstanciados[key].destroy(true, true);
             }
             carrosseisInstanciados = {};
-
             if(categorias.length === 0) {
                 wrapperPrincipal.innerHTML = '<p style="text-align:center; padding:30px; opacity:0.6;">Nenhuma categoria configurada.</p>';
                 return;
             }
-
             categorias.forEach(cat => {
-                // Filtra produtos pertencentes a esta categoria usando categoria_id
                 const produtosFiltrados = produtos.filter(p => p.categoria_id === cat.id);
                 const idSwiperElemento = `swiper-categoria-id-${cat.id}`;
-                
                 const secaoElemento = document.createElement('div');
                 secaoElemento.className = 'categoria-vitrine-secao';
                 secaoElemento.id = `secao-front-cat-${cat.id}`;
-
                 if (produtosFiltrados.length === 0) {
                     secaoElemento.innerHTML = `
                         <h2><span>${cat.icone || '📁'}</span> ${cat.nome}</h2>
@@ -573,9 +616,7 @@
                         </div>
                     `;
                 }
-
                 wrapperPrincipal.appendChild(secaoElemento);
-
                 if(produtosFiltrados.length > 0) {
                     carrosseisInstanciados[cat.id] = new Swiper(`#${idSwiperElemento}`, {
                         slidesPerView: 1.2,
@@ -632,16 +673,13 @@
             sel.innerHTML = materiais.map(m => `<option value="${m.id}">${m.nome} (${m.unidade_medida})</option>`).join('');
         }
 
-        // Categorias (Admin)
         async function adicionarCategoria() {
             const nomeInput = document.getElementById('categoriaNome');
             const iconeSelect = document.getElementById('categoriaIcone');
             const nome = nomeInput.value.trim();
             const icone = iconeSelect.value;
-
             if(!nome) { showToast("Preencha o nome da categoria!", 'error'); return; }
             const payload = { nome, icone, ordem: categorias.length + 1 };
-
             try {
                 const { data, error } = await supabaseClient.from('categorias').insert([payload]).select();
                 if(error) throw error;
@@ -710,7 +748,6 @@
             } catch(e) { showToast("Não foi possível excluir.", 'error'); }
         }
 
-        // Produtos (Admin)
         async function adicionarProduto() {
             const nome = document.getElementById('prodNome').value.trim();
             const preco = parseFloat(document.getElementById('prodPreco').value);
@@ -718,10 +755,8 @@
             const categoria_id = parseInt(document.getElementById('prodCategoria').value);
             const imagem = document.getElementById('prodImagem').value.trim();
             const descricao = document.getElementById('prodDescricao').value.trim();
-
             if(!nome || isNaN(preco)) { showToast("Preencha Nome e Preço!", 'error'); return; }
             const payload = { nome, preco, estoque, categoria_id, imagem, descricao };
-
             try {
                 const { data, error } = await supabaseClient.from('produtos').insert([payload]).select();
                 if(error) throw error;
@@ -747,7 +782,6 @@
                 container.innerHTML = '<p style="padding:10px; opacity:0.6;">Nenhum produto cadastrado.</p>';
                 return;
             }
-
             container.innerHTML = produtos.map(p => `
                 <div class="produto-admin-item" data-id="${p.id}">
                     <div><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome" placeholder="Nome"></div>
@@ -771,7 +805,6 @@
         window.salvarLinhaProdutoAdmin = async function(id) {
             const produtoParaSalvar = produtos.find(p => p.id === id);
             if(!produtoParaSalvar) return;
-            
             const linha = document.querySelector(`.produto-admin-item[data-id="${id}"]`);
             if(linha) {
                 produtoParaSalvar.nome = linha.querySelector('[data-field="nome"]').value;
@@ -781,7 +814,6 @@
                 produtoParaSalvar.categoria_id = parseInt(linha.querySelector('[data-field="categoria_id"]').value);
                 produtoParaSalvar.imagem = linha.querySelector('[data-field="imagem"]').value;
             }
-            
             try {
                 const { error } = await supabaseClient.from('produtos').upsert(produtoParaSalvar).eq('id', id);
                 if(error) throw error;
@@ -804,7 +836,6 @@
             } catch(e) { showToast("Erro ao deletar produto.", 'error'); }
         };
 
-        // Materiais
         async function adicionarMaterial() {
             const nome = document.getElementById('matNome').value.trim();
             const quantidade = parseFloat(document.getElementById('matQtd').value) || 0;
@@ -841,7 +872,6 @@
             popularSelectMateriaisFicha();
         }
 
-        // Fichas Técnicas
         async function carregarFichaTecnicaProduto() {
             const pId = document.getElementById('fichaSelProduto').value;
             const container = document.getElementById('listaItensFichaTecnica');
@@ -873,7 +903,6 @@
             carregarFichaTecnicaProduto();
         }
 
-        // Slides
         async function adicionarSlide() {
             const url = document.getElementById('slideUrl').value.trim();
             if(!url) return;
@@ -905,7 +934,6 @@
             renderizarAdminSlides();
         }
 
-        // Carrinho
         function carregarCarrinho() {
             const local = localStorage.getItem('docesdi_carrinho');
             if(local) { carrinho = JSON.parse(local); atualizarBadgeCarrinho(); }
@@ -993,7 +1021,6 @@
                 if(!cep || !log) { showToast("Preencha o endereço completo!", 'error'); return; }
                 enderecoFinal = `Entrega: ${log}, CEP: ${cep}`;
             }
-
             for(let item of carrinho) {
                 const p = produtos.find(prod => prod.id === item.produto_id);
                 if(p) p.estoque = Math.max(0, p.estoque - item.quantidade);
@@ -1001,7 +1028,6 @@
             localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
             renderizarAdminProdutos();
             renderizarPaginaPrincipalPorCategorias();
-
             const total = carrinho.reduce((acc, curr) => acc + (curr.quantidade * curr.preco_unitario), 0);
             const pedidoPayload = {
                 cliente_id: usuarioLogado.id,
@@ -1011,16 +1037,12 @@
                 tipo_entrega: tipoEntrega,
                 endereco_entrega: enderecoFinal
             };
-
             try {
                 const { data: pedidoData, error: pedError } = await supabaseClient.from('pedidos').insert([pedidoPayload]).select();
                 if(pedError) throw pedError;
-                
                 fecharModal('modalCarrinho');
-                
                 document.getElementById('pixQrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/' + (pedidoData?pedidoData[0].id:'123') + '/ticket')}`;
                 document.getElementById('pixCopiaColaTexto').value = "00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/docesdi-" + (pedidoData?pedidoData[0].id:'123');
-                
                 document.getElementById('corpoComprovantePix').style.display = 'block';
                 document.getElementById('corpoComprovanteGeral').style.display = 'block';
                 document.getElementById('corpoComprovanteGeral').innerHTML = `
@@ -1028,7 +1050,6 @@
                     <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
                     <p><strong>Destino:</strong> ${enderecoFinal}</p>
                 `;
-                
                 abrirModal('modalComprovante');
                 carrinho = [];
                 localStorage.removeItem('docesdi_carrinho');
@@ -1044,17 +1065,34 @@
             showToast("Código Pix copiado!");
         }
 
-        // Login com senha
-        function verificarIdentificacaoCliente() {
+        // ========== FUNÇÕES DE PERFIL, LEMBRAR, ESQUECI SENHA ==========
+        function carregarLembrar() {
+            const saved = localStorage.getItem('docesdi_remember');
+            if(saved) {
+                const { telefone } = JSON.parse(saved);
+                document.getElementById('cadTelefone').value = telefone;
+                document.getElementById('rememberMeCheckbox').checked = true;
+            }
+        }
+
+        function salvarLembrar(telefone, senha) {
+            if(document.getElementById('rememberMeCheckbox').checked) {
+                localStorage.setItem('docesdi_remember', JSON.stringify({ telefone, senhaHash: hashSenha(senha) }));
+            } else {
+                localStorage.removeItem('docesdi_remember');
+            }
+        }
+
+        async function verificarIdentificacaoCliente() {
             const telefone = document.getElementById('cadTelefone').value.replace(/\D/g,'');
             const senha = document.getElementById('cadSenha').value;
             if(telefone.length < 10) { showToast("Insira um telefone válido!", 'error'); return; }
             if(!senha) { showToast("Digite sua senha!", 'error'); return; }
-            
             const senhaHash = hashSenha(senha);
             const match = clientes.find(c => c.telefone === telefone && c.senha === senhaHash);
             if(match) {
                 usuarioLogado = match;
+                salvarLembrar(telefone, senha);
                 loginSucessoGeral();
             } else {
                 const addFields = document.getElementById('camposCadastroAdicionais');
@@ -1072,7 +1110,6 @@
         async function efetuarCadastroClienteNovo(telefone, senhaHash) {
             const nome = document.getElementById('cadNome').value.trim();
             const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
-            const senhaOriginal = document.getElementById('cadSenha').value;
             if(hashSenha(confirmarSenha) !== senhaHash) {
                 showToast("As senhas não conferem!", 'error');
                 return;
@@ -1086,6 +1123,7 @@
                 if(!error && data) { 
                     clientes.push(data[0]); 
                     usuarioLogado = data[0]; 
+                    salvarLembrar(telefone, document.getElementById('cadSenha').value);
                     loginSucessoGeral(); 
                 } else { showToast("Erro ao cadastrar.", 'error'); }
             } catch(e){ showToast("Erro ao conectar.", 'error'); }
@@ -1094,13 +1132,7 @@
         function loginSucessoGeral() {
             showToast(`Olá, ${usuarioLogado.nome}!`);
             fecharModal('modalCliente');
-            document.getElementById('menuBtnLogin').style.display = 'none';
-            document.getElementById('menuBtnPedidos').style.display = 'block';
-            document.getElementById('menuBtnLogout').style.display = 'block';
-            if(usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin) {
-                document.getElementById('menuBtnAdmin').style.display = 'block';
-                document.getElementById('navAdminBtn').style.display = 'flex';
-            }
+            atualizarInterfaceUsuario();
             // Limpar campos do modal
             document.getElementById('cadTelefone').value = '';
             document.getElementById('cadSenha').value = '';
@@ -1111,17 +1143,90 @@
             document.getElementById('camposCadastroAdicionais').style.display = 'none';
             document.getElementById('modalClienteTitulo').innerText = 'Identificação';
             document.getElementById('btnAcaoCliente').innerText = 'Entrar';
+            localStorage.setItem('docesdi_usuario_logado', JSON.stringify(usuarioLogado));
         }
 
         function efetuarLogout() {
             usuarioLogado = null;
-            document.getElementById('menuBtnLogin').style.display = 'block';
-            document.getElementById('menuBtnPedidos').style.display = 'none';
-            document.getElementById('menuBtnAdmin').style.display = 'none';
-            document.getElementById('menuBtnLogout').style.display = 'none';
-            document.getElementById('navAdminBtn').style.display = 'none';
+            localStorage.removeItem('docesdi_usuario_logado');
+            atualizarInterfaceUsuario();
             showToast("Você saiu.");
         }
+
+        function atualizarInterfaceUsuario() {
+            const perfilBtnArea = document.getElementById('perfilButtonArea');
+            if(usuarioLogado) {
+                perfilBtnArea.style.display = 'block';
+                document.getElementById('menuBtnLogin').style.display = 'none';
+                document.getElementById('menuBtnPedidos').style.display = 'block';
+                document.getElementById('menuBtnLogout').style.display = 'block';
+                if(usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin) {
+                    document.getElementById('menuBtnAdmin').style.display = 'block';
+                    document.getElementById('navAdminBtn').style.display = 'flex';
+                } else {
+                    document.getElementById('menuBtnAdmin').style.display = 'none';
+                }
+            } else {
+                perfilBtnArea.style.display = 'none';
+                document.getElementById('menuBtnLogin').style.display = 'block';
+                document.getElementById('menuBtnPedidos').style.display = 'none';
+                document.getElementById('menuBtnAdmin').style.display = 'none';
+                document.getElementById('menuBtnLogout').style.display = 'none';
+                document.getElementById('navAdminBtn').style.display = 'none';
+            }
+        }
+
+        function abrirPerfil() {
+            if(!usuarioLogado) return;
+            document.getElementById('perfilNome').value = usuarioLogado.nome || '';
+            document.getElementById('perfilTelefone').value = usuarioLogado.telefone || '';
+            document.getElementById('perfilCep').value = usuarioLogado.cep || '';
+            document.getElementById('perfilEndereco').value = usuarioLogado.endereco || '';
+            document.getElementById('perfilSenhaAtual').value = '';
+            document.getElementById('perfilNovaSenha').value = '';
+            document.getElementById('perfilConfirmarSenha').value = '';
+            abrirModal('modalPerfil');
+        }
+
+        async function salvarPerfil() {
+            if(!usuarioLogado) return;
+            const nome = document.getElementById('perfilNome').value.trim();
+            const telefone = document.getElementById('perfilTelefone').value.replace(/\D/g,'');
+            const cep = document.getElementById('perfilCep').value.replace(/\D/g,'');
+            const endereco = document.getElementById('perfilEndereco').value.trim();
+            if(!nome || !telefone) { showToast("Nome e telefone são obrigatórios.", 'error'); return; }
+            const updates = { nome, telefone, cep, endereco };
+            const senhaAtual = document.getElementById('perfilSenhaAtual').value;
+            const novaSenha = document.getElementById('perfilNovaSenha').value;
+            const confirmarSenha = document.getElementById('perfilConfirmarSenha').value;
+            if(novaSenha || confirmarSenha) {
+                if(!senhaAtual) { showToast("Digite sua senha atual para alterar.", 'error'); return; }
+                if(hashSenha(senhaAtual) !== usuarioLogado.senha) { showToast("Senha atual incorreta.", 'error'); return; }
+                if(novaSenha !== confirmarSenha) { showToast("Nova senha e confirmação não coincidem.", 'error'); return; }
+                if(novaSenha.length < 6) { showToast("Nova senha deve ter pelo menos 6 caracteres.", 'error'); return; }
+                updates.senha = hashSenha(novaSenha);
+            }
+            const { error } = await supabaseClient.from('clientes').update(updates).eq('id', usuarioLogado.id);
+            if(error) { showToast("Erro ao atualizar perfil.", 'error'); return; }
+            Object.assign(usuarioLogado, updates);
+            showToast("Perfil atualizado com sucesso!", 'success');
+            fecharModal('modalPerfil');
+            // Atualizar interface se o nome mudou (opcional)
+            atualizarInterfaceUsuario();
+        }
+
+        document.getElementById('btnEsqueciSenha').addEventListener('click', async () => {
+            const telefone = document.getElementById('cadTelefone').value.replace(/\D/g,'');
+            if(telefone.length < 10) { showToast("Digite seu WhatsApp para recuperar a senha.", 'error'); return; }
+            const cliente = clientes.find(c => c.telefone === telefone);
+            if(!cliente) { showToast("Telefone não cadastrado.", 'error'); return; }
+            const novaSenha = Math.random().toString(36).slice(-8);
+            const novaSenhaHash = hashSenha(novaSenha);
+            const { error } = await supabaseClient.from('clientes').update({ senha: novaSenhaHash }).eq('id', cliente.id);
+            if(error) { showToast("Erro ao redefinir senha.", 'error'); return; }
+            cliente.senha = novaSenhaHash;
+            showToast(`Sua nova senha é: ${novaSenha}. Anote e use no próximo login.`, 'success');
+        });
 
         async function abrirMeusPedidos() {
             if(!usuarioLogado) return;
@@ -1190,14 +1295,12 @@
                 document.body.classList.add('dark');
                 document.getElementById('themeToggle').innerHTML = '<i class="fa-solid fa-sun"></i>';
             }
-            
             document.getElementById('themeToggle')?.addEventListener('click', () => {
                 document.body.classList.toggle('dark');
                 const isDark = document.body.classList.contains('dark');
                 localStorage.setItem('docesdi_theme', isDark ? 'dark' : 'light');
                 document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
             });
-
             document.getElementById('btnLogoHome')?.addEventListener('click', () => {
                 document.getElementById('viewAdmin').classList.remove('ativo');
                 document.getElementById('viewCliente').style.display = 'block';
@@ -1205,28 +1308,23 @@
                 document.getElementById('navHome').classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-
             document.getElementById('navHome')?.addEventListener('click', () => {
                 document.getElementById('viewAdmin').classList.remove('ativo');
                 document.getElementById('viewCliente').style.display = 'block';
                 document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
                 document.getElementById('navHome').classList.add('active');
             });
-
             document.getElementById('btnAbrirCarrinho')?.addEventListener('click', () => {
                 renderizarCarrinhoItens();
                 abrirModal('modalCarrinho');
             });
-
             document.getElementById('btnUserMenu')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 document.getElementById('usuarioDropdown').classList.toggle('show');
             });
-
             document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
                 fecharModal('modalCliente');
             });
-
             document.getElementById('buscarCepCadastro')?.addEventListener('click', async () => {
                 const cep = document.getElementById('cadCep').value.replace(/\D/g,'');
                 if(cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
@@ -1238,19 +1336,23 @@
                     showToast("Endereço preenchido!");
                 } catch(e) { showToast("Erro ao buscar CEP.", 'error'); }
             });
-
             await carregarCategorias();
             await carregarProdutos();
             await carregarSlides();
             await carregarClientes();
             await carregarAvaliacoes();
             await carregarMateriais();
-            
             carregarCarrinho();
+            carregarLembrar();
+            const savedUser = localStorage.getItem('docesdi_usuario_logado');
+            if(savedUser) {
+                usuarioLogado = JSON.parse(savedUser);
+                atualizarInterfaceUsuario();
+            }
             initDragDropTabs();
             initAdminTabs();
             initEstoqueTabs();
-
+            document.getElementById('btnAbrirPerfil')?.addEventListener('click', abrirPerfil);
             window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.classList.remove('ativo'); };
             document.addEventListener('click', (e) => {
                 const dd = document.getElementById('usuarioDropdown');
