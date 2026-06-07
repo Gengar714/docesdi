@@ -732,79 +732,80 @@
 
         // ========== PAGAMENTO MERCADO PAGO ==========
         async function avancarParaPagamento() {
-            if(carrinho.length === 0) { showToast("Carrinho vazio", 'error'); return; }
-            if(!usuarioLogado) {
-                fecharModal('modalCarrinho');
-                abrirModal('modalCliente');
-                showToast("Identifique-se para continuar.", 'error');
-                return;
-            }
-            const tipoEntrega = document.getElementById('carrinhoTipoEntrega').value;
-            let enderecoFinal = "Retirada em balcão";
-            if(tipoEntrega === 'entrega') {
-                const cep = document.getElementById('carrinhoCep').value.trim();
-                const log = document.getElementById('carrinhoLogradouro').value.trim();
-                if(!cep || !log) { showToast("Preencha o endereço completo!", 'error'); return; }
-                enderecoFinal = `Entrega: ${log}, CEP: ${cep}`;
-            }
-            const items = carrinho.map(item => {
-                const prod = produtos.find(p => p.id === item.produto_id);
-                return {
-                    title: prod.nome,
-                    quantity: item.quantidade,
-                    unit_price: item.preco_unitario,
-                    currency_id: "BRL"
-                };
-            });
-            const preference = {
-                items: items,
-                back_urls: {
-                    success: window.location.href + "?payment=success",
-                    failure: window.location.href + "?payment=failure",
-                    pending: window.location.href + "?payment=pending"
-                },
-                auto_return: "approved",
-                payer: {
-                    name: usuarioLogado.nome,
-                    phone: { number: usuarioLogado.telefone },
-                    address: { zip_code: usuarioLogado.cep, street_name: usuarioLogado.endereco }
-                }
-            };
-            try {
-                const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "APP_USR-d01d8748-97f4-4faa-aeab-a2c680b00aec" // ATENÇÃO: substitua pelo seu token real
-                    },
-                    body: JSON.stringify(preference)
-                });
-                const data = await response.json();
-                if(data.init_point) {
-                    const total = carrinho.reduce((acc, i) => acc + (i.quantidade * i.preco_unitario), 0);
-                    const pedidoPayload = {
-                        cliente_id: usuarioLogado.id,
-                        itens: carrinho.map(i => ({ produto_id: i.produto_id, quantidade: i.quantidade, preco_unitario: i.preco_unitario })),
-                        valor_total: total,
-                        status: 'pendente',
-                        tipo_entrega: tipoEntrega,
-                        endereco_entrega: enderecoFinal,
-                        mp_preference_id: data.id
-                    };
-                    await supabaseClient.from('pedidos').insert([pedidoPayload]);
-                    carrinho = [];
-                    salvarCarrinho();
-                    fecharModal('modalCarrinho');
-                    window.location.href = data.init_point;
-                } else {
-                    showToast("Erro ao criar preferência de pagamento", 'error');
-                }
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao conectar com Mercado Pago", 'error');
-            }
-        }
+    if(carrinho.length === 0) { showToast("Carrinho vazio", 'error'); return; }
+    if(!usuarioLogado) {
+        fecharModal('modalCarrinho');
+        abrirModal('modalCliente');
+        showToast("Identifique-se para continuar.", 'error');
+        return;
+    }
+    const tipoEntrega = document.getElementById('carrinhoTipoEntrega').value;
+    let enderecoFinal = "Retirada em balcão";
+    if(tipoEntrega === 'entrega') {
+        const cep = document.getElementById('carrinhoCep').value.trim();
+        const log = document.getElementById('carrinhoLogradouro').value.trim();
+        if(!cep || !log) { showToast("Preencha o endereço completo!", 'error'); return; }
+        enderecoFinal = `Entrega: ${log}, CEP: ${cep}`;
+    }
 
+    const items = carrinho.map(item => {
+        const prod = produtos.find(p => p.id === item.produto_id);
+        return {
+            title: prod.nome,
+            quantity: item.quantidade,
+            unit_price: item.preco_unitario,
+            currency_id: "BRL"
+        };
+    });
+
+    const payer = {
+        name: usuarioLogado.nome,
+        phone: { number: usuarioLogado.telefone },
+        address: { zip_code: usuarioLogado.cep || "", street_name: usuarioLogado.endereco || "" }
+    };
+
+    const back_urls = {
+        success: window.location.href + "?payment=success",
+        failure: window.location.href + "?payment=failure",
+        pending: window.location.href + "?payment=pending"
+    };
+
+    try {
+        // 🔴 SUBSTITUA ESTA URL PELA URL DA SUA FUNÇÃO 🔴
+        const FUNCTION_URL = "https://opixfppyhbiyqrilebfb.supabase.co/functions/v1/rapid-processor";
+        
+        const response = await fetch(FUNCTION_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items, payer, back_urls })
+        });
+
+        const data = await response.json();
+
+        if(data.init_point) {
+            const total = carrinho.reduce((acc, i) => acc + (i.quantidade * i.preco_unitario), 0);
+            const pedidoPayload = {
+                cliente_id: usuarioLogado.id,
+                itens: carrinho.map(i => ({ produto_id: i.produto_id, quantidade: i.quantidade, preco_unitario: i.preco_unitario })),
+                valor_total: total,
+                status: 'pendente',
+                tipo_entrega: tipoEntrega,
+                endereco_entrega: enderecoFinal,
+                mp_preference_id: data.id
+            };
+            await supabaseClient.from('pedidos').insert([pedidoPayload]);
+            carrinho = [];
+            salvarCarrinho();
+            fecharModal('modalCarrinho');
+            window.location.href = data.init_point;
+        } else {
+            showToast("Erro ao criar preferência: " + (data.error || "tente novamente"), 'error');
+        }
+    } catch(e) {
+        console.error(e);
+        showToast("Erro ao conectar com o servidor de pagamento", 'error');
+    }
+}
         // ========== ADMIN: CATEGORIAS ==========
         function renderizarAdminCategorias() {
             const container = document.getElementById('listaAdminCategorias');
