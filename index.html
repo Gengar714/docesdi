@@ -15,7 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --bg-color: #fefae0;
@@ -377,7 +376,7 @@
     </div>
 
     <script>
-        // Configuração do Supabase
+        // ==================== CONFIGURAÇÕES SUPABASE ====================
         const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -419,10 +418,7 @@
                 renderizarCategoriasFront();
                 renderizarAdminCategorias();
                 popularSelectCategorias();
-                // Após carregar categorias, se produtos já estiverem carregados, renderiza página principal
-                if(produtos.length > 0) renderizarPaginaPrincipalPorCategorias();
             } catch(e) {
-                console.error("Erro ao carregar categorias:", e);
                 const local = localStorage.getItem('docesdi_categorias');
                 if(local) { categorias = JSON.parse(local); renderizarCategoriasFront(); renderizarAdminCategorias(); popularSelectCategorias(); }
             }
@@ -434,25 +430,21 @@
                 if(error) throw error;
                 produtos = data || [];
                 localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
+                // Recria a página principal com os produtos carregados
+                renderizarPaginaPrincipalPorCategorias();
                 renderizarAdminProdutos();
                 popularSelectProdutosFicha();
-                // Se categorias já estiverem carregadas, renderiza a página
-                if(categorias.length > 0) renderizarPaginaPrincipalPorCategorias();
             } catch(e) {
-                console.error("Erro ao carregar produtos:", e);
                 const local = localStorage.getItem('docesdi_produtos');
-                if(local) { produtos = JSON.parse(local); renderizarAdminProdutos(); popularSelectProdutosFicha(); }
+                if(local) { produtos = JSON.parse(local); renderizarPaginaPrincipalPorCategorias(); renderizarAdminProdutos(); popularSelectProdutosFicha(); }
             }
         }
 
         async function carregarSlides() {
             try {
                 const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
-                if(!error && data) { slides = data; }
-                else { slides = []; }
-                renderizarSlidesFront();
-                renderizarAdminSlides();
-            } catch(e) { console.error("Erro ao carregar slides:", e); slides = []; renderizarSlidesFront(); }
+                if(!error && data) { slides = data; renderizarSlidesFront(); renderizarAdminSlides(); }
+            } catch(e) {}
         }
 
         async function carregarClientes() { try { const { data } = await supabaseClient.from('clientes').select('*'); if(data) clientes = data; } catch(e){} }
@@ -469,7 +461,7 @@
                     <div class="swiper-slide"><img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200&q=80" alt="Slide 2"></div>
                 `;
             } else {
-                wrapper.innerHTML = slides.map(s => `<div class="swiper-slide"><img src="${s.url || s.url_imagem}" onerror="this.src='https://placehold.co/1200x400?text=Banner+Doces+Di'"></div>`).join('');
+                wrapper.innerHTML = slides.map(s => `<div class="swiper-slide"><img src="${s.url}" onerror="this.src='https://placehold.co/1200x400?text=Banner+Doces+Di'"></div>`).join('');
             }
             if(heroSwiperInstance) heroSwiperInstance.destroy();
             heroSwiperInstance = new Swiper('#heroSwiper', { loop: true, autoplay: { delay: 4000 }, pagination: { el: '.swiper-pagination', clickable: true } });
@@ -478,10 +470,6 @@
         function renderizarCategoriasFront() {
             const container = document.getElementById('tabsCategoriasFront');
             if(!container) return;
-            if(categorias.length === 0) {
-                container.innerHTML = '<button class="tab-btn active">Carregando...</button>';
-                return;
-            }
             container.innerHTML = `
                 <button class="tab-btn active" id="tab-tudo-btn" onclick="rolarParaCategoria('tudo')">✨ Tudo</button>
                 ${categorias.map(c => `
@@ -518,7 +506,7 @@
             return `${estrelasHtml} <span style="font-size:0.75rem; color:#888; margin-left:3px;">(${notas.length || 1})</span>`;
         }
 
-        // Função principal que cria os carrosséis por categoria
+        // Função principal que cria os carrosséis por categoria (CORRIGIDA E ROBUSTA)
         function renderizarPaginaPrincipalPorCategorias() {
             const wrapperPrincipal = document.querySelector('.produtos-carrossel-wrapper');
             if(!wrapperPrincipal) return;
@@ -537,6 +525,7 @@
             }
 
             categorias.forEach(cat => {
+                // Filtra produtos pertencentes a esta categoria usando categoria_id
                 const produtosFiltrados = produtos.filter(p => p.categoria_id === cat.id);
                 const idSwiperElemento = `swiper-categoria-id-${cat.id}`;
                 
@@ -544,10 +533,12 @@
                 secaoElemento.className = 'categoria-vitrine-secao';
                 secaoElemento.id = `secao-front-cat-${cat.id}`;
 
-                if(produtosFiltrados.length === 0) {
+                if (produtosFiltrados.length === 0) {
                     secaoElemento.innerHTML = `
                         <h2><span>${cat.icone || '📁'}</span> ${cat.nome}</h2>
-                        <div style="text-align:center; padding:20px; opacity:0.6;">Breve novos produtos aqui...</div>
+                        <div style="background:var(--card-bg); padding:20px; border-radius:var(--border-radius); text-align:center; opacity:0.7;">
+                            Em breve novos produtos...
+                        </div>
                     `;
                 } else {
                     secaoElemento.innerHTML = `
@@ -600,7 +591,6 @@
             });
         }
 
-        // Funções admin (resumidas para não poluir, mas essenciais)
         function initAdminTabs() {
             document.querySelectorAll('#adminMainTabs .admin-tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -628,31 +618,37 @@
 
         function popularSelectCategorias() {
             const selProd = document.getElementById('prodCategoria');
-            if(selProd) selProd.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icone || '📁'} ${c.nome}</option>`).join('');
+            if(!selProd) return;
+            selProd.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icone || '📁'} ${c.nome}</option>`).join('');
         }
         function popularSelectProdutosFicha() {
             const sel = document.getElementById('fichaSelProduto');
-            if(sel) sel.innerHTML = '<option value="">-- Escolha o Produto --</option>' + produtos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+            if(!sel) return;
+            sel.innerHTML = '<option value="">-- Escolha o Produto --</option>' + produtos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
         }
         function popularSelectMateriaisFicha() {
             const sel = document.getElementById('fichaSelMaterial');
-            if(sel) sel.innerHTML = materiais.map(m => `<option value="${m.id}">${m.nome} (${m.unidade_medida})</option>`).join('');
+            if(!sel) return;
+            sel.innerHTML = materiais.map(m => `<option value="${m.id}">${m.nome} (${m.unidade_medida})</option>`).join('');
         }
 
+        // Categorias (Admin)
         async function adicionarCategoria() {
             const nomeInput = document.getElementById('categoriaNome');
             const iconeSelect = document.getElementById('categoriaIcone');
             const nome = nomeInput.value.trim();
             const icone = iconeSelect.value;
+
             if(!nome) { showToast("Preencha o nome da categoria!", 'error'); return; }
             const payload = { nome, icone, ordem: categorias.length + 1 };
+
             try {
                 const { data, error } = await supabaseClient.from('categorias').insert([payload]).select();
                 if(error) throw error;
                 if(data && data.length > 0) {
                     categorias.push(data[0]);
                     localStorage.setItem('docesdi_categorias', JSON.stringify(categorias));
-                    showToast(`Categoria "${nome}" salva!`);
+                    showToast(`Categoria "${nome}" salva com sucesso!`);
                     nomeInput.value = '';
                     iconeSelect.selectedIndex = 0;
                     renderizarCategoriasFront();
@@ -668,8 +664,10 @@
             if(!container) return;
             container.innerHTML = categorias.map(c => `
                 <div class="admin-item-row" data-id="${c.id}">
-                    <div><span style="font-size:1.2rem;">${c.icone || '📁'}</span> <strong>${c.nome}</strong></div>
-                    <button class="btn-icon btn-excluir" onclick="excluirCategoria(${c.id})"><i class="fa-solid fa-trash"></i></button>
+                    <div><span style="font-size:1.2rem; margin-right:8px;">${c.icone || '📁'}</span> <strong>${c.nome}</strong></div>
+                    <div>
+                        <button class="btn-icon btn-excluir" onclick="excluirCategoria(${c.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -683,24 +681,25 @@
                     const novasOrdens = [];
                     container.querySelectorAll('.admin-item-row').forEach((row, idx) => {
                         const id = row.dataset.id;
-                        novasOrdens.push({ id, ordem: idx+1 });
+                        novasOrdens.push({ id, idx });
                         const cat = categorias.find(c => c.id == id);
-                        if(cat) cat.ordem = idx+1;
+                        if(cat) cat.ordem = idx + 1;
                     });
                     categorias.sort((a,b) => a.ordem - b.ordem);
                     localStorage.setItem('docesdi_categorias', JSON.stringify(categorias));
                     renderizarCategoriasFront();
                     for(let item of novasOrdens) {
-                        await supabaseClient.from('categorias').update({ ordem: item.ordem }).eq('id', item.id);
+                        await supabaseClient.from('categorias').update({ ordem: item.idx + 1 }).eq('id', item.id);
                     }
                 }
             });
         }
 
         async function excluirCategoria(id) {
-            if(!confirm("Tem certeza?")) return;
+            if(!confirm("Tem certeza que deseja apagar essa categoria?")) return;
             try {
-                await supabaseClient.from('categorias').delete().eq('id', id);
+                const { error } = await supabaseClient.from('categorias').delete().eq('id', id);
+                if(error) throw error;
                 categorias = categorias.filter(c => c.id != id);
                 localStorage.setItem('docesdi_categorias', JSON.stringify(categorias));
                 showToast("Categoria removida.");
@@ -711,6 +710,7 @@
             } catch(e) { showToast("Não foi possível excluir.", 'error'); }
         }
 
+        // Produtos (Admin)
         async function adicionarProduto() {
             const nome = document.getElementById('prodNome').value.trim();
             const preco = parseFloat(document.getElementById('prodPreco').value);
@@ -718,15 +718,17 @@
             const categoria_id = parseInt(document.getElementById('prodCategoria').value);
             const imagem = document.getElementById('prodImagem').value.trim();
             const descricao = document.getElementById('prodDescricao').value.trim();
+
             if(!nome || isNaN(preco)) { showToast("Preencha Nome e Preço!", 'error'); return; }
             const payload = { nome, preco, estoque, categoria_id, imagem, descricao };
+
             try {
                 const { data, error } = await supabaseClient.from('produtos').insert([payload]).select();
                 if(error) throw error;
                 if(data && data.length > 0) {
                     produtos.push(data[0]);
                     localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
-                    showToast("Produto adicionado!");
+                    showToast("Produto cadastrado com sucesso!");
                     document.getElementById('prodNome').value = '';
                     document.getElementById('prodPreco').value = '';
                     document.getElementById('prodEstoque').value = '';
@@ -741,7 +743,11 @@
         function renderizarAdminProdutos() {
             const container = document.getElementById('listaAdminProdutos');
             if(!container) return;
-            if(produtos.length === 0) { container.innerHTML = '<p>Nenhum produto cadastrado.</p>'; return; }
+            if(produtos.length === 0) {
+                container.innerHTML = '<p style="padding:10px; opacity:0.6;">Nenhum produto cadastrado.</p>';
+                return;
+            }
+
             container.innerHTML = produtos.map(p => `
                 <div class="produto-admin-item" data-id="${p.id}">
                     <div><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome" placeholder="Nome"></div>
@@ -754,8 +760,10 @@
                         </select>
                     </div>
                     <div><input type="text" value="${p.imagem || ''}" data-field="imagem" placeholder="URL da imagem"></div>
-                    <div><button class="btn-icon btn-salvar" onclick="salvarLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-floppy-disk"></i></button>
-                    <button class="btn-icon btn-excluir" onclick="excluirLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button></div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-icon btn-salvar" onclick="salvarLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-floppy-disk"></i></button>
+                        <button class="btn-icon btn-excluir" onclick="excluirLinhaProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -763,6 +771,7 @@
         window.salvarLinhaProdutoAdmin = async function(id) {
             const produtoParaSalvar = produtos.find(p => p.id === id);
             if(!produtoParaSalvar) return;
+            
             const linha = document.querySelector(`.produto-admin-item[data-id="${id}"]`);
             if(linha) {
                 produtoParaSalvar.nome = linha.querySelector('[data-field="nome"]').value;
@@ -772,26 +781,30 @@
                 produtoParaSalvar.categoria_id = parseInt(linha.querySelector('[data-field="categoria_id"]').value);
                 produtoParaSalvar.imagem = linha.querySelector('[data-field="imagem"]').value;
             }
+            
             try {
-                await supabaseClient.from('produtos').upsert(produtoParaSalvar).eq('id', id);
+                const { error } = await supabaseClient.from('produtos').upsert(produtoParaSalvar).eq('id', id);
+                if(error) throw error;
                 showToast(`Produto "${produtoParaSalvar.nome}" atualizado!`);
                 localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
-                renderizarPaginaPrincipalPorCategorias();
-            } catch(e) { showToast("Erro ao sincronizar!", 'error'); }
+                renderizarPaginaPrincipalPorCategorias(); 
+            } catch(e) { showToast("Erro ao sincronizar com o banco!", 'error'); }
         };
 
         window.excluirLinhaProdutoAdmin = async function(id) {
-            if(!confirm("Remover produto?")) return;
+            if(!confirm("Deseja remover esse produto?")) return;
             try {
-                await supabaseClient.from('produtos').delete().eq('id', id);
+                const { error } = await supabaseClient.from('produtos').delete().eq('id', id);
+                if(error) throw error;
                 produtos = produtos.filter(p => p.id !== id);
                 localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
                 showToast("Produto removido.");
                 renderizarAdminProdutos();
                 renderizarPaginaPrincipalPorCategorias();
-            } catch(e) { showToast("Erro ao deletar.", 'error'); }
+            } catch(e) { showToast("Erro ao deletar produto.", 'error'); }
         };
 
+        // Materiais
         async function adicionarMaterial() {
             const nome = document.getElementById('matNome').value.trim();
             const quantidade = parseFloat(document.getElementById('matQtd').value) || 0;
@@ -828,6 +841,7 @@
             popularSelectMateriaisFicha();
         }
 
+        // Fichas Técnicas
         async function carregarFichaTecnicaProduto() {
             const pId = document.getElementById('fichaSelProduto').value;
             const container = document.getElementById('listaItensFichaTecnica');
@@ -836,7 +850,12 @@
             const filtrados = fichaTecnica.filter(f => f.produto_id == pId);
             container.innerHTML = filtrados.map(f => {
                 const mat = materiais.find(m => m.id == f.material_id);
-                return `<div class="admin-item-row">${mat ? mat.nome : 'Insumo'} - Gasta: <strong>${f.quantidade_necessaria}</strong> ${mat?mat.unidade_medida:''}<button class="btn-icon btn-excluir" onclick="removerItemFicha(${f.id})"><i class="fa-solid fa-trash"></i></button></div>`;
+                return `
+                    <div class="admin-item-row">
+                        <div>${mat ? mat.nome : 'Insumo'} - Gasta: <strong>${f.quantidade_necessaria}</strong> ${mat?mat.unidade_medida:''}</div>
+                        <button class="btn-icon btn-excluir" onclick="removerItemFicha(${f.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             }).join('');
         }
         async function vincularMaterialFicha() {
@@ -845,8 +864,8 @@
             const quantidade_necessaria = parseFloat(document.getElementById('fichaQtdNecessaria').value);
             if(!produto_id || !material_id || isNaN(quantidade_necessaria)) { showToast("Preencha os campos!", 'error'); return; }
             try {
-                await supabaseClient.from('ficha_tecnica').insert([{ produto_id, material_id, quantidade_necessaria }]);
-                showToast("Insumo vinculado!"); carregarFichaTecnicaProduto();
+                const { error } = await supabaseClient.from('ficha_tecnica').insert([{ produto_id, material_id, quantidade_necessaria }]);
+                if(!error) { showToast("Insumo vinculado!"); carregarFichaTecnicaProduto(); }
             } catch(e){}
         }
         async function removerItemFicha(id) {
@@ -854,11 +873,12 @@
             carregarFichaTecnicaProduto();
         }
 
+        // Slides
         async function adicionarSlide() {
             const url = document.getElementById('slideUrl').value.trim();
             if(!url) return;
             try {
-                const { data, error } = await supabaseClient.from('slides').insert([{ url_imagem: url }]).select();
+                const { data, error } = await supabaseClient.from('slides').insert([{ url: url }]).select();
                 if(!error && data) {
                     slides.push(data[0]);
                     document.getElementById('slideUrl').value = '';
@@ -873,7 +893,7 @@
             if(!c) return;
             c.innerHTML = slides.map(s => `
                 <div class="admin-item-row">
-                    <img src="${s.url_imagem}" style="height:40px; border-radius:4px; max-width:100px;">
+                    <img src="${s.url}" style="height:40px; border-radius:4px; max-width:100px; object-fit:cover;">
                     <button class="btn-icon btn-excluir" onclick="excluirSlide(${s.id})"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
@@ -885,7 +905,7 @@
             renderizarAdminSlides();
         }
 
-        // Carrinho e lógica de pedido (mantido)
+        // Carrinho
         function carregarCarrinho() {
             const local = localStorage.getItem('docesdi_carrinho');
             if(local) { carrinho = JSON.parse(local); atualizarBadgeCarrinho(); }
@@ -900,7 +920,7 @@
             if(!prod) return;
             const item = carrinho.find(c => c.produto_id === idProd);
             if(item) {
-                if(item.quantidade >= prod.estoque) { showToast("Quantidade máxima!", 'error'); return; }
+                if(item.quantidade >= prod.estoque) { showToast("Quantidade máxima atingida!", 'error'); return; }
                 item.quantidade++;
             } else {
                 carrinho.push({ produto_id: idProd, quantidade: 1, preco_unitario: prod.preco });
@@ -918,7 +938,7 @@
                 carrinho = carrinho.filter(c => c.produto_id !== idProd);
             } else if(prod && item.quantidade > prod.estoque) {
                 item.quantidade = prod.estoque;
-                showToast("Estoque máximo!", 'error');
+                showToast("Estoque máximo atingido!", 'error');
             }
             localStorage.setItem('docesdi_carrinho', JSON.stringify(carrinho));
             atualizarBadgeCarrinho();
@@ -927,14 +947,28 @@
         function renderizarCarrinhoItens() {
             const c = document.getElementById('carrinhoListaItens');
             if(!c) return;
-            if(carrinho.length === 0) { c.innerHTML = '<p>Carrinho vazio.</p>'; document.getElementById('carrinhoValorTotal').innerText = 'R$ 0,00'; return; }
+            if(carrinho.length === 0) { c.innerHTML = '<p style="text-align:center; padding:20px; opacity:0.6;">Carrinho vazio.</p>'; document.getElementById('carrinhoValorTotal').innerText = 'R$ 0,00'; return; }
             let total = 0;
             c.innerHTML = carrinho.map(item => {
                 const prod = produtos.find(p => p.id === item.produto_id);
                 if(!prod) return '';
                 const sub = item.quantidade * item.preco_unitario;
                 total += sub;
-                return `<div class="carrinho-item"><img src="${prod.imagem || ''}"><div class="carrinho-details"><strong>${prod.nome}</strong><br>R$ ${item.preco_unitario.toFixed(2)}<div class="carrinho-qtd-control"><button class="btn-qtd" onclick="alterarQtdCarrinho(${item.produto_id}, -1)">-</button><span>${item.quantidade}</span><button class="btn-qtd" onclick="alterarQtdCarrinho(${item.produto_id}, 1)">+</button></div></div><div>R$ ${sub.toFixed(2)}</div></div>`;
+                return `
+                    <div class="carrinho-item">
+                        <img src="${prod.imagem || ''}">
+                        <div class="carrinho-details">
+                            <div style="font-weight:600;">${prod.nome}</div>
+                            <div style="font-size:0.85rem; color:var(--accent-color);">R$ ${parseFloat(item.preco_unitario).toFixed(2)}</div>
+                            <div class="carrinho-qtd-control">
+                                <button class="btn-qtd" onclick="alterarQtdCarrinho(${item.produto_id}, -1)">-</button>
+                                <span style="font-weight:bold;">${item.quantidade}</span>
+                                <button class="btn-qtd" onclick="alterarQtdCarrinho(${item.produto_id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <div style="font-weight:700;">R$ ${sub.toFixed(2)}</div>
+                    </div>
+                `;
             }).join('');
             document.getElementById('carrinhoValorTotal').innerText = `R$ ${total.toFixed(2)}`;
         }
@@ -948,7 +982,7 @@
             if(!usuarioLogado) {
                 fecharModal('modalCarrinho');
                 abrirModal('modalCliente');
-                showToast("Identifique-se.", 'error');
+                showToast("Identifique-se para continuar.", 'error');
                 return;
             }
             const tipoEntrega = document.getElementById('carrinhoTipoEntrega').value;
@@ -956,9 +990,10 @@
             if(tipoEntrega === 'entrega') {
                 const cep = document.getElementById('carrinhoCep').value.trim();
                 const log = document.getElementById('carrinhoLogradouro').value.trim();
-                if(!cep || !log) { showToast("Preencha o endereço!", 'error'); return; }
+                if(!cep || !log) { showToast("Preencha o endereço completo!", 'error'); return; }
                 enderecoFinal = `Entrega: ${log}, CEP: ${cep}`;
             }
+
             for(let item of carrinho) {
                 const p = produtos.find(prod => prod.id === item.produto_id);
                 if(p) p.estoque = Math.max(0, p.estoque - item.quantidade);
@@ -976,32 +1011,46 @@
                 tipo_entrega: tipoEntrega,
                 endereco_entrega: enderecoFinal
             };
+
             try {
                 const { data: pedidoData, error: pedError } = await supabaseClient.from('pedidos').insert([pedidoPayload]).select();
                 if(pedError) throw pedError;
+                
                 fecharModal('modalCarrinho');
+                
                 document.getElementById('pixQrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/' + (pedidoData?pedidoData[0].id:'123') + '/ticket')}`;
                 document.getElementById('pixCopiaColaTexto').value = "00020101021226830014br.gov.bcb.pix2561api.mercadopago.com/v1/payments/docesdi-" + (pedidoData?pedidoData[0].id:'123');
+                
                 document.getElementById('corpoComprovantePix').style.display = 'block';
                 document.getElementById('corpoComprovanteGeral').style.display = 'block';
-                document.getElementById('corpoComprovanteGeral').innerHTML = `<p><strong>Pedido:</strong> #${pedidoData ? pedidoData[0].id : '000'}</p><p><strong>Total:</strong> R$ ${total.toFixed(2)}</p><p><strong>Destino:</strong> ${enderecoFinal}</p>`;
+                document.getElementById('corpoComprovanteGeral').innerHTML = `
+                    <p style="margin-top:10px;"><strong>Pedido:</strong> #${pedidoData ? pedidoData[0].id : '000'}</p>
+                    <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
+                    <p><strong>Destino:</strong> ${enderecoFinal}</p>
+                `;
+                
                 abrirModal('modalComprovante');
                 carrinho = [];
                 localStorage.removeItem('docesdi_carrinho');
                 atualizarBadgeCarrinho();
-            } catch(e) { showToast("Erro ao processar.", 'error'); }
+            } catch(e) { showToast("Erro ao processar o pagamento.", 'error'); }
         }
+
         function copiarPixTexto() {
             const txt = document.getElementById('pixCopiaColaTexto');
-            if(txt) { txt.select(); navigator.clipboard.writeText(txt.value); showToast("Código Pix copiado!"); }
+            if(!txt) return;
+            txt.select();
+            navigator.clipboard.writeText(txt.value);
+            showToast("Código Pix copiado!");
         }
 
         // Login com senha
         function verificarIdentificacaoCliente() {
             const telefone = document.getElementById('cadTelefone').value.replace(/\D/g,'');
             const senha = document.getElementById('cadSenha').value;
-            if(telefone.length < 10) { showToast("Telefone inválido!", 'error'); return; }
+            if(telefone.length < 10) { showToast("Insira um telefone válido!", 'error'); return; }
             if(!senha) { showToast("Digite sua senha!", 'error'); return; }
+            
             const senhaHash = hashSenha(senha);
             const match = clientes.find(c => c.telefone === telefone && c.senha === senhaHash);
             if(match) {
@@ -1013,16 +1062,21 @@
                     addFields.style.display = 'block';
                     document.getElementById('modalClienteTitulo').innerText = 'Cadastrar-se';
                     document.getElementById('btnAcaoCliente').innerText = 'Cadastrar';
-                    showToast("Telefone ou senha incorretos. Cadastre-se.", "error");
+                    showToast("Telefone ou senha incorretos. Preencha os dados para se cadastrar.", "error");
                 } else {
                     efetuarCadastroClienteNovo(telefone, senhaHash);
                 }
             }
         }
+
         async function efetuarCadastroClienteNovo(telefone, senhaHash) {
             const nome = document.getElementById('cadNome').value.trim();
             const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
-            if(hashSenha(confirmarSenha) !== senhaHash) { showToast("Senhas não conferem!", 'error'); return; }
+            const senhaOriginal = document.getElementById('cadSenha').value;
+            if(hashSenha(confirmarSenha) !== senhaHash) {
+                showToast("As senhas não conferem!", 'error');
+                return;
+            }
             if(!nome) { showToast("Preencha seu nome!", 'error'); return; }
             const cep = document.getElementById('cadCep').value.replace(/\D/g,'');
             const endereco = document.getElementById('cadEndereco').value.trim();
@@ -1034,8 +1088,9 @@
                     usuarioLogado = data[0]; 
                     loginSucessoGeral(); 
                 } else { showToast("Erro ao cadastrar.", 'error'); }
-            } catch(e){ showToast("Erro de conexão.", 'error'); }
+            } catch(e){ showToast("Erro ao conectar.", 'error'); }
         }
+
         function loginSucessoGeral() {
             showToast(`Olá, ${usuarioLogado.nome}!`);
             fecharModal('modalCliente');
@@ -1046,6 +1101,7 @@
                 document.getElementById('menuBtnAdmin').style.display = 'block';
                 document.getElementById('navAdminBtn').style.display = 'flex';
             }
+            // Limpar campos do modal
             document.getElementById('cadTelefone').value = '';
             document.getElementById('cadSenha').value = '';
             document.getElementById('cadNome').value = '';
@@ -1056,6 +1112,7 @@
             document.getElementById('modalClienteTitulo').innerText = 'Identificação';
             document.getElementById('btnAcaoCliente').innerText = 'Entrar';
         }
+
         function efetuarLogout() {
             usuarioLogado = null;
             document.getElementById('menuBtnLogin').style.display = 'block';
@@ -1065,31 +1122,60 @@
             document.getElementById('navAdminBtn').style.display = 'none';
             showToast("Você saiu.");
         }
+
         async function abrirMeusPedidos() {
             if(!usuarioLogado) return;
             const container = document.getElementById('listaPedidosCliente');
+            if(!container) return;
             document.getElementById('panelLoginCadastro').style.display = 'none';
             document.getElementById('panelMeusPedidos').style.display = 'block';
             abrirModal('modalCliente');
             try {
                 const { data, error } = await supabaseClient.from('pedidos').select('*').eq('cliente_id', usuarioLogado.id);
                 if(!error && data) {
-                    if(data.length===0) container.innerHTML = '<p>Nenhum pedido.</p>';
-                    else container.innerHTML = data.map(p => `<div class="admin-item-row">Pedido #${p.id} - R$ ${p.valor_total} - ${p.status}</div>`).join('');
+                    if(data.length===0) { container.innerHTML='<p style="font-size:0.9rem; opacity:0.6;">Nenhum pedido feito.</p>'; return; }
+                    container.innerHTML = data.map(p => `
+                        <div class="admin-item-row">
+                            <div>Pedido <strong>#${p.id}</strong> - R$ ${parseFloat(p.valor_total).toFixed(2)}</div>
+                            <div style="font-size:0.8rem; font-weight:bold; color:var(--accent-color);">${p.status.toUpperCase()}</div>
+                        </div>
+                    `).join('');
                 }
             } catch(e){}
         }
-        function abrirMeusPedidosCard() { if(!usuarioLogado) abrirModal('modalCliente'); else abrirMeusPedidos(); }
+        function abrirMeusPedidosCard() { if(!usuarioLogado) { abrirModal('modalCliente'); } else { abrirMeusPedidos(); } }
         async function carregarPedidosAdmin() {
             const container = document.getElementById('listaAdminPedidos');
             if(!container) return;
             try {
                 const { data, error } = await supabaseClient.from('pedidos').select('*').order('id', { ascending: false });
                 if(!error && data) {
-                    container.innerHTML = data.map(p => `<div class="admin-item-row">Pedido #${p.id} - R$ ${p.valor_total} - ${p.status}</div>`).join('');
+                    container.innerHTML = data.map(p => {
+                        const c = clientes.find(cli => cli.id === p.cliente_id);
+                        return `
+                            <div class="admin-item-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="display:flex; justify-content:space-between; width:100%;">
+                                    <span>Pedido <strong>#${p.id}</strong> - ${c?c.nome:'Visitante'}</span>
+                                    <strong style="color:var(--accent-color);">R$ ${parseFloat(p.valor_total).toFixed(2)}</strong>
+                                </div>
+                                <div style="font-size:0.8rem; opacity:0.8;">Destino: ${p.endereco_entrega}</div>
+                                <select onchange="atualizarStatusPedidoBanco(${p.id}, this.value)" class="form-control" style="padding:4px; font-size:0.85rem; width:auto; margin-top:5px;">
+                                    <option value="pendente" ${p.status==='pendente'?'selected':''}>Pendente</option>
+                                    <option value="preparando" ${p.status==='preparando'?'selected':''}>Em preparo</option>
+                                    <option value="entregando" ${p.status==='entregando'?'selected':''}>Saiu p/ entrega</option>
+                                    <option value="finalizado" ${p.status==='finalizado'?'selected':''}>Finalizado</option>
+                                </select>
+                            </div>
+                        `;
+                    }).join('');
                 }
             } catch(e){}
         }
+        async function atualizarStatusPedidoBanco(id, novoStatus) {
+            await supabaseClient.from('pedidos').update({ status: novoStatus }).eq('id', id);
+            showToast(`Pedido #${id} alterado!`);
+        }
+
         function abrirAdmin() {
             document.getElementById('viewCliente').style.display = 'none';
             document.getElementById('viewAdmin').classList.add('ativo');
@@ -1104,12 +1190,14 @@
                 document.body.classList.add('dark');
                 document.getElementById('themeToggle').innerHTML = '<i class="fa-solid fa-sun"></i>';
             }
+            
             document.getElementById('themeToggle')?.addEventListener('click', () => {
                 document.body.classList.toggle('dark');
                 const isDark = document.body.classList.contains('dark');
                 localStorage.setItem('docesdi_theme', isDark ? 'dark' : 'light');
                 document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
             });
+
             document.getElementById('btnLogoHome')?.addEventListener('click', () => {
                 document.getElementById('viewAdmin').classList.remove('ativo');
                 document.getElementById('viewCliente').style.display = 'block';
@@ -1117,21 +1205,28 @@
                 document.getElementById('navHome').classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
+
             document.getElementById('navHome')?.addEventListener('click', () => {
                 document.getElementById('viewAdmin').classList.remove('ativo');
                 document.getElementById('viewCliente').style.display = 'block';
                 document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
                 document.getElementById('navHome').classList.add('active');
             });
+
             document.getElementById('btnAbrirCarrinho')?.addEventListener('click', () => {
                 renderizarCarrinhoItens();
                 abrirModal('modalCarrinho');
             });
+
             document.getElementById('btnUserMenu')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 document.getElementById('usuarioDropdown').classList.toggle('show');
             });
-            document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => fecharModal('modalCliente'));
+
+            document.getElementById('btnComprarSemLogin')?.addEventListener('click', () => {
+                fecharModal('modalCliente');
+            });
+
             document.getElementById('buscarCepCadastro')?.addEventListener('click', async () => {
                 const cep = document.getElementById('cadCep').value.replace(/\D/g,'');
                 if(cep.length !== 8) { showToast("CEP inválido!", 'error'); return; }
@@ -1144,7 +1239,6 @@
                 } catch(e) { showToast("Erro ao buscar CEP.", 'error'); }
             });
 
-            // Carrega os dados na ordem correta
             await carregarCategorias();
             await carregarProdutos();
             await carregarSlides();
