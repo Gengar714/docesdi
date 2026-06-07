@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
+        /* (mantido o mesmo estilo do original) */
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-color:#fcf8f5;--text-color:#4a3b32;--card-bg:white;--border-color:#f0e4da;--shadow:0 4px 15px rgba(0,0,0,0.05);--input-bg:white;--btn-bg:#d4a373;--btn-hover:#c49a6c;--accent-color:#d4a373;--border-radius:20px;--success:#27ae60;--error:#e74c3c;--warning:#f39c12}
         body{background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:20px}
@@ -82,6 +83,46 @@
         .btn-minimize { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--accent-color); }
         .filtro-avaliacao { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
         .filtro-avaliacao .field { flex: 1; min-width: 150px; }
+        /* Switch para delivery */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -237,9 +278,10 @@
             <div id="listaAvaliacoesAdmin" class="admin-list-container">Carregando avaliações...</div>
         </div>
 
-        <!-- PERSONALIZAÇÃO -->
+        <!-- PERSONALIZAÇÃO (com a nova seção de Delivery) -->
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
+            <!-- Cabeçalho -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🖼️ Cabeçalho</h4>
                 <div class="flex-row" style="margin-top:15px;">
@@ -256,6 +298,7 @@
                 <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color);">💾 Salvar Cabeçalho</button>
             </div>
 
+            <!-- Rodapé -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>📞 Rodapé</h4>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px;">
@@ -269,6 +312,29 @@
                 <button class="btn-add" onclick="salvarConfiguracoesRodape()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Rodapé</button>
             </div>
 
+            <!-- NOVA SEÇÃO: Configuração de Delivery -->
+            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
+                <h4>🚚 Delivery (Entrega em Domicílio)</h4>
+                <div class="flex-row" style="margin-top:10px; align-items:center;">
+                    <label style="display:flex; align-items:center; gap:15px; cursor:pointer;">
+                        <span style="font-weight:bold;">Ativar opção de delivery no carrinho:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="deliveryToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </label>
+                </div>
+                <div class="flex-row" style="margin-top:15px;">
+                    <div style="flex:1;">
+                        <label>Taxa de entrega (R$) - opcional</label>
+                        <input type="number" step="0.01" id="deliveryTax" class="form-control" placeholder="0,00">
+                    </div>
+                </div>
+                <p style="font-size:0.8rem; color:#666; margin-top:10px;">✔️ Se desativado, a opção "Receber por Delivery" não aparecerá para o cliente.<br>✔️ A taxa de entrega poderá ser usada futuramente para cálculo automático no carrinho.</p>
+                <button class="btn-add" onclick="salvarConfiguracoesDelivery()" style="background:var(--accent-color); margin-top:10px;">💾 Salvar Configurações de Delivery</button>
+            </div>
+
+            <!-- Palavras-chave por clima -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius);">
                 <h4>🌡️ Palavras-chave por Clima</h4>
                 <div style="margin-bottom:15px;">
@@ -333,6 +399,7 @@
             instagram: { enabled: false, value: '' }, facebook: { enabled: false, value: '' },
             endereco: { enabled: false, value: '' }, horario: { enabled: false, value: '' }
         };
+        let configDelivery = { enabled: false, taxa_entrega: 0 };
         let palavrasChaveClima = { quentes: [], amenas: [], frias: [] };
         let chartVendas = null, chartAvaliacoes = null;
 
@@ -394,70 +461,7 @@
             }
         }
 
-        // ========== USUÁRIOS ADMIN ==========
-        async function carregarUsuariosAdmin() {
-            try {
-                const { data, error } = await supabaseClient.from('admin_users').select('*').order('id');
-                if(error) throw error;
-                renderizarUsuariosAdmin(data || []);
-            } catch(e) { showToast("Erro ao carregar usuários", 'error'); }
-        }
-        function renderizarUsuariosAdmin(usuarios) {
-            const container = document.getElementById('listaUsuariosAdmin');
-            if(!container) return;
-            if(usuarios.length === 0) { container.innerHTML = '<p>Nenhum usuário cadastrado.</p>'; return; }
-            container.innerHTML = usuarios.map(u => `
-                <div class="admin-user-card" data-id="${u.id}">
-                    <div class="user-info">
-                        <strong>${u.nome}</strong><br>
-                        <small>@${u.username}</small>
-                        <span class="badge-admin">${u.role === 'admin' ? 'Administrador' : 'Editor'}</span>
-                        ${u.id === adminUserAtual?.id ? '<span class="badge-admin" style="background:var(--success);">Você</span>' : ''}
-                    </div>
-                    <div class="user-actions">
-                        <button class="btn-icon" onclick="abrirEditarUsuario(${u.id}, '${u.username}')"><i class="fa-solid fa-key"></i> Alterar Senha</button>
-                        ${u.id !== adminUserAtual?.id ? `<button class="btn-icon btn-excluir" onclick="excluirUsuarioAdmin(${u.id})"><i class="fa-solid fa-trash"></i> Excluir</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-        async function adicionarUsuarioAdmin() {
-            const username = document.getElementById('novoUserUsername').value.trim().toLowerCase();
-            const nome = document.getElementById('novoUserNome').value.trim();
-            const senha = document.getElementById('novoUserSenha').value;
-            const confirmar = document.getElementById('novoUserConfirmarSenha').value;
-            const role = document.getElementById('novoUserRole').value;
-            if(!username || !nome) { showToast("Preencha usuário e nome!", 'error'); return; }
-            if(senha.length < 6) { showToast("Senha deve ter pelo menos 6 caracteres!", 'error'); return; }
-            if(senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
-            const senhaHash = hashSenha(senha);
-            try {
-                const { error } = await supabaseClient.from('admin_users').insert([{ username, nome, senha: senhaHash, role, ativo: true }]);
-                if(error) { if(error.code === '23505') showToast("Este nome de usuário já existe!", 'error'); else showToast("Erro ao adicionar usuário", 'error'); return; }
-                showToast(`Usuário ${username} adicionado!`);
-                document.getElementById('novoUserUsername').value = '';
-                document.getElementById('novoUserNome').value = '';
-                document.getElementById('novoUserSenha').value = '';
-                document.getElementById('novoUserConfirmarSenha').value = '';
-                carregarUsuariosAdmin();
-            } catch(e) { showToast("Erro ao adicionar usuário", 'error'); }
-        }
-        async function excluirUsuarioAdmin(id) {
-            if(!confirm("Excluir este usuário permanentemente?")) return;
-            await supabaseClient.from('admin_users').delete().eq('id', id);
-            showToast("Usuário removido!");
-            carregarUsuariosAdmin();
-        }
-        async function abrirEditarUsuario(id, username) {
-            const novaSenha = prompt(`Digite a nova senha para o usuário @${username}:`);
-            if(novaSenha !== null && novaSenha.length >= 6) {
-                const senhaHash = hashSenha(novaSenha);
-                await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
-                showToast(`Senha de @${username} atualizada!`);
-            } else if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
-        }
-
-        // ========== CONFIGURAÇÕES ==========
+        // ========== CONFIGURAÇÕES (incluindo Delivery) ==========
         async function carregarConfiguracoes() {
             try {
                 const { data, error } = await supabaseClient.from('configuracoes').select('*');
@@ -466,12 +470,27 @@
                         if(config.chave === 'cabecalho') { configCabecalho = config.valor; carregarConfigCabecalhoUI(); }
                         if(config.chave === 'rodape') { configRodape = config.valor; carregarConfigRodapeUI(); }
                         if(config.chave === 'palavras_chave') { palavrasChaveClima = config.valor; renderizarPalavrasChaveUI(); }
+                        if(config.chave === 'delivery') { configDelivery = config.valor; carregarConfigDeliveryUI(); }
                     }
                 }
             } catch(e) { console.log('Erro:', e); }
             if(!palavrasChaveClima.quentes || palavrasChaveClima.quentes.length === 0) {
                 palavrasChaveClima = { quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante'], amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus'], frias: ['café', 'chocolate', 'bolo', 'torta', 'quentinho'] };
             }
+            if(!configDelivery.enabled === undefined) configDelivery = { enabled: false, taxa_entrega: 0 };
+        }
+        function carregarConfigDeliveryUI() {
+            const toggle = document.getElementById('deliveryToggle');
+            const taxa = document.getElementById('deliveryTax');
+            if(toggle) toggle.checked = configDelivery.enabled || false;
+            if(taxa) taxa.value = configDelivery.taxa_entrega || 0;
+        }
+        async function salvarConfiguracoesDelivery() {
+            const enabled = document.getElementById('deliveryToggle').checked;
+            const taxa = parseFloat(document.getElementById('deliveryTax').value) || 0;
+            configDelivery = { enabled, taxa_entrega: taxa };
+            await supabaseClient.from('configuracoes').upsert({ chave: 'delivery', valor: configDelivery }, { onConflict: 'chave' });
+            showToast("Configurações de delivery salvas!");
         }
         function carregarConfigCabecalhoUI() {
             document.getElementById('headerLogoUrl').value = configCabecalho?.logo_url || '';
@@ -717,6 +736,69 @@
             }
         }
         function limparUploadLocal(){ document.getElementById('slideUpload').value=''; showToast("Upload limpo!"); }
+
+        // ========== USUÁRIOS ADMIN ==========
+        async function carregarUsuariosAdmin() {
+            try {
+                const { data, error } = await supabaseClient.from('admin_users').select('*').order('id');
+                if(error) throw error;
+                renderizarUsuariosAdmin(data || []);
+            } catch(e) { showToast("Erro ao carregar usuários", 'error'); }
+        }
+        function renderizarUsuariosAdmin(usuarios) {
+            const container = document.getElementById('listaUsuariosAdmin');
+            if(!container) return;
+            if(usuarios.length === 0) { container.innerHTML = '<p>Nenhum usuário cadastrado.</p>'; return; }
+            container.innerHTML = usuarios.map(u => `
+                <div class="admin-user-card" data-id="${u.id}">
+                    <div class="user-info">
+                        <strong>${u.nome}</strong><br>
+                        <small>@${u.username}</small>
+                        <span class="badge-admin">${u.role === 'admin' ? 'Administrador' : 'Editor'}</span>
+                        ${u.id === adminUserAtual?.id ? '<span class="badge-admin" style="background:var(--success);">Você</span>' : ''}
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" onclick="abrirEditarUsuario(${u.id}, '${u.username}')"><i class="fa-solid fa-key"></i> Alterar Senha</button>
+                        ${u.id !== adminUserAtual?.id ? `<button class="btn-icon btn-excluir" onclick="excluirUsuarioAdmin(${u.id})"><i class="fa-solid fa-trash"></i> Excluir</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        async function adicionarUsuarioAdmin() {
+            const username = document.getElementById('novoUserUsername').value.trim().toLowerCase();
+            const nome = document.getElementById('novoUserNome').value.trim();
+            const senha = document.getElementById('novoUserSenha').value;
+            const confirmar = document.getElementById('novoUserConfirmarSenha').value;
+            const role = document.getElementById('novoUserRole').value;
+            if(!username || !nome) { showToast("Preencha usuário e nome!", 'error'); return; }
+            if(senha.length < 6) { showToast("Senha deve ter pelo menos 6 caracteres!", 'error'); return; }
+            if(senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
+            const senhaHash = hashSenha(senha);
+            try {
+                const { error } = await supabaseClient.from('admin_users').insert([{ username, nome, senha: senhaHash, role, ativo: true }]);
+                if(error) { if(error.code === '23505') showToast("Este nome de usuário já existe!", 'error'); else showToast("Erro ao adicionar usuário", 'error'); return; }
+                showToast(`Usuário ${username} adicionado!`);
+                document.getElementById('novoUserUsername').value = '';
+                document.getElementById('novoUserNome').value = '';
+                document.getElementById('novoUserSenha').value = '';
+                document.getElementById('novoUserConfirmarSenha').value = '';
+                carregarUsuariosAdmin();
+            } catch(e) { showToast("Erro ao adicionar usuário", 'error'); }
+        }
+        async function excluirUsuarioAdmin(id) {
+            if(!confirm("Excluir este usuário permanentemente?")) return;
+            await supabaseClient.from('admin_users').delete().eq('id', id);
+            showToast("Usuário removido!");
+            carregarUsuariosAdmin();
+        }
+        async function abrirEditarUsuario(id, username) {
+            const novaSenha = prompt(`Digite a nova senha para o usuário @${username}:`);
+            if(novaSenha !== null && novaSenha.length >= 6) {
+                const senhaHash = hashSenha(novaSenha);
+                await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
+                showToast(`Senha de @${username} atualizada!`);
+            } else if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
+        }
 
         // ========== DASHBOARD E GRÁFICOS ==========
         async function carregarDashboard(startDate=null, endDate=null){
