@@ -413,7 +413,7 @@
         function showToast(mensagem, tipo = 'success') {
             const toast = document.getElementById('toastNotification');
             if(!toast) return;
-            toast.innerText = mensaje || mensagem;
+            toast.innerText = mensagem || mensagem;
             toast.className = `toast ${tipo}`;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3500);
