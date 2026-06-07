@@ -42,6 +42,13 @@
         .login-box{background:var(--card-bg);padding:30px;border-radius:var(--border-radius);width:90%;max-width:350px;text-align:center}
         .login-box input{padding:12px;margin:10px 0;width:100%;border-radius:30px;border:1px solid var(--border-color)}
         .login-box button{background:var(--accent-color);color:white;border:none;padding:12px;border-radius:30px;width:100%;font-weight:bold;cursor:pointer}
+        .filter-box{background:var(--bg-color);padding:15px;border-radius:var(--border-radius);margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+        .filter-box .field{flex:1;min-width:130px}
+        .filter-box label{display:block;font-size:.75rem;font-weight:bold;color:var(--accent-color);margin-bottom:3px}
+        .filter-box input{padding:8px;border-radius:20px;border:1px solid var(--border-color);background:var(--input-bg);width:100%}
+        .btn-filter{background:var(--accent-color);color:white;border:none;padding:8px 20px;border-radius:25px;cursor:pointer;font-weight:bold}
+        .chart-container{max-height:300px;margin-top:20px}
+        canvas{max-height:300px}
     </style>
 </head>
 <body>
@@ -69,9 +76,30 @@
             <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
         </div>
 
+        <!-- Dashboard com filtro de datas -->
         <div id="tabDashboard" class="admin-tab-content ativo">
+            <div class="filter-box">
+                <div class="field">
+                    <label>📅 Data Início</label>
+                    <input type="date" id="dataInicio">
+                </div>
+                <div class="field">
+                    <label>📅 Data Fim</label>
+                    <input type="date" id="dataFim">
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn-filter" onclick="aplicarFiltroDashboard()">Aplicar Filtro</button>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn-filter" onclick="limparFiltroDashboard()" style="background:#999;">Limpar</button>
+                </div>
+            </div>
             <div class="dashboard-stats" id="dashboardStats">Carregando métricas...</div>
-            <canvas id="vendasChart" style="max-height:300px;"></canvas>
+            <div class="chart-container">
+                <canvas id="vendasChart"></canvas>
+            </div>
             <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
 
@@ -138,6 +166,9 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [];
+        let chartInstance = null;
+        let currentStartDate = null;
+        let currentEndDate = null;
 
         function showToast(msg, tipo='success'){
             const container = document.getElementById('toastContainer');
@@ -159,7 +190,7 @@
             }
         }
 
-        // Sortable para as abas (arrastar e reorganizar)
+        // Sortable para as abas
         function initSortableTabs() {
             const container = document.getElementById('adminTabsContainer');
             if(container && !window.sortableInstance) {
@@ -192,34 +223,81 @@
             }
         }
 
-        async function carregarDashboard(){
+        // Dashboard com filtro de datas
+        async function carregarDashboard(startDate = null, endDate = null) {
             try {
-                const { data: pedidosData } = await supabaseClient.from('pedidos').select('*');
-                if(!pedidosData || pedidosData.length === 0){
-                    document.getElementById('dashboardStats').innerHTML = "<p>Nenhum pedido efetuado ainda.</p>";
+                let query = supabaseClient.from('pedidos').select('*');
+                if(startDate) {
+                    query = query.gte('created_at', startDate + 'T00:00:00');
+                }
+                if(endDate) {
+                    query = query.lte('created_at', endDate + 'T23:59:59');
+                }
+                const { data: pedidosData, error } = await query;
+                if(error) throw error;
+                pedidos = pedidosData || [];
+
+                if(pedidos.length === 0){
+                    document.getElementById('dashboardStats').innerHTML = "<p>Nenhum pedido no período selecionado.</p>";
+                    if(chartInstance) chartInstance.destroy();
+                    document.getElementById('topProdutos').innerHTML = '';
                     return;
                 }
-                const total = pedidosData.reduce((s,p) => s + (p.valor_total || 0), 0);
-                const ticket = total / pedidosData.length;
+                const total = pedidos.reduce((s,p) => s + (p.valor_total || 0), 0);
+                const ticket = total / pedidos.length;
                 document.getElementById('dashboardStats').innerHTML = `
                     <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div>
-                    <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidosData.length}</div></div>
+                    <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
                     <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticket.toFixed(2)}</div></div>
                 `;
-                // Gráfico simples de vendas por mês
-                const vendasPorMes = {};
-                pedidosData.forEach(p => {
-                    const mes = new Date(p.created_at || Date.now()).toLocaleDateString('pt-BR', { month:'short', year:'numeric' });
-                    vendasPorMes[mes] = (vendasPorMes[mes] || 0) + (p.valor_total || 0);
+
+                // Gráfico de vendas por dia/mês
+                const vendasPorData = {};
+                pedidos.forEach(p => {
+                    const data = new Date(p.created_at).toLocaleDateString('pt-BR');
+                    vendasPorData[data] = (vendasPorData[data] || 0) + (p.valor_total || 0);
                 });
-                const labels = Object.keys(vendasPorMes);
-                const valores = Object.values(vendasPorMes);
+                const labels = Object.keys(vendasPorData).slice(-14); // últimos 14 dias
+                const valores = labels.map(l => vendasPorData[l]);
+                
                 const ctx = document.getElementById('vendasChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: { labels, datasets: [{ label: 'Vendas (R$)', data: valores, backgroundColor: '#d4a373' }] }
+                if(chartInstance) chartInstance.destroy();
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels, datasets: [{ label: 'Vendas (R$)', data: valores, borderColor: '#d4a373', backgroundColor: 'rgba(212,163,115,0.1)', fill: true, tension: 0.3 }] },
+                    options: { responsive: true, maintainAspectRatio: true }
                 });
-            } catch(e) { console.error(e); }
+
+                // Top produtos mais vendidos
+                const vendasProdutos = {};
+                pedidos.forEach(p => {
+                    if(p.itens && Array.isArray(p.itens)) {
+                        p.itens.forEach(item => {
+                            vendasProdutos[item.nome || item.produto_nome] = (vendasProdutos[item.nome || item.produto_nome] || 0) + (item.quantidade || 1);
+                        });
+                    }
+                });
+                const top = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0,5);
+                document.getElementById('topProdutos').innerHTML = top.length ? 
+                    `<h3>🥇 Produtos mais vendidos</h3>` + top.map(([n,q]) => `<div class="admin-item-row"><span>${n}</span><span>${q} unidades</span></div>`).join('') 
+                    : '<p>Sem dados de produtos vendidos.</p>';
+            } catch(e) { console.error(e); showToast("Erro ao carregar dashboard", 'error'); }
+        }
+
+        function aplicarFiltroDashboard() {
+            const inicio = document.getElementById('dataInicio').value;
+            const fim = document.getElementById('dataFim').value;
+            currentStartDate = inicio || null;
+            currentEndDate = fim || null;
+            carregarDashboard(currentStartDate, currentEndDate);
+        }
+
+        function limparFiltroDashboard() {
+            document.getElementById('dataInicio').value = '';
+            document.getElementById('dataFim').value = '';
+            currentStartDate = null;
+            currentEndDate = null;
+            carregarDashboard();
         }
 
         async function carregarDadosBasicos(){
@@ -238,13 +316,14 @@
             popularSelectCategorias();
         }
 
+        // Produtos com edição inline (categoria funcionando)
         function renderizarProdutosInline(){
             const container = document.getElementById('listaAdminProdutos');
             if(produtos.length === 0) { container.innerHTML = "<p>Nenhum produto cadastrado.</p>"; return; }
             container.innerHTML = produtos.map(p => `
                 <div class="produto-admin-item" data-id="${p.id}">
-                    <div style="flex:2;"><input type="text" value="${p.nome}" data-field="nome" placeholder="Nome"></div>
-                    <div style="flex:3;"><textarea rows="1" data-field="descricao" placeholder="Descrição">${p.descricao || ''}</textarea></div>
+                    <div style="flex:2;"><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome" placeholder="Nome"></div>
+                    <div style="flex:3;"><textarea rows="1" data-field="descricao" placeholder="Descrição">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
                     <div style="flex:1;"><input type="number" step="0.01" value="${p.preco}" data-field="preco" placeholder="Preço"></div>
                     <div style="flex:1;"><input type="number" value="${p.estoque || 0}" data-field="estoque" placeholder="Estoque"></div>
                     <div style="flex:1.5;">
@@ -300,7 +379,6 @@
                     <button class="btn-icon btn-excluir" onclick="excluirCategoriaAdmin(${c.id})"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
-            // Sortable para reordenar categorias
             if(window.sortableCategorias) window.sortableCategorias.destroy();
             window.sortableCategorias = new Sortable(container, {
                 animation: 150,
@@ -403,7 +481,7 @@
 
         function renderizarInsumos() {
             const tbody = document.querySelector('#tabelaMateriais tbody');
-            if(materiais.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Nenhum insumo cadastrado.</td></tr>"; return; }
+            if(materiais.length === 0) { tbody.innerHTML = "<td><td colspan='5' style='text-align:center;'>Nenhum insumo cadastrado.</td></tr>"; return; }
             tbody.innerHTML = materiais.map(m => `
                 <tr>
                     <td>${m.nome}</td>
@@ -427,8 +505,8 @@
         }
 
         async function inicializarAdmin() {
-            await carregarDashboard();
             await carregarDadosBasicos();
+            await carregarDashboard(); // sem filtro inicial
             initSortableTabs();
             carregarOrdemAbas();
             // Navegação das abas
@@ -438,11 +516,12 @@
                     document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('ativo'));
                     tab.classList.add('ativo');
                     document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('ativo');
+                    if(tab.dataset.tab === 'dashboard') carregarDashboard(currentStartDate, currentEndDate);
                 });
             });
         }
 
-        // Injetar Font Awesome se não existir
+        // Injetar Font Awesome
         if(!document.querySelector('link[href*="font-awesome"]')) {
             const link = document.createElement('link');
             link.rel = "stylesheet";
