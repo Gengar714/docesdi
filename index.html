@@ -15,7 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --bg-color: #fefae0;
@@ -43,7 +42,7 @@
         body { background-color: var(--bg-color); color: var(--text-color); transition: var(--transition); padding-top: var(--safe-top); padding-bottom: calc(70px + var(--safe-bottom)); min-height: 100vh; }
         
         header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: var(--safe-top); z-index: 100; transition: var(--transition); }
-        .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.4rem; color: var(--accent-color); }
+        .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.4rem; color: var(--accent-color); cursor: pointer; }
         .logo-area img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .btn-header { background: none; border: none; font-size: 1.4rem; color: var(--text-color); cursor: pointer; position: relative; transition: var(--transition); }
@@ -118,8 +117,9 @@
         .btn-salvar { color: #2a9d8f; }
         .btn-excluir { color: #e63946; }
         
-        .toast { position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; display: none; font-weight: 600; animation: slideIn 0.3s ease; }
+        .toast { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; display: none; font-weight: 600; animation: slideIn 0.3s ease; text-align: center; }
         .toast.error { background: #e63946; }
+        .toast.success { background: #2a9d8f; }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .carrinho-item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
@@ -388,13 +388,10 @@
     </div>
 
     <script>
-        // === ATUALIZADO: Usando o ID de projeto correto extraído das suas fotos ===
+        // ==================== CONFIGURAÇÕES SUPABASE (ANON KEY CORRIGIDA) ====================
         const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
-        
-        // ATENÇÃO: Substitua os caracteres abaixo pela sua nova Anon Key do projeto 'opixfppyhbiyqrilebfb'
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzNTcxMjAsImV4cCI6MjA1NDkzMzEyMH0.INSIRA_SUA_NOVA_ANON_KEY_AQUI";
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const mpInstance = new MercadoPago('APP_USR-8c3ba50c-e1fc-463d-82d2-8b9816bfbcf1', { locale: 'pt-BR' });
 
         let categorias = [];
@@ -413,7 +410,7 @@
         function showToast(mensagem, tipo = 'success') {
             const toast = document.getElementById('toastNotification');
             if(!toast) return;
-            toast.innerText = mensaje || mensagem;
+            toast.innerText = mensagem;
             toast.className = `toast ${tipo}`;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3500);
@@ -638,9 +635,9 @@
 
         async function adicionarCategoria() {
             const nomeInput = document.getElementById('categoriaNome');
-            const iconeInput = document.getElementById('categoriaIcone');
+            const iconeSelect = document.getElementById('categoriaIcone');
             const nome = nomeInput.value.trim();
-            const icone = iconeInput.value;
+            const icone = iconeSelect.value;
 
             if(!nome) { showToast("Preencha o nome da categoria!", 'error'); return; }
             const payload = { nome, icone, ordem: categorias.length + 1 };
@@ -653,6 +650,7 @@
                     localStorage.setItem('docesdi_categorias', JSON.stringify(categorias));
                     showToast(`Categoria "${nome}" salva com sucesso!`);
                     nomeInput.value = '';
+                    iconeSelect.selectedIndex = 0;
                     renderizarCategoriasFront();
                     renderizarAdminCategorias();
                     popularSelectCategorias();
@@ -767,33 +765,28 @@
                     </div>
                 </div>
             `).join('');
-
-            container.querySelectorAll('input, textarea, select').forEach(element => {
-                element.addEventListener('change', (e) => {
-                    const linha = e.target.closest('.produto-admin-item');
-                    const idProd = parseInt(linha.dataset.id);
-                    const campo = e.target.dataset.field;
-                    let valor = e.target.value;
-
-                    if(campo === 'preco') valor = parseFloat(valor) || 0;
-                    if(campo === 'estoque' || campo === 'categoria_id') valor = parseInt(valor) || 0;
-
-                    const idx = produtos.findIndex(p => p.id === idProd);
-                    if(idx !== -1) {
-                        produtos[idx][campo] = valor;
-                        localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
-                    }
-                });
-            });
         }
 
         window.salvarLinhaProdutoAdmin = async function(id) {
             const produtoParaSalvar = produtos.find(p => p.id === id);
             if(!produtoParaSalvar) return;
+            
+            // Atualizar valores dos inputs
+            const linha = document.querySelector(`.produto-admin-item[data-id="${id}"]`);
+            if(linha) {
+                produtoParaSalvar.nome = linha.querySelector('[data-field="nome"]').value;
+                produtoParaSalvar.descricao = linha.querySelector('[data-field="descricao"]').value;
+                produtoParaSalvar.preco = parseFloat(linha.querySelector('[data-field="preco"]').value);
+                produtoParaSalvar.estoque = parseInt(linha.querySelector('[data-field="estoque"]').value);
+                produtoParaSalvar.categoria_id = parseInt(linha.querySelector('[data-field="categoria_id"]').value);
+                produtoParaSalvar.imagem = linha.querySelector('[data-field="imagem"]').value;
+            }
+            
             try {
                 const { error } = await supabaseClient.from('produtos').upsert(produtoParaSalvar).eq('id', id);
                 if(error) throw error;
                 showToast(`Produto "${produtoParaSalvar.nome}" atualizado!`);
+                localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
                 renderizarPaginaPrincipalPorCategorias(); 
             } catch(e) { showToast("Erro ao sincronizar com o banco!", 'error'); }
         };
@@ -926,7 +919,7 @@
                 if(item.quantidade >= prod.estoque) { showToast("Quantidade máxima atingida!", 'error'); return; }
                 item.quantidade++;
             } else {
-                carrinho.push({ produto_id: idProd, quantity: 1, quantidade: 1, preco_unitario: prod.preco });
+                carrinho.push({ produto_id: idProd, quantidade: 1, preco_unitario: prod.preco });
             }
             localStorage.setItem('docesdi_carrinho', JSON.stringify(carrinho));
             atualizarBadgeCarrinho();
@@ -1018,24 +1011,6 @@
             try {
                 const { data: pedidoData, error: pedError } = await supabaseClient.from('pedidos').insert([pedidoPayload]).select();
                 if(pedError) throw pedError;
-                
-                const mpItems = carrinho.map(item => {
-                    const p = produtos.find(prod => prod.id === item.produto_id);
-                    return { title: p ? p.nome : 'Doce', quantity: item.quantidade, unit_price: parseFloat(item.preco_unitario) };
-                });
-
-                await fetch("https://api.mercadopago.com/checkout/preferences", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer APP_USR-8761801264357777-021213-93333333333333333333333333" 
-                    },
-                    body: JSON.stringify({
-                        items: mpItems,
-                        payment_methods: { excluded_payment_types: [{ id: "credit_card" }, { id: "ticket" }], installments: 1 },
-                        purpose: "wallet_purchase"
-                    })
-                });
                 
                 fecharModal('modalCarrinho');
                 
@@ -1244,7 +1219,7 @@
             initAdminTabs();
             initEstoqueTabs();
 
-            window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.className = 'modal'; };
+            window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.classList.remove('ativo'); };
             document.addEventListener('click', (e) => {
                 const dd = document.getElementById('usuarioDropdown');
                 if(dd && !dd.contains(e.target)) dd.classList.remove('show');
