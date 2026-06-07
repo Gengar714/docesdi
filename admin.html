@@ -74,12 +74,19 @@
         .form-usuario h4{margin-bottom:15px}
         .form-usuario .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
         .error-message{color:var(--error);font-size:0.85rem;margin-top:10px;display:none}
+        .chart-wrapper { margin-bottom: 25px; border: 1px solid var(--border-color); border-radius: 20px; background: var(--card-bg); overflow: hidden; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-color); cursor: pointer; }
+        .chart-header h4 { margin: 0; }
+        .chart-body { padding: 15px; transition: all 0.3s; }
+        .chart-body.collapsed { display: none; }
+        .btn-minimize { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--accent-color); }
+        .filtro-avaliacao { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
+        .filtro-avaliacao .field { flex: 1; min-width: 150px; }
     </style>
 </head>
 <body>
     <div class="toast-container" id="toastContainer"></div>
     
-    <!-- Tela de Login - SEM senha exposta -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
             <h2>🔐 Área Restrita</h2>
@@ -107,12 +114,13 @@
             <div class="admin-tab" data-tab="categorias">🏷️ Categorias</div>
             <div class="admin-tab" data-tab="estoque">📦 Insumos</div>
             <div class="admin-tab" data-tab="slides">📸 Banners</div>
+            <div class="admin-tab" data-tab="avaliacoes">⭐ Avaliações</div>
             <div class="admin-tab" data-tab="personalizacao">🎨 Personalização</div>
             <div class="admin-tab" data-tab="usuarios">👥 Admins</div>
             <div class="admin-tab" data-tab="clientes">👤 Clientes</div>
         </div>
 
-        <!-- Dashboard -->
+        <!-- DASHBOARD -->
         <div id="tabDashboard" class="admin-tab-content ativo">
             <div class="filter-box">
                 <div class="field"><label>📅 Data Início</label><input type="date" id="dataInicio"></div>
@@ -121,11 +129,31 @@
                 <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="limparFiltroDashboard()" style="background:#999;">Limpar</button></div>
             </div>
             <div class="dashboard-stats" id="dashboardStats">Carregando...</div>
-            <div class="chart-container"><canvas id="vendasChart"></canvas></div>
+            
+            <div class="chart-wrapper">
+                <div class="chart-header" onclick="toggleChart('vendasChartBody')">
+                    <h4>📈 Evolução de Vendas</h4>
+                    <button class="btn-minimize"><i class="fa-solid fa-chevron-up" id="vendasChartIcon"></i></button>
+                </div>
+                <div id="vendasChartBody" class="chart-body">
+                    <canvas id="vendasChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-header" onclick="toggleChart('avaliacoesChartBody')">
+                    <h4>⭐ Distribuição de Avaliações</h4>
+                    <button class="btn-minimize"><i class="fa-solid fa-chevron-up" id="avaliacoesChartIcon"></i></button>
+                </div>
+                <div id="avaliacoesChartBody" class="chart-body">
+                    <canvas id="avaliacoesChart"></canvas>
+                </div>
+            </div>
+
             <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
 
-        <!-- Produtos -->
+        <!-- PRODUTOS -->
         <div id="tabProdutos" class="admin-tab-content">
             <div class="form-produto">
                 <div class="field"><label>Nome</label><input type="text" id="prodNome" placeholder="Ex: Bolo de Chocolate"></div>
@@ -140,7 +168,7 @@
             <div id="listaAdminProdutos"></div>
         </div>
 
-        <!-- Categorias -->
+        <!-- CATEGORIAS -->
         <div id="tabCategorias" class="admin-tab-content">
             <div class="form-categoria">
                 <div class="field"><label>Nome</label><input type="text" id="categoriaNome"></div>
@@ -160,7 +188,7 @@
             <div id="listaAdminCategorias"></div>
         </div>
 
-        <!-- Estoque -->
+        <!-- ESTOQUE -->
         <div id="tabEstoque" class="admin-tab-content">
             <h4>📦 Materiais e Insumos</h4>
             <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
@@ -176,7 +204,7 @@
             </table>
         </div>
 
-        <!-- Slides -->
+        <!-- SLIDES -->
         <div id="tabSlides" class="admin-tab-content">
             <h3>Gerenciar Banners</h3>
             <div style="background:var(--bg-color); padding:15px; border-radius:var(--border-radius); margin-bottom:20px;">
@@ -197,10 +225,21 @@
             <div id="listaAdminSlides"></div>
         </div>
 
+        <!-- AVALIAÇÕES -->
+        <div id="tabAvaliacoes" class="admin-tab-content">
+            <h3>⭐ Gerenciar Avaliações dos Clientes</h3>
+            <div class="filtro-avaliacao">
+                <div class="field"><label>📅 Data Início</label><input type="date" id="avaliacaoDataInicio"></div>
+                <div class="field"><label>📅 Data Fim</label><input type="date" id="avaliacaoDataFim"></div>
+                <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="filtrarAvaliacoesAdmin()">Filtrar</button></div>
+                <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="limparFiltroAvaliacoes()" style="background:#999;">Limpar</button></div>
+            </div>
+            <div id="listaAvaliacoesAdmin" class="admin-list-container">Carregando avaliações...</div>
+        </div>
+
         <!-- PERSONALIZAÇÃO -->
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
-            
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🖼️ Cabeçalho</h4>
                 <div class="flex-row" style="margin-top:15px;">
@@ -254,7 +293,6 @@
         <!-- USUÁRIOS ADMIN -->
         <div id="tabUsuarios" class="admin-tab-content">
             <h3>👥 Gerenciar Administradores</h3>
-            
             <div class="form-usuario">
                 <h4>➕ Adicionar Novo Administrador</h4>
                 <div class="grid-2">
@@ -271,12 +309,11 @@
                 </div>
                 <button class="btn-add" onclick="adicionarUsuarioAdmin()" style="background:var(--success);">➕ Adicionar Usuário</button>
             </div>
-
             <h4>📋 Usuários Cadastrados</h4>
             <div id="listaUsuariosAdmin"></div>
         </div>
 
-        <!-- Clientes -->
+        <!-- CLIENTES -->
         <div id="tabClientes" class="admin-tab-content">
             <h4>👥 Clientes Cadastrados</h4>
             <div id="listaClientesAdmin">Carregando...</div>
@@ -288,7 +325,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [], slides = [];
+        let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [], slides = [], avaliacoes = [];
         let adminUserAtual = null;
         let configCabecalho = { logo_url: '', nome_loja: 'Doces Di' };
         let configRodape = {
@@ -297,7 +334,7 @@
             endereco: { enabled: false, value: '' }, horario: { enabled: false, value: '' }
         };
         let palavrasChaveClima = { quentes: [], amenas: [], frias: [] };
-        let chartInstance = null;
+        let chartVendas = null, chartAvaliacoes = null;
 
         function showToast(msg, tipo='success'){
             const container = document.getElementById('toastContainer');
@@ -307,7 +344,6 @@
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-
         function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
 
         // ========== LOGIN ADMIN ==========
@@ -315,34 +351,12 @@
             const username = document.getElementById('adminUsername').value.trim().toLowerCase();
             const senha = document.getElementById('adminPassword').value;
             const errorDiv = document.getElementById('loginError');
-            
-            if(!username || !senha) {
-                errorDiv.style.display = 'block';
-                errorDiv.innerText = "Preencha usuário e senha!";
-                return;
-            }
-            
+            if(!username || !senha) { errorDiv.style.display = 'block'; errorDiv.innerText = "Preencha usuário e senha!"; return; }
             errorDiv.style.display = 'none';
             const senhaHash = hashSenha(senha);
-            
             try {
-                console.log("Tentando login com:", username);
-                
-                const { data, error } = await supabaseClient
-                    .from('admin_users')
-                    .select('*')
-                    .eq('username', username)
-                    .eq('senha', senhaHash);
-                
-                if(error) {
-                    console.error("Erro na consulta:", error);
-                    errorDiv.style.display = 'block';
-                    errorDiv.innerText = "Erro ao conectar com o banco de dados!";
-                    return;
-                }
-                
-                console.log("Resultado:", data);
-                
+                const { data, error } = await supabaseClient.from('admin_users').select('*').eq('username', username).eq('senha', senhaHash);
+                if(error) throw error;
                 if(data && data.length > 0) {
                     adminUserAtual = data[0];
                     localStorage.setItem('docesdi_admin_user', JSON.stringify(adminUserAtual));
@@ -355,13 +369,8 @@
                     errorDiv.style.display = 'block';
                     errorDiv.innerText = "Usuário ou senha incorretos!";
                 }
-            } catch(e) {
-                console.error("Erro no login:", e);
-                errorDiv.style.display = 'block';
-                errorDiv.innerText = "Erro ao fazer login! Verifique sua conexão.";
-            }
+            } catch(e) { errorDiv.style.display = 'block'; errorDiv.innerText = "Erro ao fazer login!"; }
         }
-
         function logoutAdmin() {
             adminUserAtual = null;
             localStorage.removeItem('docesdi_admin_user');
@@ -371,7 +380,6 @@
             document.getElementById('adminPassword').value = '';
             document.getElementById('loginError').style.display = 'none';
         }
-
         function verificarSessaoAdmin() {
             const saved = localStorage.getItem('docesdi_admin_user');
             if(saved) {
@@ -382,27 +390,22 @@
                     document.getElementById('adminUserNome').innerHTML = `${adminUserAtual.nome} (@${adminUserAtual.username})`;
                     document.getElementById('adminUserRole').innerHTML = adminUserAtual.role === 'admin' ? '👑 Administrador' : '✏️ Editor';
                     inicializarAdmin();
-                } catch(e) {
-                    console.error("Erro ao restaurar sessão:", e);
-                    localStorage.removeItem('docesdi_admin_user');
-                }
+                } catch(e) { localStorage.removeItem('docesdi_admin_user'); }
             }
         }
 
-        // ========== CRUD USUÁRIOS ADMIN ==========
+        // ========== USUÁRIOS ADMIN ==========
         async function carregarUsuariosAdmin() {
             try {
                 const { data, error } = await supabaseClient.from('admin_users').select('*').order('id');
                 if(error) throw error;
                 renderizarUsuariosAdmin(data || []);
-            } catch(e) { console.error(e); showToast("Erro ao carregar usuários", 'error'); }
+            } catch(e) { showToast("Erro ao carregar usuários", 'error'); }
         }
-
         function renderizarUsuariosAdmin(usuarios) {
             const container = document.getElementById('listaUsuariosAdmin');
             if(!container) return;
             if(usuarios.length === 0) { container.innerHTML = '<p>Nenhum usuário cadastrado.</p>'; return; }
-            
             container.innerHTML = usuarios.map(u => `
                 <div class="admin-user-card" data-id="${u.id}">
                     <div class="user-info">
@@ -418,29 +421,19 @@
                 </div>
             `).join('');
         }
-
         async function adicionarUsuarioAdmin() {
             const username = document.getElementById('novoUserUsername').value.trim().toLowerCase();
             const nome = document.getElementById('novoUserNome').value.trim();
             const senha = document.getElementById('novoUserSenha').value;
             const confirmar = document.getElementById('novoUserConfirmarSenha').value;
             const role = document.getElementById('novoUserRole').value;
-            
             if(!username || !nome) { showToast("Preencha usuário e nome!", 'error'); return; }
             if(senha.length < 6) { showToast("Senha deve ter pelo menos 6 caracteres!", 'error'); return; }
             if(senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
-            
             const senhaHash = hashSenha(senha);
-            
             try {
-                const { data, error } = await supabaseClient.from('admin_users').insert([{
-                    username, nome, senha: senhaHash, role, ativo: true
-                }]).select();
-                if(error) {
-                    if(error.code === '23505') showToast("Este nome de usuário já existe!", 'error');
-                    else showToast("Erro ao adicionar usuário", 'error');
-                    return;
-                }
+                const { error } = await supabaseClient.from('admin_users').insert([{ username, nome, senha: senhaHash, role, ativo: true }]);
+                if(error) { if(error.code === '23505') showToast("Este nome de usuário já existe!", 'error'); else showToast("Erro ao adicionar usuário", 'error'); return; }
                 showToast(`Usuário ${username} adicionado!`);
                 document.getElementById('novoUserUsername').value = '';
                 document.getElementById('novoUserNome').value = '';
@@ -449,29 +442,19 @@
                 carregarUsuariosAdmin();
             } catch(e) { showToast("Erro ao adicionar usuário", 'error'); }
         }
-
         async function excluirUsuarioAdmin(id) {
             if(!confirm("Excluir este usuário permanentemente?")) return;
-            try {
-                await supabaseClient.from('admin_users').delete().eq('id', id);
-                showToast("Usuário removido!");
-                carregarUsuariosAdmin();
-            } catch(e) { showToast("Erro ao excluir", 'error'); }
+            await supabaseClient.from('admin_users').delete().eq('id', id);
+            showToast("Usuário removido!");
+            carregarUsuariosAdmin();
         }
-
         async function abrirEditarUsuario(id, username) {
             const novaSenha = prompt(`Digite a nova senha para o usuário @${username}:`);
-            if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) {
-                showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
-                return;
-            }
             if(novaSenha !== null && novaSenha.length >= 6) {
                 const senhaHash = hashSenha(novaSenha);
-                try {
-                    await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
-                    showToast(`Senha de @${username} atualizada!`);
-                } catch(e) { showToast("Erro ao atualizar senha", 'error'); }
-            }
+                await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
+                showToast(`Senha de @${username} atualizada!`);
+            } else if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
         }
 
         // ========== CONFIGURAÇÕES ==========
@@ -486,22 +469,15 @@
                     }
                 }
             } catch(e) { console.log('Erro:', e); }
-            
             if(!palavrasChaveClima.quentes || palavrasChaveClima.quentes.length === 0) {
-                palavrasChaveClima = {
-                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante'],
-                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus'],
-                    frias: ['café', 'chocolate', 'bolo', 'torta', 'quentinho']
-                };
+                palavrasChaveClima = { quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante'], amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus'], frias: ['café', 'chocolate', 'bolo', 'torta', 'quentinho'] };
             }
         }
-
         function carregarConfigCabecalhoUI() {
             document.getElementById('headerLogoUrl').value = configCabecalho?.logo_url || '';
             document.getElementById('storeName').value = configCabecalho?.nome_loja || 'Doces Di';
             document.getElementById('logoPreview').src = configCabecalho?.logo_url || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80';
         }
-
         function carregarConfigRodapeUI() {
             const r = configRodape || {};
             document.getElementById('footerWhatsappEnabled').checked = r.whatsapp?.enabled || false;
@@ -517,18 +493,11 @@
             document.getElementById('footerHorarioEnabled').checked = r.horario?.enabled || false;
             document.getElementById('footerHorario').value = r.horario?.value || '';
         }
-
         async function salvarConfiguracoesCabecalho() {
-            configCabecalho = {
-                logo_url: document.getElementById('headerLogoUrl').value,
-                nome_loja: document.getElementById('storeName').value
-            };
-            try {
-                await supabaseClient.from('configuracoes').upsert({ chave: 'cabecalho', valor: configCabecalho }, { onConflict: 'chave' });
-                showToast("Cabeçalho salvo!");
-            } catch(e) { showToast("Erro ao salvar", 'error'); }
+            configCabecalho = { logo_url: document.getElementById('headerLogoUrl').value, nome_loja: document.getElementById('storeName').value };
+            await supabaseClient.from('configuracoes').upsert({ chave: 'cabecalho', valor: configCabecalho }, { onConflict: 'chave' });
+            showToast("Cabeçalho salvo!");
         }
-
         async function salvarConfiguracoesRodape() {
             configRodape = {
                 whatsapp: { enabled: document.getElementById('footerWhatsappEnabled').checked, value: document.getElementById('footerWhatsapp').value },
@@ -538,12 +507,9 @@
                 endereco: { enabled: document.getElementById('footerEnderecoEnabled').checked, value: document.getElementById('footerEndereco').value },
                 horario: { enabled: document.getElementById('footerHorarioEnabled').checked, value: document.getElementById('footerHorario').value }
             };
-            try {
-                await supabaseClient.from('configuracoes').upsert({ chave: 'rodape', valor: configRodape }, { onConflict: 'chave' });
-                showToast("Rodapé salvo!");
-            } catch(e) { showToast("Erro ao salvar", 'error'); }
+            await supabaseClient.from('configuracoes').upsert({ chave: 'rodape', valor: configRodape }, { onConflict: 'chave' });
+            showToast("Rodapé salvo!");
         }
-
         function renderizarPalavrasChaveUI() {
             const q = document.getElementById('palavrasQuentesContainer');
             const a = document.getElementById('palavrasAmenasContainer');
@@ -552,11 +518,9 @@
             if(a) a.innerHTML = (palavrasChaveClima.amenas || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('amenas',${i})">&times;</span></span>`).join('');
             if(f) f.innerHTML = (palavrasChaveClima.frias || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('frias',${i})">&times;</span></span>`).join('');
         }
-
         function adicionarPalavraQuente() { adicionarPalavra('quentes', 'novaPalavraQuente'); }
         function adicionarPalavraAmena() { adicionarPalavra('amenas', 'novaPalavraAmena'); }
         function adicionarPalavraFria() { adicionarPalavra('frias', 'novaPalavraFria'); }
-        
         function adicionarPalavra(tipo, inputId) {
             const input = document.getElementById(inputId);
             const palavra = input.value.trim().toLowerCase();
@@ -566,19 +530,11 @@
                 input.value = '';
             }
         }
-        
-        function removerPalavra(tipo, index) {
-            palavrasChaveClima[tipo].splice(index, 1);
-            renderizarPalavrasChaveUI();
-        }
-        
+        function removerPalavra(tipo, index) { palavrasChaveClima[tipo].splice(index, 1); renderizarPalavrasChaveUI(); }
         async function salvarPalavrasChave() {
-            try {
-                await supabaseClient.from('configuracoes').upsert({ chave: 'palavras_chave', valor: palavrasChaveClima }, { onConflict: 'chave' });
-                showToast("Palavras-chave salvas!");
-            } catch(e) { showToast("Erro ao salvar", 'error'); }
+            await supabaseClient.from('configuracoes').upsert({ chave: 'palavras_chave', valor: palavrasChaveClima }, { onConflict: 'chave' });
+            showToast("Palavras-chave salvas!");
         }
-
         function uploadLogoLocal() {
             const file = document.getElementById('logoUpload').files[0];
             if(file) {
@@ -592,7 +548,7 @@
             } else showToast("Selecione uma imagem!", 'error');
         }
 
-        // ========== DEMAIS FUNÇÕES ==========
+        // ========== DEMAIS FUNÇÕES (produtos, categorias, slides, etc) ==========
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
@@ -608,7 +564,6 @@
             renderizarClientes();
             popularSelectCategorias();
         }
-
         function renderizarProdutosInline(){
             const container = document.getElementById('listaAdminProdutos');
             if(!container) return;
@@ -625,7 +580,6 @@
                 </div>
             `).join('');
         }
-
         window.salvarProdutoAdmin = async function(id){
             const prod = produtos.find(p=>p.id===id);
             if(!prod) return;
@@ -641,7 +595,6 @@
                 showToast("Produto atualizado!");
             }
         };
-
         window.excluirProdutoAdmin = async function(id){
             if(confirm("Remover?")){
                 await supabaseClient.from('produtos').delete().eq('id',id);
@@ -650,7 +603,6 @@
                 showToast("Produto removido!");
             }
         };
-
         document.getElementById('btnAddProduto').addEventListener('click', async ()=>{
             const novo = {
                 nome: document.getElementById('prodNome').value,
@@ -665,7 +617,6 @@
             if(!error && data){ produtos.push(data[0]); renderizarProdutosInline(); showToast("Produto adicionado!"); }
             else showToast("Erro!",'error');
         });
-
         function renderizarCategorias(){
             const container = document.getElementById('listaAdminCategorias');
             if(!container) return;
@@ -676,7 +627,6 @@
                 showToast("Ordem das categorias salva!");
             }});
         }
-
         async function excluirCategoriaAdmin(id){
             if(confirm("Excluir categoria?")){
                 await supabaseClient.from('categorias').delete().eq('id',id);
@@ -686,7 +636,6 @@
                 showToast("Categoria removida!");
             }
         }
-
         document.getElementById('btnAddCategoria').addEventListener('click',async()=>{
             const nome=document.getElementById('categoriaNome').value.trim();
             const icone=document.getElementById('categoriaIcone').value;
@@ -694,12 +643,10 @@
             const {data,error}=await supabaseClient.from('categorias').insert([{nome,icone,ordem:categorias.length+1}]).select();
             if(!error && data){ categorias.push(data[0]); renderizarCategorias(); popularSelectCategorias(); showToast("Categoria adicionada!"); }
         });
-
         function popularSelectCategorias(){
             const sel=document.getElementById('prodCategoria');
             if(sel) sel.innerHTML=categorias.map(c=>`<option value="${c.id}">${c.icone} ${c.nome}</option>`).join('');
         }
-
         async function adicionarMaterialAdmin(){
             const nome=document.getElementById('materialNome').value.trim();
             const preco=parseFloat(document.getElementById('materialPreco').value);
@@ -709,13 +656,11 @@
             const {data,error}=await supabaseClient.from('materiais').insert([{nome,preco_unitario:preco,unidade,estoque_atual:estoque}]).select();
             if(!error && data){ materiais.push(data[0]); renderizarInsumos(); showToast("Insumo adicionado!"); }
         }
-
         function renderizarInsumos(){
             const tbody=document.querySelector('#tabelaMateriais tbody');
             if(!tbody) return;
             tbody.innerHTML=materiais.map(m=>`<tr><td>${m.nome}</td><td>${m.unidade}</td><td>R$ ${(m.preco_unitario||0).toFixed(2)}</td><td>${m.estoque_atual||0}</td><td><button class="btn-icon btn-excluir" onclick="excluirMaterialAdmin(${m.id})">🗑️</button></td></tr>`).join('');
         }
-
         async function excluirMaterialAdmin(id){
             if(confirm("Excluir?")){
                 await supabaseClient.from('materiais').delete().eq('id',id);
@@ -724,20 +669,17 @@
                 showToast("Insumo removido!");
             }
         }
-
         function renderizarClientes(){
             const container=document.getElementById('listaClientesAdmin');
             if(!container) return;
             if(clientes.length===0){ container.innerHTML="<p>Nenhum cliente cadastrado.</p>"; return; }
             container.innerHTML=clientes.map(c=>`<div class="admin-item-row"><div><strong>${c.nome||'Sem nome'}</strong> - ${c.telefone||'Sem telefone'}</div><div>${c.endereco||'Endereço não informado'}</div></div>`).join('');
         }
-
         async function carregarSlides(){
             const {data}=await supabaseClient.from('slides').select('*');
             slides=data||[];
             renderizarAdminSlides();
         }
-
         async function adicionarSlideAdmin(){
             const url=document.getElementById('slideUrl').value.trim();
             const titulo=document.getElementById('slideTitulo').value.trim();
@@ -762,13 +704,11 @@
             document.getElementById('slideTitulo').value='';
             document.getElementById('slideDescricao').value='';
         }
-
         function renderizarAdminSlides(){
             const container=document.getElementById('listaAdminSlides');
             if(!container) return;
             container.innerHTML=slides.map(s=>`<div class="admin-item-row"><img src="${s.url}" style="height:50px;width:80px;object-fit:cover;"><div>${s.titulo||''}</div><button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button></div>`).join('');
         }
-
         async function excluirSlideAdmin(id){
             if(confirm("Remover slide?")){
                 await supabaseClient.from('slides').delete().eq('id',id);
@@ -776,22 +716,86 @@
                 showToast("Slide removido!");
             }
         }
-
         function limparUploadLocal(){ document.getElementById('slideUpload').value=''; showToast("Upload limpo!"); }
 
-        async function carregarDashboard(){
-            const {data}=await supabaseClient.from('pedidos').select('*');
-            pedidos=data||[];
-            const total=pedidos.reduce((s,p)=>s+(p.valor_total||0),0);
-            document.getElementById('dashboardStats').innerHTML=`<div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div><div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
+        // ========== DASHBOARD E GRÁFICOS ==========
+        async function carregarDashboard(startDate=null, endDate=null){
+            let query = supabaseClient.from('pedidos').select('*');
+            if(startDate) query = query.gte('created_at', startDate+'T00:00:00');
+            if(endDate) query = query.lte('created_at', endDate+'T23:59:59');
+            const {data, error} = await query;
+            if(error) return;
+            pedidos = data || [];
+            const total = pedidos.reduce((s,p)=>s+(p.valor_total||0),0);
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div>
+                <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
+                <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
+            // Gráfico de vendas
+            const vendasPorData = {};
+            pedidos.forEach(p => { const data = new Date(p.created_at).toLocaleDateString('pt-BR'); vendasPorData[data] = (vendasPorData[data]||0) + (p.valor_total||0); });
+            const labels = Object.keys(vendasPorData).slice(-14);
+            const valores = labels.map(l=>vendasPorData[l]);
+            const ctx = document.getElementById('vendasChart').getContext('2d');
+            if(chartVendas) chartVendas.destroy();
+            chartVendas = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ label:'Vendas (R$)', data:valores, borderColor:'#d4a373', backgroundColor:'rgba(212,163,115,0.1)', fill:true, tension:0.3 }] }, options:{ responsive:true, maintainAspectRatio:true } });
+            // Top produtos
+            const vendasProdutos = {};
+            pedidos.forEach(p => { if(p.itens && Array.isArray(p.itens)) p.itens.forEach(item => { vendasProdutos[item.nome || item.produto_nome] = (vendasProdutos[item.nome || item.produto_nome]||0) + (item.quantidade||1); }); });
+            const top = Object.entries(vendasProdutos).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            document.getElementById('topProdutos').innerHTML = top.length ? `<h3>🥇 Produtos mais vendidos</h3>`+top.map(([n,q])=>`<div class="admin-item-row"><span>${n}</span><span>${q} unidades</span></div>`).join('') : '<p>Sem dados de produtos vendidos.</p>';
+        }
+        function aplicarFiltroDashboard(){ carregarDashboard(document.getElementById('dataInicio').value, document.getElementById('dataFim').value); }
+        function limparFiltroDashboard(){ document.getElementById('dataInicio').value=''; document.getElementById('dataFim').value=''; carregarDashboard(); }
+
+        // ========== AVALIAÇÕES ==========
+        async function carregarGraficoAvaliacoes() {
+            const { data } = await supabaseClient.from('avaliacoes').select('nota');
+            if (!data || data.length === 0) return;
+            const distribuicao = [0,0,0,0,0];
+            data.forEach(a => { if (a.nota>=1 && a.nota<=5) distribuicao[a.nota-1]++; });
+            const ctx = document.getElementById('avaliacoesChart').getContext('2d');
+            if (chartAvaliacoes) chartAvaliacoes.destroy();
+            chartAvaliacoes = new Chart(ctx, { type:'bar', data:{ labels:['⭐ 1','⭐ 2','⭐ 3','⭐ 4','⭐ 5'], datasets:[{ label:'Quantidade de avaliações', data:distribuicao, backgroundColor:'#d4a373', borderRadius:10 }] }, options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ beginAtZero:true, stepSize:1, precision:0 } } } });
+        }
+        async function carregarAvaliacoesAdmin(dataInicio=null, dataFim=null) {
+            let query = supabaseClient.from('avaliacoes').select('*, clientes(nome), produtos(nome)');
+            if (dataInicio) query = query.gte('created_at', dataInicio+'T00:00:00');
+            if (dataFim) query = query.lte('created_at', dataFim+'T23:59:59');
+            const { data, error } = await query;
+            if (error) { showToast("Erro ao carregar avaliações", 'error'); return; }
+            const container = document.getElementById('listaAvaliacoesAdmin');
+            if (!data || data.length === 0) { container.innerHTML = '<p>Nenhuma avaliação encontrada.</p>'; return; }
+            container.innerHTML = data.map(av => `
+                <div class="admin-item-row" style="flex-direction:column; align-items:flex-start;">
+                    <div><strong>${av.clientes?.nome || 'Cliente'}</strong> - ${new Date(av.created_at).toLocaleDateString()}</div>
+                    <div>Produto: ${av.produtos?.nome || 'Produto'}</div>
+                    <div>Nota: ${'⭐'.repeat(av.nota)} (${av.nota})</div>
+                    <div>Comentário: ${av.comentario || '<em>sem comentário</em>'}</div>
+                    <button class="btn-icon btn-excluir" onclick="excluirAvaliacaoAdmin(${av.id})"><i class="fa-solid fa-trash"></i> Excluir</button>
+                </div>
+            `).join('');
+        }
+        function filtrarAvaliacoesAdmin() {
+            const inicio = document.getElementById('avaliacaoDataInicio').value;
+            const fim = document.getElementById('avaliacaoDataFim').value;
+            carregarAvaliacoesAdmin(inicio || null, fim || null);
+        }
+        function limparFiltroAvaliacoes() {
+            document.getElementById('avaliacaoDataInicio').value = '';
+            document.getElementById('avaliacaoDataFim').value = '';
+            carregarAvaliacoesAdmin();
+        }
+        async function excluirAvaliacaoAdmin(id) {
+            if (!confirm("Excluir esta avaliação permanentemente?")) return;
+            await supabaseClient.from('avaliacoes').delete().eq('id', id);
+            showToast("Avaliação removida!");
+            filtrarAvaliacoesAdmin();
+            carregarGraficoAvaliacoes();
         }
 
-        function aplicarFiltroDashboard(){ carregarDashboard(); }
-        function limparFiltroDashboard(){ carregarDashboard(); }
-
-        // ========== DRAG AND DROP DAS ABAS PRINCIPAIS ==========
+        // ========== DRAG AND DROP DAS ABAS ==========
         let sortableTabsInstance = null;
-
         function initSortableTabs() {
             const container = document.getElementById('adminTabsContainer');
             if (container && !sortableTabsInstance) {
@@ -800,16 +804,13 @@
                     handle: '.admin-tab',
                     ghostClass: 'dragging',
                     onEnd: function() {
-                        const ordem = Array.from(document.querySelectorAll('.admin-tab')).map((tab, idx) => {
-                            return { tabId: tab.dataset.tab, ordem: idx };
-                        });
+                        const ordem = Array.from(document.querySelectorAll('.admin-tab')).map((tab, idx) => ({ tabId: tab.dataset.tab, ordem: idx }));
                         localStorage.setItem('admin_tabs_order', JSON.stringify(ordem));
                         showToast("Ordem das abas salva!");
                     }
                 });
             }
         }
-
         function carregarOrdemAbas() {
             const ordemSalva = localStorage.getItem('admin_tabs_order');
             if (ordemSalva) {
@@ -824,27 +825,41 @@
             }
         }
 
+        function toggleChart(chartId) {
+            const body = document.getElementById(chartId);
+            const icon = body.previousElementSibling.querySelector('.btn-minimize i');
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                body.classList.add('collapsed');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+
         // ========== INICIALIZAÇÃO ==========
-        async function inicializarAdmin(){
+        async function inicializarAdmin() {
             await carregarDadosBasicos();
             await carregarConfiguracoes();
             await carregarSlides();
             await carregarDashboard();
             await carregarUsuariosAdmin();
-            
-            // Inicializar drag-and-drop das abas
+            await carregarGraficoAvaliacoes();
+            await carregarAvaliacoesAdmin();
             initSortableTabs();
             carregarOrdemAbas();
-            
-            document.querySelectorAll('.admin-tab').forEach(tab=>{
-                tab.addEventListener('click',()=>{
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
                     document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('ativo'));
                     document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('ativo'));
                     tab.classList.add('ativo');
                     const tabName = tab.dataset.tab;
                     const elementId = `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
                     document.getElementById(elementId).classList.add('ativo');
-                    if(tabName === 'dashboard') carregarDashboard();
+                    if (tabName === 'dashboard') carregarDashboard();
+                    if (tabName === 'avaliacoes') { carregarAvaliacoesAdmin(); carregarGraficoAvaliacoes(); }
                 });
             });
         }
@@ -855,7 +870,6 @@
             link.href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
             document.head.appendChild(link);
         }
-
         verificarSessaoAdmin();
     </script>
 </body>
