@@ -673,7 +673,7 @@
             new Sortable(container,{animation:150,onEnd:async()=>{
                 const ordens = Array.from(container.querySelectorAll('.admin-item-row')).map((row,i)=>({id:row.dataset.id,ordem:i+1}));
                 for(let o of ordens) await supabaseClient.from('categorias').update({ordem:o.ordem}).eq('id',o.id);
-                showToast("Ordem salva!");
+                showToast("Ordem das categorias salva!");
             }});
         }
 
@@ -789,12 +789,52 @@
         function aplicarFiltroDashboard(){ carregarDashboard(); }
         function limparFiltroDashboard(){ carregarDashboard(); }
 
+        // ========== DRAG AND DROP DAS ABAS PRINCIPAIS ==========
+        let sortableTabsInstance = null;
+
+        function initSortableTabs() {
+            const container = document.getElementById('adminTabsContainer');
+            if (container && !sortableTabsInstance) {
+                sortableTabsInstance = new Sortable(container, {
+                    animation: 200,
+                    handle: '.admin-tab',
+                    ghostClass: 'dragging',
+                    onEnd: function() {
+                        const ordem = Array.from(document.querySelectorAll('.admin-tab')).map((tab, idx) => {
+                            return { tabId: tab.dataset.tab, ordem: idx };
+                        });
+                        localStorage.setItem('admin_tabs_order', JSON.stringify(ordem));
+                        showToast("Ordem das abas salva!");
+                    }
+                });
+            }
+        }
+
+        function carregarOrdemAbas() {
+            const ordemSalva = localStorage.getItem('admin_tabs_order');
+            if (ordemSalva) {
+                const ordem = JSON.parse(ordemSalva);
+                const container = document.getElementById('adminTabsContainer');
+                const tabs = Array.from(container.children);
+                ordem.sort((a,b) => a.ordem - b.ordem);
+                for (let item of ordem) {
+                    const tab = tabs.find(t => t.dataset.tab === item.tabId);
+                    if (tab) container.appendChild(tab);
+                }
+            }
+        }
+
+        // ========== INICIALIZAÇÃO ==========
         async function inicializarAdmin(){
             await carregarDadosBasicos();
             await carregarConfiguracoes();
             await carregarSlides();
             await carregarDashboard();
             await carregarUsuariosAdmin();
+            
+            // Inicializar drag-and-drop das abas
+            initSortableTabs();
+            carregarOrdemAbas();
             
             document.querySelectorAll('.admin-tab').forEach(tab=>{
                 tab.addEventListener('click',()=>{
@@ -804,6 +844,7 @@
                     const tabName = tab.dataset.tab;
                     const elementId = `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
                     document.getElementById(elementId).classList.add('ativo');
+                    if(tabName === 'dashboard') carregarDashboard();
                 });
             });
         }
