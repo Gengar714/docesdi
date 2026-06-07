@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-color:#fcf8f5;--text-color:#4a3b32;--card-bg:white;--border-color:#f0e4da;--shadow:0 4px 15px rgba(0,0,0,0.05);--input-bg:white;--btn-bg:#d4a373;--btn-hover:#c49a6c;--accent-color:#d4a373;--border-radius:20px;--success:#27ae60;--error:#e74c3c;--warning:#f39c12}
@@ -38,10 +39,13 @@
         .tabela-estoque th,.tabela-estoque td{padding:10px;text-align:left;border-bottom:1px solid var(--border-color)}
         .tabela-estoque th{background:var(--accent-color);color:white}
         .admin-item-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-color);border-radius:10px;margin-bottom:8px;border:1px solid var(--border-color);flex-wrap:wrap;gap:10px}
-        .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000}
-        .login-box{background:var(--card-bg);padding:30px;border-radius:var(--border-radius);width:90%;max-width:350px;text-align:center}
-        .login-box input{padding:12px;margin:10px 0;width:100%;border-radius:30px;border:1px solid var(--border-color)}
-        .login-box button{background:var(--accent-color);color:white;border:none;padding:12px;border-radius:30px;width:100%;font-weight:bold;cursor:pointer}
+        .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;z-index:10000}
+        .login-box{background:var(--card-bg);padding:35px;border-radius:var(--border-radius);width:90%;max-width:380px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.2)}
+        .login-box h2{margin-bottom:25px;color:var(--accent-color)}
+        .login-box input{padding:12px 15px;margin:10px 0;width:100%;border-radius:30px;border:1px solid var(--border-color);font-size:1rem;outline:none}
+        .login-box input:focus{border-color:var(--accent-color)}
+        .login-box button{background:var(--accent-color);color:white;border:none;padding:12px;border-radius:30px;width:100%;font-weight:bold;cursor:pointer;font-size:1rem;margin-top:15px;transition:all .3s}
+        .login-box button:hover{background:var(--btn-hover);transform:scale(1.02)}
         .filter-box{background:var(--bg-color);padding:15px;border-radius:var(--border-radius);margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
         .filter-box .field{flex:1;min-width:130px}
         .filter-box label{display:block;font-size:.75rem;font-weight:bold;color:var(--accent-color);margin-bottom:3px}
@@ -50,71 +54,74 @@
         .chart-container{max-height:300px;margin-top:20px}
         canvas{max-height:300px}
         .slide-preview{width:80px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px}
-        .slide-edit-input{flex:2;min-width:200px}
         .full-width-input{width:100%;}
         .flex-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-        .flex-grow{flex-grow:1;}
         .slide-edit-fields{display:flex; flex-wrap:wrap; gap:10px; align-items:center; flex:3;}
         .slide-edit-fields input{flex:1; min-width:120px;}
         .logo-preview{width:60px;height:60px;border-radius:50%;object-fit:cover;background:#f0e4da;}
-        .keyword-tag{display:inline-block;background:var(--accent-color);color:white;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;}
+        .keyword-tag{display:inline-block;background:var(--accent-color);color:white;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;cursor:default;}
+        .keyword-tag .remove{color:white;margin-left:8px;cursor:pointer;opacity:0.7}
+        .keyword-tag .remove:hover{opacity:1}
         .keyword-input-group{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
         .keyword-input-group input{flex:1;}
         .toggle-group{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
         .toggle-group input[type="checkbox"]{width:18px;height:18px;cursor:pointer;}
+        .admin-user-card{background:var(--bg-color);padding:15px;border-radius:var(--border-radius);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+        .admin-user-card .user-info{flex:1}
+        .admin-user-card .user-actions{display:flex;gap:10px}
+        .badge-admin{background:var(--accent-color);color:white;padding:2px 8px;border-radius:20px;font-size:0.7rem}
+        .form-usuario{background:var(--bg-color);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}
+        .form-usuario h4{margin-bottom:15px}
+        .form-usuario .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+        .error-message{color:var(--error);font-size:0.85rem;margin-top:10px;display:none}
     </style>
 </head>
 <body>
     <div class="toast-container" id="toastContainer"></div>
     
+    <!-- Tela de Login - SEM senha exposta -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
-            <h2>🔐 Acesso Administrativo</h2>
-            <input type="password" id="adminPassword" placeholder="Digite a senha">
-            <button onclick="verificarSenhaAdmin()">Entrar</button>
+            <h2>🔐 Área Restrita</h2>
+            <input type="text" id="adminUsername" placeholder="Usuário" autocomplete="off">
+            <input type="password" id="adminPassword" placeholder="Senha" onkeypress="if(event.key==='Enter') verificarLoginAdmin()">
+            <button onclick="verificarLoginAdmin()">Entrar</button>
+            <div id="loginError" class="error-message"></div>
         </div>
     </div>
 
     <div id="adminContent" style="display:none;">
         <header>
             <h2>🔧 Painel Administrativo - Doces Di</h2>
-            <button onclick="window.location.href='index.html'" style="background:var(--accent-color);color:white;border:none;padding:8px 15px;border-radius:20px;cursor:pointer;font-weight:bold;">Voltar à Loja</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="adminUserNome" style="background:rgba(255,255,255,0.2); padding:5px 15px; border-radius:20px;"></span>
+                <span id="adminUserRole" style="background:rgba(255,255,255,0.1); padding:5px 10px; border-radius:20px; font-size:0.8rem;"></span>
+                <button onclick="logoutAdmin()" style="background:var(--error);color:white;border:none;padding:8px 15px;border-radius:20px;cursor:pointer;font-weight:bold;">Sair</button>
+                <button onclick="window.location.href='index.html'" style="background:var(--accent-color);color:white;border:none;padding:8px 15px;border-radius:20px;cursor:pointer;font-weight:bold;">Voltar à Loja</button>
+            </div>
         </header>
 
         <div class="admin-tabs-container" id="adminTabsContainer">
             <div class="admin-tab ativo" data-tab="dashboard">📊 Dashboard</div>
             <div class="admin-tab" data-tab="produtos">🍰 Produtos</div>
             <div class="admin-tab" data-tab="categorias">🏷️ Categorias</div>
-            <div class="admin-tab" data-tab="estoque">📦 Insumos / Estoque</div>
-            <div class="admin-tab" data-tab="slides">📸 Banners / Slides</div>
+            <div class="admin-tab" data-tab="estoque">📦 Insumos</div>
+            <div class="admin-tab" data-tab="slides">📸 Banners</div>
             <div class="admin-tab" data-tab="personalizacao">🎨 Personalização</div>
-            <div class="admin-tab" data-tab="clientes">👥 Clientes</div>
+            <div class="admin-tab" data-tab="usuarios">👥 Admins</div>
+            <div class="admin-tab" data-tab="clientes">👤 Clientes</div>
         </div>
 
         <!-- Dashboard -->
         <div id="tabDashboard" class="admin-tab-content ativo">
             <div class="filter-box">
-                <div class="field">
-                    <label>📅 Data Início</label>
-                    <input type="date" id="dataInicio">
-                </div>
-                <div class="field">
-                    <label>📅 Data Fim</label>
-                    <input type="date" id="dataFim">
-                </div>
-                <div class="field">
-                    <label>&nbsp;</label>
-                    <button class="btn-filter" onclick="aplicarFiltroDashboard()">Aplicar Filtro</button>
-                </div>
-                <div class="field">
-                    <label>&nbsp;</label>
-                    <button class="btn-filter" onclick="limparFiltroDashboard()" style="background:#999;">Limpar</button>
-                </div>
+                <div class="field"><label>📅 Data Início</label><input type="date" id="dataInicio"></div>
+                <div class="field"><label>📅 Data Fim</label><input type="date" id="dataFim"></div>
+                <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="aplicarFiltroDashboard()">Aplicar</button></div>
+                <div class="field"><label>&nbsp;</label><button class="btn-filter" onclick="limparFiltroDashboard()" style="background:#999;">Limpar</button></div>
             </div>
-            <div class="dashboard-stats" id="dashboardStats">Carregando métricas...</div>
-            <div class="chart-container">
-                <canvas id="vendasChart"></canvas>
-            </div>
+            <div class="dashboard-stats" id="dashboardStats">Carregando...</div>
+            <div class="chart-container"><canvas id="vendasChart"></canvas></div>
             <div id="topProdutos" style="margin-top:20px;"></div>
         </div>
 
@@ -129,7 +136,7 @@
                 <div class="field"><label>URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
                 <button id="btnAddProduto" class="btn-add">➕ Adicionar</button>
             </div>
-            <h4>📋 Produtos Cadastrados (edição inline)</h4>
+            <h4>📋 Produtos Cadastrados</h4>
             <div id="listaAdminProdutos"></div>
         </div>
 
@@ -139,234 +146,158 @@
                 <div class="field"><label>Nome</label><input type="text" id="categoriaNome"></div>
                 <div class="field"><label>Ícone</label>
                     <select id="categoriaIcone">
-                        <option value="🍰">🍰 Bolo</option>
-                        <option value="🥧">🥧 Torta</option>
-                        <option value="🍬">🍬 Doce</option>
-                        <option value="🍪">🍪 Biscoito</option>
-                        <option value="🧁">🧁 Cupcake</option>
-                        <option value="🍩">🍩 Donut</option>
-                        <option value="🍫">🍫 Chocolate</option>
-                        <option value="🍭">🍭 Pirulito</option>
-                        <option value="🍦">🍦 Sorvete</option>
-                        <option value="🥨">🥨 Salgado</option>
+                        <option value="🍰">🍰 Bolo</option><option value="🥧">🥧 Torta</option>
+                        <option value="🍬">🍬 Doce</option><option value="🍪">🍪 Biscoito</option>
+                        <option value="🧁">🧁 Cupcake</option><option value="🍩">🍩 Donut</option>
+                        <option value="🍫">🍫 Chocolate</option><option value="🍭">🍭 Pirulito</option>
+                        <option value="🍦">🍦 Sorvete</option><option value="🥨">🥨 Salgado</option>
                         <option value="☕">☕ Café</option>
                     </select>
                 </div>
                 <button id="btnAddCategoria" class="btn-add">➕ Adicionar</button>
             </div>
-            <h4>📋 Categorias Cadastradas (arraste para reordenar)</h4>
+            <h4>📋 Categorias (arraste para reordenar)</h4>
             <div id="listaAdminCategorias"></div>
         </div>
 
         <!-- Estoque -->
         <div id="tabEstoque" class="admin-tab-content">
-            <h4>📦 Controle de Materiais e Insumos</h4>
+            <h4>📦 Materiais e Insumos</h4>
             <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                <input type="text" id="materialNome" class="form-control" placeholder="Nome do insumo" style="flex:2; min-width:150px;">
-                <input type="number" id="materialPreco" step="0.01" class="form-control" placeholder="Preço unitário" style="flex:1;">
-                <input type="text" id="materialUnidade" class="form-control" placeholder="Unidade (kg, g, un)" style="flex:1;">
-                <input type="number" id="materialEstoque" step="0.001" class="form-control" placeholder="Estoque atual" style="flex:1;">
+                <input type="text" id="materialNome" placeholder="Nome" style="flex:2; padding:8px; border-radius:20px; border:1px solid var(--border-color);">
+                <input type="number" id="materialPreco" step="0.01" placeholder="Preço" style="flex:1; padding:8px; border-radius:20px; border:1px solid var(--border-color);">
+                <input type="text" id="materialUnidade" placeholder="Unidade" style="flex:1; padding:8px; border-radius:20px; border:1px solid var(--border-color);">
+                <input type="number" id="materialEstoque" step="0.001" placeholder="Estoque" style="flex:1; padding:8px; border-radius:20px; border:1px solid var(--border-color);">
                 <button class="btn-add" onclick="adicionarMaterialAdmin()" style="margin:0;">+ Insumo</button>
             </div>
             <table class="tabela-estoque" id="tabelaMateriais">
-                <thead><tr><th>Material</th><th>Unidade</th><th>Preço Unitário</th><th>Estoque Atual</th><th>Ações</th></tr></thead>
+                <thead><tr><th>Material</th><th>Unidade</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
 
         <!-- Slides -->
         <div id="tabSlides" class="admin-tab-content">
-            <h3>Gerenciar Banners Iniciais (Slides)</h3>
+            <h3>Gerenciar Banners</h3>
             <div style="background:var(--bg-color); padding:15px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <div class="flex-row" style="margin-bottom:10px;">
-                    <div style="flex:3; min-width:250px;">
-                        <label>URL da imagem (ou use upload)</label>
-                        <input type="text" id="slideUrl" class="form-control full-width-input" placeholder="https://exemplo.com/imagem.jpg" style="width:100%;">
-                    </div>
+                    <div style="flex:3;"><label>URL da imagem</label><input type="text" id="slideUrl" class="form-control" placeholder="https://..." style="width:100%;"></div>
                 </div>
                 <div class="flex-row" style="margin-bottom:10px;">
-                    <div style="flex:1;">
-                        <label>Título do banner</label>
-                        <input type="text" id="slideTitulo" class="form-control" placeholder="Ex: Promoção de Páscoa">
-                    </div>
-                    <div style="flex:2;">
-                        <label>Descrição (opcional)</label>
-                        <input type="text" id="slideDescricao" class="form-control" placeholder="Texto curto sobre o banner">
-                    </div>
+                    <div style="flex:1;"><label>Título</label><input type="text" id="slideTitulo" class="form-control" placeholder="Título"></div>
+                    <div style="flex:2;"><label>Descrição</label><input type="text" id="slideDescricao" class="form-control" placeholder="Descrição"></div>
                 </div>
                 <div class="flex-row">
-                    <div style="flex:2;">
-                        <label>Ou enviar arquivo local</label>
-                        <input type="file" id="slideUpload" accept="image/*" class="form-control" style="padding:8px; width:100%;">
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:flex-end;">
-                        <button class="btn-add" onclick="limparUploadLocal()" style="background:#999; margin:0;">🗑️ Limpar</button>
-                        <button class="btn-add" onclick="adicionarSlideAdmin()" style="margin:0;">➕ Adicionar Slide</button>
-                    </div>
+                    <div style="flex:2;"><label>Ou enviar arquivo</label><input type="file" id="slideUpload" accept="image/*" class="form-control"></div>
+                    <div><button class="btn-add" onclick="limparUploadLocal()" style="background:#999;">🗑️ Limpar</button></div>
+                    <div><button class="btn-add" onclick="adicionarSlideAdmin()">➕ Adicionar</button></div>
                 </div>
             </div>
-            <h4>📸 Slides Atuais (edite título, descrição e URL)</h4>
-            <div id="listaAdminSlides" class="admin-list-container"></div>
+            <h4>📸 Slides Atuais</h4>
+            <div id="listaAdminSlides"></div>
         </div>
 
-        <!-- PERSONALIZAÇÃO: Cabeçalho, Rodapé e Palavras-chave para Clima -->
+        <!-- PERSONALIZAÇÃO -->
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
             
-            <!-- Cabeçalho -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🖼️ Cabeçalho</h4>
                 <div class="flex-row" style="margin-top:15px;">
-                    <div style="flex:1;">
-                        <label>Logo (URL da imagem)</label>
-                        <input type="text" id="headerLogoUrl" class="form-control" placeholder="https://exemplo.com/logo.jpg">
-                        <small style="display:block; margin-top:5px;">Use uma URL de imagem quadrada (recomendado 200x200)</small>
-                    </div>
-                    <div style="text-align:center;">
-                        <img id="logoPreview" class="logo-preview" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80" alt="Preview Logo">
-                    </div>
+                    <div style="flex:1;"><label>Logo URL</label><input type="text" id="headerLogoUrl" class="form-control" placeholder="URL da logo"></div>
+                    <div><img id="logoPreview" class="logo-preview" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80"></div>
                 </div>
                 <div class="flex-row" style="margin-top:15px;">
-                    <div style="flex:1;">
-                        <label>Nome da Loja</label>
-                        <input type="text" id="storeName" class="form-control" placeholder="Doces Di">
-                    </div>
+                    <div style="flex:1;"><label>Nome da Loja</label><input type="text" id="storeName" class="form-control" placeholder="Doces Di"></div>
                 </div>
                 <div class="flex-row" style="margin-top:15px;">
-                    <div style="flex:2;">
-                        <label>Ou enviar arquivo local (será convertido para base64)</label>
-                        <input type="file" id="logoUpload" accept="image/*" class="form-control">
-                    </div>
-                    <div>
-                        <button class="btn-add" onclick="uploadLogoLocal()" style="background:var(--accent-color);">📤 Usar esta imagem</button>
-                    </div>
+                    <div style="flex:2;"><label>Upload logo local</label><input type="file" id="logoUpload" accept="image/*" class="form-control"></div>
+                    <div><button class="btn-add" onclick="uploadLogoLocal()" style="background:var(--accent-color);">📤 Usar imagem</button></div>
                 </div>
-                <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Cabeçalho</button>
+                <button class="btn-add" onclick="salvarConfiguracoesCabecalho()" style="background:var(--accent-color);">💾 Salvar Cabeçalho</button>
             </div>
 
-            <!-- Rodapé com toggles -->
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
-                <h4>📞 Rodapé - Contatos e Informações</h4>
-                <p style="font-size:0.8rem; margin-bottom:15px; opacity:0.7;">✅ Marque o checkbox ao lado de cada informação para exibi-la no site</p>
-                
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:15px; margin-top:15px;">
-                    <!-- WhatsApp -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerWhatsappEnabled">
-                            <label style="font-weight:bold;">📱 WhatsApp</label>
-                        </div>
-                        <input type="text" id="footerWhatsapp" class="form-control" placeholder="(11) 99999-9999">
-                    </div>
-                    <!-- E-mail -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerEmailEnabled">
-                            <label style="font-weight:bold;">✉️ E-mail</label>
-                        </div>
-                        <input type="email" id="footerEmail" class="form-control" placeholder="contato@docesdi.com">
-                    </div>
-                    <!-- Instagram -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerInstagramEnabled">
-                            <label style="font-weight:bold;">📸 Instagram</label>
-                        </div>
-                        <input type="text" id="footerInstagram" class="form-control" placeholder="@docesdi">
-                    </div>
-                    <!-- Facebook -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerFacebookEnabled">
-                            <label style="font-weight:bold;">📘 Facebook</label>
-                        </div>
-                        <input type="text" id="footerFacebook" class="form-control" placeholder="https://facebook.com/docesdi">
-                    </div>
-                    <!-- Endereço -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerEnderecoEnabled">
-                            <label style="font-weight:bold;">📍 Endereço</label>
-                        </div>
-                        <input type="text" id="footerEndereco" class="form-control" placeholder="Rua Exemplo, 123 - Centro">
-                    </div>
-                    <!-- Horário -->
-                    <div>
-                        <div class="toggle-group">
-                            <input type="checkbox" id="footerHorarioEnabled">
-                            <label style="font-weight:bold;">🕒 Horário de Funcionamento</label>
-                        </div>
-                        <input type="text" id="footerHorario" class="form-control" placeholder="Seg-Sex: 8h às 18h | Sáb: 8h às 14h">
-                    </div>
+                <h4>📞 Rodapé</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px;">
+                    <div><label><input type="checkbox" id="footerWhatsappEnabled"> WhatsApp</label><input type="text" id="footerWhatsapp" class="form-control" placeholder="(11) 99999-9999"></div>
+                    <div><label><input type="checkbox" id="footerEmailEnabled"> E-mail</label><input type="email" id="footerEmail" class="form-control" placeholder="contato@docesdi.com"></div>
+                    <div><label><input type="checkbox" id="footerInstagramEnabled"> Instagram</label><input type="text" id="footerInstagram" class="form-control" placeholder="@docesdi"></div>
+                    <div><label><input type="checkbox" id="footerFacebookEnabled"> Facebook</label><input type="text" id="footerFacebook" class="form-control" placeholder="https://facebook.com/docesdi"></div>
+                    <div><label><input type="checkbox" id="footerEnderecoEnabled"> Endereço</label><input type="text" id="footerEndereco" class="form-control" placeholder="Rua Exemplo, 123"></div>
+                    <div><label><input type="checkbox" id="footerHorarioEnabled"> Horário</label><input type="text" id="footerHorario" class="form-control" placeholder="Seg-Sex: 8h às 18h"></div>
                 </div>
                 <button class="btn-add" onclick="salvarConfiguracoesRodape()" style="background:var(--accent-color); margin-top:15px;">💾 Salvar Rodapé</button>
             </div>
 
-            <!-- Palavras-chave para sugestão climática -->
-            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
-                <h4>🌡️ Palavras-chave para Sugestão por Clima</h4>
-                <p style="font-size:0.85rem; margin-bottom:15px; opacity:0.7;">O sistema usa estas palavras para sugerir produtos baseado na temperatura. Quanto mais palavras, mais precisa a sugestão!</p>
-                
-                <div style="margin-bottom:20px;">
-                    <h5>🔥 Clima Quente (≥ 26°C) - Produtos gelados/refrescantes</h5>
+            <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius);">
+                <h4>🌡️ Palavras-chave por Clima</h4>
+                <div style="margin-bottom:15px;">
+                    <h5>🔥 Quente (≥26°C)</h5>
                     <div id="palavrasQuentesContainer" style="margin:10px 0;"></div>
-                    <div class="keyword-input-group">
-                        <input type="text" id="novaPalavraQuente" class="form-control" placeholder="Nova palavra (ex: sorvete, milkshake, açaí)">
-                        <button class="btn-add" onclick="adicionarPalavraQuente()" style="margin:0;">+ Adicionar</button>
-                    </div>
+                    <div class="keyword-input-group"><input type="text" id="novaPalavraQuente" placeholder="Nova palavra"><button class="btn-add" onclick="adicionarPalavraQuente()">+</button></div>
                 </div>
-
-                <div style="margin-bottom:20px;">
-                    <h5>🍃 Clima Ameno (20-26°C) - Produtos refrescantes</h5>
+                <div style="margin-bottom:15px;">
+                    <h5>🍃 Ameno (20-26°C)</h5>
                     <div id="palavrasAmenasContainer" style="margin:10px 0;"></div>
-                    <div class="keyword-input-group">
-                        <input type="text" id="novaPalavraAmena" class="form-control" placeholder="Nova palavra (ex: suco, limonada, fruta)">
-                        <button class="btn-add" onclick="adicionarPalavraAmena()" style="margin:0;">+ Adicionar</button>
-                    </div>
+                    <div class="keyword-input-group"><input type="text" id="novaPalavraAmena" placeholder="Nova palavra"><button class="btn-add" onclick="adicionarPalavraAmena()">+</button></div>
                 </div>
-
-                <div style="margin-bottom:20px;">
-                    <h5>❄️ Clima Frio (< 20°C) - Produtos quentes/aconchegantes</h5>
+                <div style="margin-bottom:15px;">
+                    <h5>❄️ Frio (<20°C)</h5>
                     <div id="palavrasFriasContainer" style="margin:10px 0;"></div>
-                    <div class="keyword-input-group">
-                        <input type="text" id="novaPalavraFria" class="form-control" placeholder="Nova palavra (ex: café, chocolate quente, bolo)">
-                        <button class="btn-add" onclick="adicionarPalavraFria()" style="margin:0;">+ Adicionar</button>
-                    </div>
+                    <div class="keyword-input-group"><input type="text" id="novaPalavraFria" placeholder="Nova palavra"><button class="btn-add" onclick="adicionarPalavraFria()">+</button></div>
                 </div>
-
                 <button class="btn-add" onclick="salvarPalavrasChave()" style="background:var(--accent-color);">💾 Salvar Palavras-chave</button>
             </div>
+        </div>
+
+        <!-- USUÁRIOS ADMIN -->
+        <div id="tabUsuarios" class="admin-tab-content">
+            <h3>👥 Gerenciar Administradores</h3>
+            
+            <div class="form-usuario">
+                <h4>➕ Adicionar Novo Administrador</h4>
+                <div class="grid-2">
+                    <div><label>Usuário (nickname)</label><input type="text" id="novoUserUsername" class="form-control" placeholder="usuario123"></div>
+                    <div><label>Nome completo</label><input type="text" id="novoUserNome" class="form-control" placeholder="Nome do usuário"></div>
+                    <div><label>Senha</label><input type="password" id="novoUserSenha" class="form-control" placeholder="Mínimo 6 caracteres"></div>
+                    <div><label>Confirmar Senha</label><input type="password" id="novoUserConfirmarSenha" class="form-control" placeholder="Digite novamente"></div>
+                    <div><label>Perfil</label>
+                        <select id="novoUserRole" class="form-control">
+                            <option value="admin">Administrador (acesso total)</option>
+                            <option value="editor">Editor (acesso limitado)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarUsuarioAdmin()" style="background:var(--success);">➕ Adicionar Usuário</button>
+            </div>
+
+            <h4>📋 Usuários Cadastrados</h4>
+            <div id="listaUsuariosAdmin"></div>
         </div>
 
         <!-- Clientes -->
         <div id="tabClientes" class="admin-tab-content">
             <h4>👥 Clientes Cadastrados</h4>
-            <div id="listaClientesAdmin">Carregando lista de clientes...</div>
+            <div id="listaClientesAdmin">Carregando...</div>
         </div>
     </div>
 
     <script>
-        // Configuração do Supabase
         const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let produtos = [], categorias = [], materiais = [], clientes = [], pedidos = [], slides = [];
-        let configuracoes = {
-            cabecalho: { logo_url: '', nome_loja: 'Doces Di' },
-            rodape: {
-                whatsapp: { enabled: false, value: '' },
-                email: { enabled: false, value: '' },
-                instagram: { enabled: false, value: '' },
-                facebook: { enabled: false, value: '' },
-                endereco: { enabled: false, value: '' },
-                horario: { enabled: false, value: '' }
-            },
-            palavrasChave: { quentes: [], amenas: [], frias: [] }
+        let adminUserAtual = null;
+        let configCabecalho = { logo_url: '', nome_loja: 'Doces Di' };
+        let configRodape = {
+            whatsapp: { enabled: false, value: '' }, email: { enabled: false, value: '' },
+            instagram: { enabled: false, value: '' }, facebook: { enabled: false, value: '' },
+            endereco: { enabled: false, value: '' }, horario: { enabled: false, value: '' }
         };
+        let palavrasChaveClima = { quentes: [], amenas: [], frias: [] };
         let chartInstance = null;
-        let currentStartDate = null;
-        let currentEndDate = null;
 
         function showToast(msg, tipo='success'){
             const container = document.getElementById('toastContainer');
@@ -377,435 +308,291 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function verificarSenhaAdmin() {
+        function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+
+        // ========== LOGIN ADMIN ==========
+        async function verificarLoginAdmin() {
+            const username = document.getElementById('adminUsername').value.trim().toLowerCase();
             const senha = document.getElementById('adminPassword').value;
-            if(senha === 'admin123') {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
-                inicializarAdmin();
-            } else {
-                showToast("Senha incorreta!", 'error');
-            }
-        }
-
-        // Carregar configurações do Supabase
-        async function carregarConfiguracoes() {
-            try {
-                const { data, error } = await supabaseClient.from('configuracoes').select('*');
-                if(!error && data) {
-                    for(let config of data) {
-                        if(config.chave === 'cabecalho') configuracoes.cabecalho = config.valor;
-                        if(config.chave === 'rodape') configuracoes.rodape = config.valor;
-                        if(config.chave === 'palavras_chave') configuracoes.palavrasChave = config.valor;
-                    }
-                }
-            } catch(e) { console.log('Erro ao carregar configurações:', e); }
+            const errorDiv = document.getElementById('loginError');
             
-            if(!configuracoes.palavrasChave.quentes || configuracoes.palavrasChave.quentes.length === 0) {
-                configuracoes.palavrasChave = {
-                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante', 'smoothie', 'frozen', 'slush', 'granizado', 'sorbet'],
-                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus', 'laranja', 'morango', 'manga', 'maracujá', 'pêssego'],
-                    frias: ['café', 'chocolate quente', 'quentinho', 'cappuccino', 'latte', 'bolo', 'torta', 'pão de queijo', 'especial', 'quente']
-                };
-                await salvarPalavrasChave();
-            }
-            
-            renderizarPalavrasChaveUI();
-        }
-
-        function renderizarPalavrasChaveUI() {
-            const quentesContainer = document.getElementById('palavrasQuentesContainer');
-            const amenasContainer = document.getElementById('palavrasAmenasContainer');
-            const friasContainer = document.getElementById('palavrasFriasContainer');
-            
-            if(quentesContainer) {
-                quentesContainer.innerHTML = configuracoes.palavrasChave.quentes.map((p, i) => 
-                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('quentes', ${i})">&times;</span></span>`
-                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
-            }
-            if(amenasContainer) {
-                amenasContainer.innerHTML = configuracoes.palavrasChave.amenas.map((p, i) => 
-                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('amenas', ${i})">&times;</span></span>`
-                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
-            }
-            if(friasContainer) {
-                friasContainer.innerHTML = configuracoes.palavrasChave.frias.map((p, i) => 
-                    `<span class="keyword-tag">${p} <span style="cursor:pointer; margin-left:8px;" onclick="removerPalavra('frias', ${i})">&times;</span></span>`
-                ).join('') || '<span style="opacity:0.5;">Nenhuma palavra cadastrada</span>';
-            }
-        }
-
-        function adicionarPalavraQuente() {
-            const input = document.getElementById('novaPalavraQuente');
-            const palavra = input.value.trim().toLowerCase();
-            if(palavra && !configuracoes.palavrasChave.quentes.includes(palavra)) {
-                configuracoes.palavrasChave.quentes.push(palavra);
-                renderizarPalavrasChaveUI();
-                input.value = '';
-            } else if(configuracoes.palavrasChave.quentes.includes(palavra)) {
-                showToast("Palavra já existe!", 'error');
-            }
-        }
-
-        function adicionarPalavraAmena() {
-            const input = document.getElementById('novaPalavraAmena');
-            const palavra = input.value.trim().toLowerCase();
-            if(palavra && !configuracoes.palavrasChave.amenas.includes(palavra)) {
-                configuracoes.palavrasChave.amenas.push(palavra);
-                renderizarPalavrasChaveUI();
-                input.value = '';
-            } else if(configuracoes.palavrasChave.amenas.includes(palavra)) {
-                showToast("Palavra já existe!", 'error');
-            }
-        }
-
-        function adicionarPalavraFria() {
-            const input = document.getElementById('novaPalavraFria');
-            const palavra = input.value.trim().toLowerCase();
-            if(palavra && !configuracoes.palavrasChave.frias.includes(palavra)) {
-                configuracoes.palavrasChave.frias.push(palavra);
-                renderizarPalavrasChaveUI();
-                input.value = '';
-            } else if(configuracoes.palavrasChave.frias.includes(palavra)) {
-                showToast("Palavra já existe!", 'error');
-            }
-        }
-
-        function removerPalavra(tipo, index) {
-            configuracoes.palavrasChave[tipo].splice(index, 1);
-            renderizarPalavrasChaveUI();
-        }
-
-        async function salvarPalavrasChave() {
-            try {
-                const { error } = await supabaseClient.from('configuracoes').upsert({ 
-                    chave: 'palavras_chave', 
-                    valor: configuracoes.palavrasChave 
-                }, { onConflict: 'chave' });
-                if(!error) {
-                    showToast("Palavras-chave salvas com sucesso!");
-                    localStorage.setItem('docesdi_palavras_chave', JSON.stringify(configuracoes.palavrasChave));
-                } else throw error;
-            } catch(e) { showToast("Erro ao salvar palavras-chave", 'error'); }
-        }
-
-        // Configurações de Cabeçalho
-        function previewLogo() {
-            const url = document.getElementById('headerLogoUrl').value;
-            const preview = document.getElementById('logoPreview');
-            if(url && preview) preview.src = url;
-        }
-        
-        document.getElementById('headerLogoUrl')?.addEventListener('input', previewLogo);
-        
-        function uploadLogoLocal() {
-            const fileInput = document.getElementById('logoUpload');
-            if(fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64 = e.target.result;
-                    document.getElementById('headerLogoUrl').value = base64;
-                    document.getElementById('logoPreview').src = base64;
-                    showToast("Logo carregada! Clique em 'Salvar Cabeçalho' para finalizar.");
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                showToast("Selecione uma imagem primeiro!", 'error');
-            }
-        }
-
-        async function salvarConfiguracoesCabecalho() {
-            const logoUrl = document.getElementById('headerLogoUrl').value;
-            const nomeLoja = document.getElementById('storeName').value;
-            configuracoes.cabecalho = { logo_url: logoUrl, nome_loja: nomeLoja };
-            try {
-                const { error } = await supabaseClient.from('configuracoes').upsert({ 
-                    chave: 'cabecalho', 
-                    valor: configuracoes.cabecalho 
-                }, { onConflict: 'chave' });
-                if(!error) {
-                    showToast("Cabeçalho salvo com sucesso!");
-                    localStorage.setItem('docesdi_config_cabecalho', JSON.stringify(configuracoes.cabecalho));
-                } else throw error;
-            } catch(e) { showToast("Erro ao salvar cabeçalho", 'error'); }
-        }
-
-        async function salvarConfiguracoesRodape() {
-            configuracoes.rodape = {
-                whatsapp: {
-                    enabled: document.getElementById('footerWhatsappEnabled')?.checked || false,
-                    value: document.getElementById('footerWhatsapp').value
-                },
-                email: {
-                    enabled: document.getElementById('footerEmailEnabled')?.checked || false,
-                    value: document.getElementById('footerEmail').value
-                },
-                instagram: {
-                    enabled: document.getElementById('footerInstagramEnabled')?.checked || false,
-                    value: document.getElementById('footerInstagram').value
-                },
-                facebook: {
-                    enabled: document.getElementById('footerFacebookEnabled')?.checked || false,
-                    value: document.getElementById('footerFacebook').value
-                },
-                endereco: {
-                    enabled: document.getElementById('footerEnderecoEnabled')?.checked || false,
-                    value: document.getElementById('footerEndereco').value
-                },
-                horario: {
-                    enabled: document.getElementById('footerHorarioEnabled')?.checked || false,
-                    value: document.getElementById('footerHorario').value
-                }
-            };
-            try {
-                const { error } = await supabaseClient.from('configuracoes').upsert({ 
-                    chave: 'rodape', 
-                    valor: configuracoes.rodape 
-                }, { onConflict: 'chave' });
-                if(!error) {
-                    showToast("Rodapé salvo com sucesso!");
-                    localStorage.setItem('docesdi_config_rodape', JSON.stringify(configuracoes.rodape));
-                } else throw error;
-            } catch(e) { showToast("Erro ao salvar rodapé", 'error'); }
-        }
-
-        function carregarConfiguracoesUI() {
-            document.getElementById('headerLogoUrl').value = configuracoes.cabecalho?.logo_url || '';
-            document.getElementById('storeName').value = configuracoes.cabecalho?.nome_loja || 'Doces Di';
-            document.getElementById('logoPreview').src = configuracoes.cabecalho?.logo_url || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80';
-            
-            const rodape = configuracoes.rodape || {};
-            document.getElementById('footerWhatsappEnabled').checked = rodape.whatsapp?.enabled || false;
-            document.getElementById('footerWhatsapp').value = rodape.whatsapp?.value || '';
-            document.getElementById('footerEmailEnabled').checked = rodape.email?.enabled || false;
-            document.getElementById('footerEmail').value = rodape.email?.value || '';
-            document.getElementById('footerInstagramEnabled').checked = rodape.instagram?.enabled || false;
-            document.getElementById('footerInstagram').value = rodape.instagram?.value || '';
-            document.getElementById('footerFacebookEnabled').checked = rodape.facebook?.enabled || false;
-            document.getElementById('footerFacebook').value = rodape.facebook?.value || '';
-            document.getElementById('footerEnderecoEnabled').checked = rodape.endereco?.enabled || false;
-            document.getElementById('footerEndereco').value = rodape.endereco?.value || '';
-            document.getElementById('footerHorarioEnabled').checked = rodape.horario?.enabled || false;
-            document.getElementById('footerHorario').value = rodape.horario?.value || '';
-        }
-
-        // Sortable para as abas
-        function initSortableTabs() {
-            const container = document.getElementById('adminTabsContainer');
-            if(container && !window.sortableInstance) {
-                window.sortableInstance = new Sortable(container, {
-                    animation: 200,
-                    handle: '.admin-tab',
-                    ghostClass: 'dragging',
-                    onEnd: function() {
-                        const ordem = Array.from(document.querySelectorAll('.admin-tab')).map((tab, idx) => {
-                            return { tabId: tab.dataset.tab, ordem: idx };
-                        });
-                        localStorage.setItem('admin_tabs_order', JSON.stringify(ordem));
-                        showToast("Ordem das abas salva!");
-                    }
-                });
-            }
-        }
-
-        function carregarOrdemAbas() {
-            const ordemSalva = localStorage.getItem('admin_tabs_order');
-            if(ordemSalva) {
-                const ordem = JSON.parse(ordemSalva);
-                const container = document.getElementById('adminTabsContainer');
-                const tabs = Array.from(container.children);
-                ordem.sort((a,b) => a.ordem - b.ordem);
-                for(let item of ordem) {
-                    const tab = tabs.find(t => t.dataset.tab === item.tabId);
-                    if(tab) container.appendChild(tab);
-                }
-            }
-        }
-
-        // Dashboard
-        async function carregarDashboard(startDate = null, endDate = null) {
-            try {
-                let query = supabaseClient.from('pedidos').select('*');
-                if(startDate) query = query.gte('created_at', startDate + 'T00:00:00');
-                if(endDate) query = query.lte('created_at', endDate + 'T23:59:59');
-                const { data: pedidosData, error } = await query;
-                if(error) throw error;
-                pedidos = pedidosData || [];
-
-                if(pedidos.length === 0){
-                    document.getElementById('dashboardStats').innerHTML = "<p>Nenhum pedido no período selecionado.</p>";
-                    if(chartInstance) chartInstance.destroy();
-                    document.getElementById('topProdutos').innerHTML = '';
-                    return;
-                }
-                const total = pedidos.reduce((s,p) => s + (p.valor_total || 0), 0);
-                const ticket = total / pedidos.length;
-                document.getElementById('dashboardStats').innerHTML = `
-                    <div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div>
-                    <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
-                    <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${ticket.toFixed(2)}</div></div>
-                `;
-
-                const vendasPorData = {};
-                pedidos.forEach(p => {
-                    const data = new Date(p.created_at).toLocaleDateString('pt-BR');
-                    vendasPorData[data] = (vendasPorData[data] || 0) + (p.valor_total || 0);
-                });
-                const labels = Object.keys(vendasPorData).slice(-14);
-                const valores = labels.map(l => vendasPorData[l]);
-                
-                const ctx = document.getElementById('vendasChart').getContext('2d');
-                if(chartInstance) chartInstance.destroy();
-                chartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: { labels, datasets: [{ label: 'Vendas (R$)', data: valores, borderColor: '#d4a373', backgroundColor: 'rgba(212,163,115,0.1)', fill: true, tension: 0.3 }] },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
-
-                const vendasProdutos = {};
-                pedidos.forEach(p => {
-                    if(p.itens && Array.isArray(p.itens)) {
-                        p.itens.forEach(item => {
-                            vendasProdutos[item.nome || item.produto_nome] = (vendasProdutos[item.nome || item.produto_nome] || 0) + (item.quantidade || 1);
-                        });
-                    }
-                });
-                const top = Object.entries(vendasProdutos).sort((a,b) => b[1] - a[1]).slice(0,5);
-                document.getElementById('topProdutos').innerHTML = top.length ? 
-                    `<h3>🥇 Produtos mais vendidos</h3>` + top.map(([n,q]) => `<div class="admin-item-row"><span>${n}</span><span>${q} unidades</span></div>`).join('') 
-                    : '<p>Sem dados de produtos vendidos.</p>';
-            } catch(e) { console.error(e); showToast("Erro ao carregar dashboard", 'error'); }
-        }
-
-        function aplicarFiltroDashboard() {
-            const inicio = document.getElementById('dataInicio').value;
-            const fim = document.getElementById('dataFim').value;
-            currentStartDate = inicio || null;
-            currentEndDate = fim || null;
-            carregarDashboard(currentStartDate, currentEndDate);
-        }
-
-        function limparFiltroDashboard() {
-            document.getElementById('dataInicio').value = '';
-            document.getElementById('dataFim').value = '';
-            currentStartDate = null;
-            currentEndDate = null;
-            carregarDashboard();
-        }
-
-        // Slides
-        async function carregarSlides() {
-            try {
-                const { data, error } = await supabaseClient.from('slides').select('*').order('id', { ascending: true });
-                if(!error && data) slides = data;
-                else slides = [];
-                renderizarAdminSlides();
-            } catch(e) { console.error("Erro ao carregar slides:", e); slides = []; }
-        }
-
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        function limparUploadLocal() {
-            document.getElementById('slideUpload').value = '';
-            showToast("Arquivo removido do campo de upload.", 'success');
-        }
-
-        async function adicionarSlideAdmin() {
-            const urlInput = document.getElementById('slideUrl');
-            const tituloInput = document.getElementById('slideTitulo');
-            const descricaoInput = document.getElementById('slideDescricao');
-            const fileInput = document.getElementById('slideUpload');
-            let imageUrl = urlInput.value.trim();
-            
-            if(fileInput.files && fileInput.files[0]) {
-                try {
-                    const base64 = await fileToBase64(fileInput.files[0]);
-                    imageUrl = base64;
-                } catch(e) {
-                    showToast("Erro ao processar imagem local", 'error');
-                    return;
-                }
-            }
-            
-            if(!imageUrl) { showToast("Informe a URL da imagem ou selecione um arquivo local!", 'error'); return; }
-            const titulo = tituloInput.value.trim();
-            const descricao = descricaoInput.value.trim();
-            
-            try {
-                const { data, error } = await supabaseClient.from('slides').insert([{ url: imageUrl, titulo: titulo, descricao: descricao }]).select();
-                if(!error && data) {
-                    slides.push(data[0]);
-                    urlInput.value = '';
-                    tituloInput.value = '';
-                    descricaoInput.value = '';
-                    fileInput.value = '';
-                    renderizarAdminSlides();
-                    showToast("Slide adicionado com sucesso!");
-                } else { 
-                    console.error(error);
-                    showToast("Erro ao adicionar slide: " + (error?.message || "desconhecido"), 'error'); 
-                }
-            } catch(e) { console.error(e); showToast("Erro de conexão.", 'error'); }
-        }
-
-        async function editarSlideAdmin(id, novaUrl, novoTitulo, novaDescricao) {
-            if(!novaUrl) { showToast("URL inválida", 'error'); return; }
-            try {
-                const { error } = await supabaseClient.from('slides').update({ url: novaUrl, titulo: novoTitulo, descricao: novaDescricao }).eq('id', id);
-                if(!error) {
-                    const slide = slides.find(s => s.id === id);
-                    if(slide) {
-                        slide.url = novaUrl;
-                        slide.titulo = novoTitulo;
-                        slide.descricao = novaDescricao;
-                    }
-                    renderizarAdminSlides();
-                    showToast("Slide atualizado!");
-                } else { console.error(error); showToast("Erro ao editar slide.", 'error'); }
-            } catch(e) { showToast("Erro de conexão.", 'error'); }
-        }
-
-        async function excluirSlideAdmin(id) {
-            if(!confirm("Remover este slide?")) return;
-            try {
-                await supabaseClient.from('slides').delete().eq('id', id);
-                slides = slides.filter(s => s.id !== id);
-                renderizarAdminSlides();
-                showToast("Slide removido.");
-            } catch(e) { showToast("Erro ao excluir.", 'error'); }
-        }
-
-        function renderizarAdminSlides() {
-            const container = document.getElementById('listaAdminSlides');
-            if(!container) return;
-            if(slides.length === 0) {
-                container.innerHTML = '<p>Nenhum slide cadastrado. Adicione um banner acima.</p>';
+            if(!username || !senha) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = "Preencha usuário e senha!";
                 return;
             }
-            container.innerHTML = slides.map(s => `
-                <div class="admin-item-row" style="flex-wrap:wrap; gap:10px;">
-                    <img src="${s.url}" class="slide-preview" onerror="this.src='https://placehold.co/80x50?text=Erro'">
-                    <div class="slide-edit-fields">
-                        <input type="text" id="edit-url-${s.id}" value="${(s.url || '').replace(/"/g, '&quot;')}" class="form-control slide-edit-input" placeholder="URL" style="flex:2;">
-                        <input type="text" id="edit-titulo-${s.id}" value="${(s.titulo || '').replace(/"/g, '&quot;')}" class="form-control" placeholder="Título" style="flex:1;">
-                        <input type="text" id="edit-desc-${s.id}" value="${(s.descricao || '').replace(/"/g, '&quot;')}" class="form-control" placeholder="Descrição" style="flex:1.5;">
+            
+            errorDiv.style.display = 'none';
+            const senhaHash = hashSenha(senha);
+            
+            try {
+                console.log("Tentando login com:", username);
+                
+                const { data, error } = await supabaseClient
+                    .from('admin_users')
+                    .select('*')
+                    .eq('username', username)
+                    .eq('senha', senhaHash);
+                
+                if(error) {
+                    console.error("Erro na consulta:", error);
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerText = "Erro ao conectar com o banco de dados!";
+                    return;
+                }
+                
+                console.log("Resultado:", data);
+                
+                if(data && data.length > 0) {
+                    adminUserAtual = data[0];
+                    localStorage.setItem('docesdi_admin_user', JSON.stringify(adminUserAtual));
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('adminContent').style.display = 'block';
+                    document.getElementById('adminUserNome').innerHTML = `${adminUserAtual.nome} (@${adminUserAtual.username})`;
+                    document.getElementById('adminUserRole').innerHTML = adminUserAtual.role === 'admin' ? '👑 Administrador' : '✏️ Editor';
+                    inicializarAdmin();
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerText = "Usuário ou senha incorretos!";
+                }
+            } catch(e) {
+                console.error("Erro no login:", e);
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = "Erro ao fazer login! Verifique sua conexão.";
+            }
+        }
+
+        function logoutAdmin() {
+            adminUserAtual = null;
+            localStorage.removeItem('docesdi_admin_user');
+            document.getElementById('adminContent').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function verificarSessaoAdmin() {
+            const saved = localStorage.getItem('docesdi_admin_user');
+            if(saved) {
+                try {
+                    adminUserAtual = JSON.parse(saved);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('adminContent').style.display = 'block';
+                    document.getElementById('adminUserNome').innerHTML = `${adminUserAtual.nome} (@${adminUserAtual.username})`;
+                    document.getElementById('adminUserRole').innerHTML = adminUserAtual.role === 'admin' ? '👑 Administrador' : '✏️ Editor';
+                    inicializarAdmin();
+                } catch(e) {
+                    console.error("Erro ao restaurar sessão:", e);
+                    localStorage.removeItem('docesdi_admin_user');
+                }
+            }
+        }
+
+        // ========== CRUD USUÁRIOS ADMIN ==========
+        async function carregarUsuariosAdmin() {
+            try {
+                const { data, error } = await supabaseClient.from('admin_users').select('*').order('id');
+                if(error) throw error;
+                renderizarUsuariosAdmin(data || []);
+            } catch(e) { console.error(e); showToast("Erro ao carregar usuários", 'error'); }
+        }
+
+        function renderizarUsuariosAdmin(usuarios) {
+            const container = document.getElementById('listaUsuariosAdmin');
+            if(!container) return;
+            if(usuarios.length === 0) { container.innerHTML = '<p>Nenhum usuário cadastrado.</p>'; return; }
+            
+            container.innerHTML = usuarios.map(u => `
+                <div class="admin-user-card" data-id="${u.id}">
+                    <div class="user-info">
+                        <strong>${u.nome}</strong><br>
+                        <small>@${u.username}</small>
+                        <span class="badge-admin">${u.role === 'admin' ? 'Administrador' : 'Editor'}</span>
+                        ${u.id === adminUserAtual?.id ? '<span class="badge-admin" style="background:var(--success);">Você</span>' : ''}
                     </div>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-icon btn-salvar" onclick="editarSlideAdmin(${s.id}, document.getElementById('edit-url-${s.id}').value, document.getElementById('edit-titulo-${s.id}').value, document.getElementById('edit-desc-${s.id}').value)"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
-                        <button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                    <div class="user-actions">
+                        <button class="btn-icon" onclick="abrirEditarUsuario(${u.id}, '${u.username}')"><i class="fa-solid fa-key"></i> Alterar Senha</button>
+                        ${u.id !== adminUserAtual?.id ? `<button class="btn-icon btn-excluir" onclick="excluirUsuarioAdmin(${u.id})"><i class="fa-solid fa-trash"></i> Excluir</button>` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        // Produtos, Categorias, Estoque, Clientes
+        async function adicionarUsuarioAdmin() {
+            const username = document.getElementById('novoUserUsername').value.trim().toLowerCase();
+            const nome = document.getElementById('novoUserNome').value.trim();
+            const senha = document.getElementById('novoUserSenha').value;
+            const confirmar = document.getElementById('novoUserConfirmarSenha').value;
+            const role = document.getElementById('novoUserRole').value;
+            
+            if(!username || !nome) { showToast("Preencha usuário e nome!", 'error'); return; }
+            if(senha.length < 6) { showToast("Senha deve ter pelo menos 6 caracteres!", 'error'); return; }
+            if(senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
+            
+            const senhaHash = hashSenha(senha);
+            
+            try {
+                const { data, error } = await supabaseClient.from('admin_users').insert([{
+                    username, nome, senha: senhaHash, role, ativo: true
+                }]).select();
+                if(error) {
+                    if(error.code === '23505') showToast("Este nome de usuário já existe!", 'error');
+                    else showToast("Erro ao adicionar usuário", 'error');
+                    return;
+                }
+                showToast(`Usuário ${username} adicionado!`);
+                document.getElementById('novoUserUsername').value = '';
+                document.getElementById('novoUserNome').value = '';
+                document.getElementById('novoUserSenha').value = '';
+                document.getElementById('novoUserConfirmarSenha').value = '';
+                carregarUsuariosAdmin();
+            } catch(e) { showToast("Erro ao adicionar usuário", 'error'); }
+        }
+
+        async function excluirUsuarioAdmin(id) {
+            if(!confirm("Excluir este usuário permanentemente?")) return;
+            try {
+                await supabaseClient.from('admin_users').delete().eq('id', id);
+                showToast("Usuário removido!");
+                carregarUsuariosAdmin();
+            } catch(e) { showToast("Erro ao excluir", 'error'); }
+        }
+
+        async function abrirEditarUsuario(id, username) {
+            const novaSenha = prompt(`Digite a nova senha para o usuário @${username}:`);
+            if(novaSenha !== null && novaSenha.length > 0 && novaSenha.length < 6) {
+                showToast("Senha deve ter pelo menos 6 caracteres!", 'error');
+                return;
+            }
+            if(novaSenha !== null && novaSenha.length >= 6) {
+                const senhaHash = hashSenha(novaSenha);
+                try {
+                    await supabaseClient.from('admin_users').update({ senha: senhaHash }).eq('id', id);
+                    showToast(`Senha de @${username} atualizada!`);
+                } catch(e) { showToast("Erro ao atualizar senha", 'error'); }
+            }
+        }
+
+        // ========== CONFIGURAÇÕES ==========
+        async function carregarConfiguracoes() {
+            try {
+                const { data, error } = await supabaseClient.from('configuracoes').select('*');
+                if(!error && data) {
+                    for(let config of data) {
+                        if(config.chave === 'cabecalho') { configCabecalho = config.valor; carregarConfigCabecalhoUI(); }
+                        if(config.chave === 'rodape') { configRodape = config.valor; carregarConfigRodapeUI(); }
+                        if(config.chave === 'palavras_chave') { palavrasChaveClima = config.valor; renderizarPalavrasChaveUI(); }
+                    }
+                }
+            } catch(e) { console.log('Erro:', e); }
+            
+            if(!palavrasChaveClima.quentes || palavrasChaveClima.quentes.length === 0) {
+                palavrasChaveClima = {
+                    quentes: ['sorvete', 'milkshake', 'açaí', 'picolé', 'gelado', 'refrescante'],
+                    amenas: ['limonada', 'suco', 'fruta', 'leve', 'citrus'],
+                    frias: ['café', 'chocolate', 'bolo', 'torta', 'quentinho']
+                };
+            }
+        }
+
+        function carregarConfigCabecalhoUI() {
+            document.getElementById('headerLogoUrl').value = configCabecalho?.logo_url || '';
+            document.getElementById('storeName').value = configCabecalho?.nome_loja || 'Doces Di';
+            document.getElementById('logoPreview').src = configCabecalho?.logo_url || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80';
+        }
+
+        function carregarConfigRodapeUI() {
+            const r = configRodape || {};
+            document.getElementById('footerWhatsappEnabled').checked = r.whatsapp?.enabled || false;
+            document.getElementById('footerWhatsapp').value = r.whatsapp?.value || '';
+            document.getElementById('footerEmailEnabled').checked = r.email?.enabled || false;
+            document.getElementById('footerEmail').value = r.email?.value || '';
+            document.getElementById('footerInstagramEnabled').checked = r.instagram?.enabled || false;
+            document.getElementById('footerInstagram').value = r.instagram?.value || '';
+            document.getElementById('footerFacebookEnabled').checked = r.facebook?.enabled || false;
+            document.getElementById('footerFacebook').value = r.facebook?.value || '';
+            document.getElementById('footerEnderecoEnabled').checked = r.endereco?.enabled || false;
+            document.getElementById('footerEndereco').value = r.endereco?.value || '';
+            document.getElementById('footerHorarioEnabled').checked = r.horario?.enabled || false;
+            document.getElementById('footerHorario').value = r.horario?.value || '';
+        }
+
+        async function salvarConfiguracoesCabecalho() {
+            configCabecalho = {
+                logo_url: document.getElementById('headerLogoUrl').value,
+                nome_loja: document.getElementById('storeName').value
+            };
+            try {
+                await supabaseClient.from('configuracoes').upsert({ chave: 'cabecalho', valor: configCabecalho }, { onConflict: 'chave' });
+                showToast("Cabeçalho salvo!");
+            } catch(e) { showToast("Erro ao salvar", 'error'); }
+        }
+
+        async function salvarConfiguracoesRodape() {
+            configRodape = {
+                whatsapp: { enabled: document.getElementById('footerWhatsappEnabled').checked, value: document.getElementById('footerWhatsapp').value },
+                email: { enabled: document.getElementById('footerEmailEnabled').checked, value: document.getElementById('footerEmail').value },
+                instagram: { enabled: document.getElementById('footerInstagramEnabled').checked, value: document.getElementById('footerInstagram').value },
+                facebook: { enabled: document.getElementById('footerFacebookEnabled').checked, value: document.getElementById('footerFacebook').value },
+                endereco: { enabled: document.getElementById('footerEnderecoEnabled').checked, value: document.getElementById('footerEndereco').value },
+                horario: { enabled: document.getElementById('footerHorarioEnabled').checked, value: document.getElementById('footerHorario').value }
+            };
+            try {
+                await supabaseClient.from('configuracoes').upsert({ chave: 'rodape', valor: configRodape }, { onConflict: 'chave' });
+                showToast("Rodapé salvo!");
+            } catch(e) { showToast("Erro ao salvar", 'error'); }
+        }
+
+        function renderizarPalavrasChaveUI() {
+            const q = document.getElementById('palavrasQuentesContainer');
+            const a = document.getElementById('palavrasAmenasContainer');
+            const f = document.getElementById('palavrasFriasContainer');
+            if(q) q.innerHTML = (palavrasChaveClima.quentes || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('quentes',${i})">&times;</span></span>`).join('');
+            if(a) a.innerHTML = (palavrasChaveClima.amenas || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('amenas',${i})">&times;</span></span>`).join('');
+            if(f) f.innerHTML = (palavrasChaveClima.frias || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('frias',${i})">&times;</span></span>`).join('');
+        }
+
+        function adicionarPalavraQuente() { adicionarPalavra('quentes', 'novaPalavraQuente'); }
+        function adicionarPalavraAmena() { adicionarPalavra('amenas', 'novaPalavraAmena'); }
+        function adicionarPalavraFria() { adicionarPalavra('frias', 'novaPalavraFria'); }
+        
+        function adicionarPalavra(tipo, inputId) {
+            const input = document.getElementById(inputId);
+            const palavra = input.value.trim().toLowerCase();
+            if(palavra && !palavrasChaveClima[tipo].includes(palavra)) {
+                palavrasChaveClima[tipo].push(palavra);
+                renderizarPalavrasChaveUI();
+                input.value = '';
+            }
+        }
+        
+        function removerPalavra(tipo, index) {
+            palavrasChaveClima[tipo].splice(index, 1);
+            renderizarPalavrasChaveUI();
+        }
+        
+        async function salvarPalavrasChave() {
+            try {
+                await supabaseClient.from('configuracoes').upsert({ chave: 'palavras_chave', valor: palavrasChaveClima }, { onConflict: 'chave' });
+                showToast("Palavras-chave salvas!");
+            } catch(e) { showToast("Erro ao salvar", 'error'); }
+        }
+
+        function uploadLogoLocal() {
+            const file = document.getElementById('logoUpload').files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('headerLogoUrl').value = e.target.result;
+                    document.getElementById('logoPreview').src = e.target.result;
+                    showToast("Logo carregada! Clique em Salvar Cabeçalho.");
+                };
+                reader.readAsDataURL(file);
+            } else showToast("Selecione uma imagem!", 'error');
+        }
+
+        // ========== DEMAIS FUNÇÕES ==========
         async function carregarDadosBasicos(){
             let { data: prodData } = await supabaseClient.from('produtos').select('*');
             produtos = prodData || [];
@@ -824,219 +611,211 @@
 
         function renderizarProdutosInline(){
             const container = document.getElementById('listaAdminProdutos');
+            if(!container) return;
             if(produtos.length === 0) { container.innerHTML = "<p>Nenhum produto cadastrado.</p>"; return; }
             container.innerHTML = produtos.map(p => `
                 <div class="produto-admin-item" data-id="${p.id}">
-                    <div style="flex:2;"><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome" placeholder="Nome"></div>
-                    <div style="flex:3;"><textarea rows="1" data-field="descricao" placeholder="Descrição">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
-                    <div style="flex:1;"><input type="number" step="0.01" value="${p.preco}" data-field="preco" placeholder="Preço"></div>
-                    <div style="flex:1;"><input type="number" value="${p.estoque || 0}" data-field="estoque" placeholder="Estoque"></div>
-                    <div style="flex:1.5;">
-                        <select data-field="categoria_id">
-                            ${categorias.map(cat => `<option value="${cat.id}" ${cat.id == p.categoria_id ? 'selected' : ''}>${cat.icone || '📁'} ${cat.nome}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div style="flex:2;"><input type="text" value="${p.imagem || ''}" data-field="imagem" placeholder="URL da imagem"></div>
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-icon btn-salvar" onclick="salvarProdutoAdmin(${p.id})"><i class="fa-solid fa-floppy-disk"></i></button>
-                        <button class="btn-icon btn-excluir" onclick="excluirProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                    <div><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome"></div>
+                    <div><textarea rows="1" data-field="descricao">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
+                    <div><input type="number" step="0.01" value="${p.preco}" data-field="preco"></div>
+                    <div><input type="number" value="${p.estoque || 0}" data-field="estoque"></div>
+                    <div><select data-field="categoria_id">${categorias.map(c => `<option value="${c.id}" ${c.id==p.categoria_id?'selected':''}>${c.icone} ${c.nome}</option>`).join('')}</select></div>
+                    <div><input type="text" value="${p.imagem || ''}" data-field="imagem"></div>
+                    <div><button class="btn-icon btn-salvar" onclick="salvarProdutoAdmin(${p.id})"><i class="fa-solid fa-save"></i></button><button class="btn-icon btn-excluir" onclick="excluirProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
             `).join('');
         }
 
-        window.salvarProdutoAdmin = async function(id) {
-            const prod = produtos.find(p => p.id === id);
+        window.salvarProdutoAdmin = async function(id){
+            const prod = produtos.find(p=>p.id===id);
             if(!prod) return;
             const linha = document.querySelector(`.produto-admin-item[data-id="${id}"]`);
-            if(linha) {
+            if(linha){
                 prod.nome = linha.querySelector('[data-field="nome"]').value;
                 prod.descricao = linha.querySelector('[data-field="descricao"]').value;
                 prod.preco = parseFloat(linha.querySelector('[data-field="preco"]').value);
                 prod.estoque = parseInt(linha.querySelector('[data-field="estoque"]').value);
                 prod.categoria_id = parseInt(linha.querySelector('[data-field="categoria_id"]').value);
                 prod.imagem = linha.querySelector('[data-field="imagem"]').value;
+                await supabaseClient.from('produtos').upsert(prod).eq('id',id);
+                showToast("Produto atualizado!");
             }
-            try {
-                const { error } = await supabaseClient.from('produtos').upsert(prod).eq('id', id);
-                if(error) throw error;
-                showToast(`Produto "${prod.nome}" atualizado!`);
-                localStorage.setItem('docesdi_produtos', JSON.stringify(produtos));
-            } catch(e) { showToast("Erro ao salvar!", 'error'); }
         };
 
-        window.excluirProdutoAdmin = async function(id) {
-            if(!confirm("Remover produto?")) return;
-            try {
-                await supabaseClient.from('produtos').delete().eq('id', id);
-                produtos = produtos.filter(p => p.id !== id);
+        window.excluirProdutoAdmin = async function(id){
+            if(confirm("Remover?")){
+                await supabaseClient.from('produtos').delete().eq('id',id);
+                produtos = produtos.filter(p=>p.id!==id);
                 renderizarProdutosInline();
-                showToast("Produto removido.");
-            } catch(e) { showToast("Erro ao excluir.", 'error'); }
+                showToast("Produto removido!");
+            }
         };
 
-        function renderizarCategorias() {
-            const container = document.getElementById('listaAdminCategorias');
-            if(!container) return;
-            container.innerHTML = categorias.map(c => `
-                <div class="admin-item-row" data-id="${c.id}">
-                    <div><span style="font-size:1.2rem;">${c.icone || '📁'}</span> <strong>${c.nome}</strong></div>
-                    <button class="btn-icon btn-excluir" onclick="excluirCategoriaAdmin(${c.id})"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            `).join('');
-            if(window.sortableCategorias) window.sortableCategorias.destroy();
-            window.sortableCategorias = new Sortable(container, {
-                animation: 150,
-                onEnd: async () => {
-                    const novasOrdens = [];
-                    container.querySelectorAll('.admin-item-row').forEach((row, idx) => {
-                        const id = row.dataset.id;
-                        novasOrdens.push({ id, ordem: idx+1 });
-                        const cat = categorias.find(c => c.id == id);
-                        if(cat) cat.ordem = idx+1;
-                    });
-                    categorias.sort((a,b) => a.ordem - b.ordem);
-                    for(let item of novasOrdens) {
-                        await supabaseClient.from('categorias').update({ ordem: item.ordem }).eq('id', item.id);
-                    }
-                    showToast("Ordem das categorias salva!");
-                }
-            });
-        }
-
-        async function excluirCategoriaAdmin(id) {
-            if(!confirm("Excluir categoria?")) return;
-            await supabaseClient.from('categorias').delete().eq('id', id);
-            categorias = categorias.filter(c => c.id !== id);
-            renderizarCategorias();
-            popularSelectCategorias();
-            renderizarProdutosInline();
-            showToast("Categoria removida.");
-        }
-
-        function popularSelectCategorias() {
-            const select = document.getElementById('prodCategoria');
-            if(select) select.innerHTML = categorias.map(c => `<option value="${c.id}">${c.icone} ${c.nome}</option>`).join('');
-        }
-
-        document.getElementById('btnAddProduto').addEventListener('click', async () => {
-            const nome = document.getElementById('prodNome').value.trim();
-            const preco = parseFloat(document.getElementById('prodPreco').value);
-            if(!nome || isNaN(preco)) { showToast("Preencha nome e preço!", "error"); return; }
+        document.getElementById('btnAddProduto').addEventListener('click', async ()=>{
             const novo = {
-                nome,
+                nome: document.getElementById('prodNome').value,
                 descricao: document.getElementById('prodDesc').value,
-                preco,
-                estoque: parseInt(document.getElementById('prodEstoque').value) || 0,
+                preco: parseFloat(document.getElementById('prodPreco').value),
+                estoque: parseInt(document.getElementById('prodEstoque').value)||0,
                 categoria_id: parseInt(document.getElementById('prodCategoria').value),
                 imagem: document.getElementById('prodImagem').value
             };
-            const { data, error } = await supabaseClient.from('produtos').insert([novo]).select();
-            if(!error && data) {
-                produtos.push(data[0]);
-                renderizarProdutosInline();
-                showToast("Produto adicionado!");
-                document.getElementById('prodNome').value = '';
-                document.getElementById('prodDesc').value = '';
-                document.getElementById('prodPreco').value = '';
-                document.getElementById('prodEstoque').value = '';
-                document.getElementById('prodImagem').value = '';
-            } else showToast("Erro ao adicionar.", 'error');
+            if(!novo.nome || isNaN(novo.preco)) return showToast("Preencha nome e preço!",'error');
+            const {data,error}=await supabaseClient.from('produtos').insert([novo]).select();
+            if(!error && data){ produtos.push(data[0]); renderizarProdutosInline(); showToast("Produto adicionado!"); }
+            else showToast("Erro!",'error');
         });
 
-        document.getElementById('btnAddCategoria').addEventListener('click', async () => {
-            const nome = document.getElementById('categoriaNome').value.trim();
-            const icone = document.getElementById('categoriaIcone').value;
-            if(!nome) { showToast("Preencha o nome!", 'error'); return; }
-            const { data, error } = await supabaseClient.from('categorias').insert([{ nome, icone, ordem: categorias.length+1 }]).select();
-            if(!error && data) {
-                categorias.push(data[0]);
+        function renderizarCategorias(){
+            const container = document.getElementById('listaAdminCategorias');
+            if(!container) return;
+            container.innerHTML = categorias.map(c=>`<div class="admin-item-row" data-id="${c.id}"><div>${c.icone} ${c.nome}</div><button class="btn-icon btn-excluir" onclick="excluirCategoriaAdmin(${c.id})"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+            new Sortable(container,{animation:150,onEnd:async()=>{
+                const ordens = Array.from(container.querySelectorAll('.admin-item-row')).map((row,i)=>({id:row.dataset.id,ordem:i+1}));
+                for(let o of ordens) await supabaseClient.from('categorias').update({ordem:o.ordem}).eq('id',o.id);
+                showToast("Ordem salva!");
+            }});
+        }
+
+        async function excluirCategoriaAdmin(id){
+            if(confirm("Excluir categoria?")){
+                await supabaseClient.from('categorias').delete().eq('id',id);
+                categorias=categorias.filter(c=>c.id!==id);
                 renderizarCategorias();
                 popularSelectCategorias();
-                showToast("Categoria adicionada!");
-                document.getElementById('categoriaNome').value = '';
-            } else showToast("Erro ao adicionar categoria.", 'error');
+                showToast("Categoria removida!");
+            }
+        }
+
+        document.getElementById('btnAddCategoria').addEventListener('click',async()=>{
+            const nome=document.getElementById('categoriaNome').value.trim();
+            const icone=document.getElementById('categoriaIcone').value;
+            if(!nome) return showToast("Preencha o nome!",'error');
+            const {data,error}=await supabaseClient.from('categorias').insert([{nome,icone,ordem:categorias.length+1}]).select();
+            if(!error && data){ categorias.push(data[0]); renderizarCategorias(); popularSelectCategorias(); showToast("Categoria adicionada!"); }
         });
 
-        async function adicionarMaterialAdmin() {
-            const nome = document.getElementById('materialNome').value.trim();
-            const preco_unitario = parseFloat(document.getElementById('materialPreco').value);
-            const unidade = document.getElementById('materialUnidade').value.trim();
-            const estoque_atual = parseFloat(document.getElementById('materialEstoque').value) || 0;
-            if(!nome || isNaN(preco_unitario) || !unidade) { showToast("Preencha todos os campos do insumo!", 'error'); return; }
-            const { data, error } = await supabaseClient.from('materiais').insert([{ nome, preco_unitario, unidade, estoque_atual }]).select();
-            if(!error && data) {
-                materiais.push(data[0]);
+        function popularSelectCategorias(){
+            const sel=document.getElementById('prodCategoria');
+            if(sel) sel.innerHTML=categorias.map(c=>`<option value="${c.id}">${c.icone} ${c.nome}</option>`).join('');
+        }
+
+        async function adicionarMaterialAdmin(){
+            const nome=document.getElementById('materialNome').value.trim();
+            const preco=parseFloat(document.getElementById('materialPreco').value);
+            const unidade=document.getElementById('materialUnidade').value.trim();
+            const estoque=parseFloat(document.getElementById('materialEstoque').value)||0;
+            if(!nome||isNaN(preco)||!unidade) return showToast("Preencha todos os campos!",'error');
+            const {data,error}=await supabaseClient.from('materiais').insert([{nome,preco_unitario:preco,unidade,estoque_atual:estoque}]).select();
+            if(!error && data){ materiais.push(data[0]); renderizarInsumos(); showToast("Insumo adicionado!"); }
+        }
+
+        function renderizarInsumos(){
+            const tbody=document.querySelector('#tabelaMateriais tbody');
+            if(!tbody) return;
+            tbody.innerHTML=materiais.map(m=>`<tr><td>${m.nome}</td><td>${m.unidade}</td><td>R$ ${(m.preco_unitario||0).toFixed(2)}</td><td>${m.estoque_atual||0}</td><td><button class="btn-icon btn-excluir" onclick="excluirMaterialAdmin(${m.id})">🗑️</button></td></tr>`).join('');
+        }
+
+        async function excluirMaterialAdmin(id){
+            if(confirm("Excluir?")){
+                await supabaseClient.from('materiais').delete().eq('id',id);
+                materiais=materiais.filter(m=>m.id!==id);
                 renderizarInsumos();
-                showToast("Insumo cadastrado!");
-                document.getElementById('materialNome').value = '';
-                document.getElementById('materialPreco').value = '';
-                document.getElementById('materialUnidade').value = '';
-                document.getElementById('materialEstoque').value = '';
-            } else showToast("Erro ao cadastrar insumo.", 'error');
+                showToast("Insumo removido!");
+            }
         }
 
-        async function excluirMaterialAdmin(id) {
-            if(!confirm("Excluir insumo?")) return;
-            await supabaseClient.from('materiais').delete().eq('id', id);
-            materiais = materiais.filter(m => m.id !== id);
-            renderizarInsumos();
-            showToast("Insumo removido.");
+        function renderizarClientes(){
+            const container=document.getElementById('listaClientesAdmin');
+            if(!container) return;
+            if(clientes.length===0){ container.innerHTML="<p>Nenhum cliente cadastrado.</p>"; return; }
+            container.innerHTML=clientes.map(c=>`<div class="admin-item-row"><div><strong>${c.nome||'Sem nome'}</strong> - ${c.telefone||'Sem telefone'}</div><div>${c.endereco||'Endereço não informado'}</div></div>`).join('');
         }
 
-        function renderizarInsumos() {
-            const tbody = document.querySelector('#tabelaMateriais tbody');
-            if(materiais.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Nenhum insumo cadastrado.</td></tr>"; return; }
-            tbody.innerHTML = materiais.map(m => `
-                <tr>
-                    <td>${m.nome}</td>
-                    <td>${m.unidade}</td>
-                    <td>R$ ${m.preco_unitario?.toFixed(2) || '0,00'}</td>
-                    <td>${m.estoque_atual || 0}</td>
-                    <td><button class="btn-icon btn-excluir" onclick="excluirMaterialAdmin(${m.id})">🗑️</button></td>
-                </tr>
-            `).join('');
+        async function carregarSlides(){
+            const {data}=await supabaseClient.from('slides').select('*');
+            slides=data||[];
+            renderizarAdminSlides();
         }
 
-        function renderizarClientes() {
-            const container = document.getElementById('listaClientesAdmin');
-            if(clientes.length === 0) { container.innerHTML = "<p>Nenhum cliente cadastrado.</p>"; return; }
-            container.innerHTML = clientes.map(c => `
-                <div class="admin-item-row">
-                    <div><strong>${c.nome || 'Sem nome'}</strong> - ${c.telefone || 'Sem telefone'}</div>
-                    <div>${c.endereco || 'Endereço não informado'}</div>
-                </div>
-            `).join('');
+        async function adicionarSlideAdmin(){
+            const url=document.getElementById('slideUrl').value.trim();
+            const titulo=document.getElementById('slideTitulo').value.trim();
+            const descricao=document.getElementById('slideDescricao').value.trim();
+            const file=document.getElementById('slideUpload').files[0];
+            let imageUrl=url;
+            if(file){
+                const reader=new FileReader();
+                reader.onload=async function(e){
+                    await supabaseClient.from('slides').insert([{url:e.target.result,titulo,descricao}]);
+                    carregarSlides();
+                    showToast("Slide adicionado!");
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+            if(!imageUrl) return showToast("URL da imagem obrigatória!",'error');
+            await supabaseClient.from('slides').insert([{url:imageUrl,titulo,descricao}]);
+            carregarSlides();
+            showToast("Slide adicionado!");
+            document.getElementById('slideUrl').value='';
+            document.getElementById('slideTitulo').value='';
+            document.getElementById('slideDescricao').value='';
         }
 
-        async function inicializarAdmin() {
+        function renderizarAdminSlides(){
+            const container=document.getElementById('listaAdminSlides');
+            if(!container) return;
+            container.innerHTML=slides.map(s=>`<div class="admin-item-row"><img src="${s.url}" style="height:50px;width:80px;object-fit:cover;"><div>${s.titulo||''}</div><button class="btn-icon btn-excluir" onclick="excluirSlideAdmin(${s.id})"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+        }
+
+        async function excluirSlideAdmin(id){
+            if(confirm("Remover slide?")){
+                await supabaseClient.from('slides').delete().eq('id',id);
+                carregarSlides();
+                showToast("Slide removido!");
+            }
+        }
+
+        function limparUploadLocal(){ document.getElementById('slideUpload').value=''; showToast("Upload limpo!"); }
+
+        async function carregarDashboard(){
+            const {data}=await supabaseClient.from('pedidos').select('*');
+            pedidos=data||[];
+            const total=pedidos.reduce((s,p)=>s+(p.valor_total||0),0);
+            document.getElementById('dashboardStats').innerHTML=`<div class="stat-card"><h4>💰 Faturamento</h4><div class="value">R$ ${total.toFixed(2)}</div></div><div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div><div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
+        }
+
+        function aplicarFiltroDashboard(){ carregarDashboard(); }
+        function limparFiltroDashboard(){ carregarDashboard(); }
+
+        async function inicializarAdmin(){
             await carregarDadosBasicos();
-            await carregarSlides();
             await carregarConfiguracoes();
-            carregarConfiguracoesUI();
+            await carregarSlides();
             await carregarDashboard();
-            initSortableTabs();
-            carregarOrdemAbas();
+            await carregarUsuariosAdmin();
             
-            document.querySelectorAll('.admin-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('ativo'));
-                    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('ativo'));
+            document.querySelectorAll('.admin-tab').forEach(tab=>{
+                tab.addEventListener('click',()=>{
+                    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('ativo'));
+                    document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('ativo'));
                     tab.classList.add('ativo');
                     const tabName = tab.dataset.tab;
                     const elementId = `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
                     document.getElementById(elementId).classList.add('ativo');
-                    if(tabName === 'dashboard') carregarDashboard(currentStartDate, currentEndDate);
                 });
             });
         }
 
-        if(!document.querySelector('link[href*="font-awesome"]')) {
-            const link = document.createElement('link');
-            link.rel = "stylesheet";
-            link.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
+        if(!document.querySelector('link[href*="font-awesome"]')){
+            const link=document.createElement('link');
+            link.rel="stylesheet";
+            link.href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
             document.head.appendChild(link);
         }
+
+        verificarSessaoAdmin();
     </script>
 </body>
 </html>
