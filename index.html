@@ -51,7 +51,7 @@
         .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
         .btn-perfil { background: var(--accent-color); color: white; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); }
         
-        /* Termômetro sem fundo azul */
+        /* Termômetro sem fundo azul e sem botão */
         .thermometer-bar {
             background: var(--card-bg);
             padding: 8px 20px;
@@ -75,7 +75,6 @@
         .suggestion-card:hover { background: rgba(0,0,0,0.06); transform: scale(1.01); }
         .suggestion-card i { font-size: 1.1rem; }
         .suggestion-text { font-weight: 500; font-size: 0.85rem; }
-        /* remove botão refresh */
         
         .hero-slider { margin: 15px auto; max-width: 1200px; padding: 0 15px; }
         .hero-swiper { width: 100%; height: 220px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); }
@@ -1055,15 +1054,10 @@
             document.getElementById('carrinhoCamposEndereco').style.display = (val === 'entrega') ? 'block' : 'none';
         }
 
-        // ========== PAGAMENTO MERCADO PAGO ==========
+        // ========== PAGAMENTO MERCADO PAGO (com suporte a visitante) ==========
         async function avancarParaPagamento() {
             if(carrinho.length === 0) { showToast("Carrinho vazio", 'error'); return; }
-            if(!usuarioLogado) {
-                fecharModal('modalCarrinho');
-                abrirModalLogin();
-                showToast("Identifique-se para continuar.", 'error');
-                return;
-            }
+            
             const tipoEntrega = document.getElementById('carrinhoTipoEntrega').value;
             let enderecoFinal = "Retirada em balcão";
             if(tipoEntrega === 'entrega') {
@@ -1083,10 +1077,15 @@
                 };
             });
 
-            const payer = {
+            // Se não estiver logado, usa dados mínimos (visitante)
+            const payer = usuarioLogado ? {
                 name: usuarioLogado.nome,
                 phone: { number: usuarioLogado.telefone },
                 address: { zip_code: usuarioLogado.cep || "", street_name: usuarioLogado.endereco || "" }
+            } : {
+                name: "Visitante",
+                phone: { number: "" },
+                address: { zip_code: "", street_name: "" }
             };
 
             const back_urls = {
@@ -1107,7 +1106,7 @@
                 if(data.init_point) {
                     const total = carrinho.reduce((acc, i) => acc + (i.quantidade * i.preco_unitario), 0);
                     const pedidoPayload = {
-                        cliente_id: usuarioLogado.id,
+                        cliente_id: usuarioLogado ? usuarioLogado.id : null, // permite nulo
                         itens: carrinho.map(i => ({ produto_id: i.produto_id, quantidade: i.quantidade, preco_unitario: i.preco_unitario })),
                         valor_total: total,
                         status: 'pendente',
@@ -1474,27 +1473,23 @@
         async function checarTelefone() {
             const telefone = document.getElementById('loginTelefone').value.replace(/\D/g,'');
             if(telefone.length < 10) { showToast("Telefone inválido!", 'error'); return; }
-            // Verificar se telefone já existe
             const cliente = clientes.find(c => c.telefone === telefone);
             if(cliente) {
-                // Telefone cadastrado -> pedir senha
                 telefoneTemp = telefone;
                 document.getElementById('stepTelefone').classList.add('hidden-step');
                 document.getElementById('stepSenha').classList.remove('hidden-step');
                 document.getElementById('modalClienteTitulo').innerText = 'Digite sua senha';
                 document.getElementById('loginSenha').value = '';
             } else {
-                // Telefone não cadastrado -> mostrar cadastro completo
                 telefoneTemp = telefone;
                 document.getElementById('stepTelefone').classList.add('hidden-step');
                 document.getElementById('stepCadastro').classList.remove('hidden-step');
                 document.getElementById('modalClienteTitulo').innerText = 'Cadastre-se';
-                // Preencher telefone no campo oculto
-                document.getElementById('cadSenha').value = '';
-                document.getElementById('cadConfirmarSenha').value = '';
-                // Limpar outros campos
+                // Limpar campos do cadastro
                 document.getElementById('cadNome').value = '';
                 document.getElementById('cadEmail').value = '';
+                document.getElementById('cadSenha').value = '';
+                document.getElementById('cadConfirmarSenha').value = '';
                 document.getElementById('cadCep').value = '';
                 document.getElementById('cadLogradouro').value = '';
                 document.getElementById('cadNumero').value = '';
@@ -1832,7 +1827,6 @@
             });
 
             await buscarClima();
-            // Atualizar clima a cada 2 minutos (120000 ms)
             setInterval(buscarClima, 120000);
         }
 
