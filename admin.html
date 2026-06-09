@@ -25,11 +25,11 @@
         .form-produto .field,.form-categoria .field{flex:1;min-width:120px}
         .form-produto label,.form-categoria label{display:block;font-size:.7rem;font-weight:bold;color:var(--accent-color);margin-bottom:3px}
         .form-produto input,.form-produto textarea,.form-categoria input,.form-categoria select{width:100%;padding:8px;border-radius:20px;border:1px solid var(--border-color);background:var(--input-bg)}
-        .btn-add{background:var(--success);color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:bold;margin-top:10px; transition: transform 0.2s;}
+        .btn-add{background:var(--success);color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:bold;margin-top:10px;transition:transform 0.2s;}
         .btn-add:active{transform:scale(0.95);}
         .produto-admin-item{background:var(--bg-color);padding:10px;border-radius:var(--border-radius);margin-bottom:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
         .produto-admin-item input,.produto-admin-item select,.produto-admin-item textarea{padding:6px 10px;border-radius:20px;border:1px solid var(--border-color);width:100%}
-        .btn-icon{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:5px; transition: transform 0.2s;}
+        .btn-icon{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:5px;transition:transform 0.2s;}
         .btn-icon:active{transform:scale(0.8);}
         .btn-salvar{color:var(--success)}.btn-excluir{color:var(--error)}
         .dashboard-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin-bottom:25px}
@@ -39,7 +39,7 @@
         .toast{padding:8px 16px;border-radius:50px;color:white;font-size:.8rem;margin-top:5px;text-align:center;}
         .toast.success{background:var(--success)}.toast.error{background:var(--error)}
         .tabela-estoque{width:100%;border-collapse:collapse;margin-top:15px}
-        .tabela-estoque th,.tabela-estoque td{padding:10px;text-align:left;border-bottom:1px solid var(--border-color); vertical-align: middle;}
+        .tabela-estoque th,.tabela-estoque td{padding:10px;text-align:left;border-bottom:1px solid var(--border-color);vertical-align:middle;}
         .tabela-estoque th{background:var(--accent-color);color:white}
         .admin-item-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg-color);border-radius:10px;margin-bottom:8px;border:1px solid var(--border-color);flex-wrap:wrap;gap:10px}
         .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;z-index:10000}
@@ -57,7 +57,7 @@
         .chart-container{max-height:300px;margin-top:20px}
         canvas{max-height:300px}
         .slide-preview{width:80px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px}
-        .flex-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+        .flex-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
         .logo-preview{width:60px;height:60px;border-radius:50%;object-fit:cover;background:#f0e4da;}
         .keyword-tag{display:inline-block;background:var(--accent-color);color:white;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;cursor:default;}
         .keyword-tag .remove{color:white;margin-left:8px;cursor:pointer;opacity:0.7}
@@ -69,20 +69,48 @@
         .form-usuario{background:var(--bg-color);padding:20px;border-radius:var(--border-radius);margin-bottom:20px}
         .form-usuario .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
         .error-message{color:var(--error);font-size:0.85rem;margin-top:10px;display:none}
-        .chart-wrapper { margin-bottom: 25px; border: 1px solid var(--border-color); border-radius: 20px; background: var(--card-bg); overflow: hidden; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-color); cursor: pointer; }
-        .chart-header h4 { margin: 0; }
-        .chart-body { padding: 15px; transition: all 0.3s; }
-        .chart-body.collapsed { display: none; }
-        .btn-minimize { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--accent-color); }
-        .filtro-avaliacao { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
-        .filtro-avaliacao .field { flex: 1; min-width: 150px; }
-        .switch { position: relative; display: inline-block; width: 52px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent-color); }
-        input:checked + .slider:before { transform: translateX(26px); }
+        .chart-wrapper{margin-bottom:25px;border:1px solid var(--border-color);border-radius:20px;background:var(--card-bg);overflow:hidden}
+        .chart-header{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:var(--bg-color);cursor:pointer}
+        .chart-header h4{margin:0}
+        .chart-body{padding:15px;transition:all 0.3s}
+        .chart-body.collapsed{display:none}
+        .btn-minimize{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--accent-color)}
+        .filtro-avaliacao{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:flex-end}
+        .filtro-avaliacao .field{flex:1;min-width:150px}
+        .switch{position:relative;display:inline-block;width:52px;height:26px}
+        .switch input{opacity:0;width:0;height:0}
+        .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.3s;border-radius:34px}
+        .slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%}
+        input:checked+.slider{background-color:var(--accent-color)}
+        input:checked+.slider:before{transform:translateX(26px)}
+        
+        /* Toggle de 3 estados para temperatura ideal */
+        .temp-toggle-group {
+            display: inline-flex;
+            background: var(--bg-color);
+            border-radius: 40px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .temp-option {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: none;
+            text-align: center;
+            min-width: 60px;
+        }
+        .temp-option.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        .temp-option:first-child { border-radius: 30px 0 0 30px; }
+        .temp-option:last-child { border-radius: 0 30px 30px 0; }
+        .produto-admin-item .temp-toggle-group { margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -157,15 +185,16 @@
                 <div class="field" style="max-width: 100px;"><label>Preço (R$)</label><input type="number" step="0.01" id="prodPreco" placeholder="0.00"></div>
                 <div class="field" style="max-width: 90px;"><label>Estoque</label><input type="number" id="prodEstoque" value="10"></div>
                 <div class="field"><label>Categoria</label><select id="prodCategoria"></select></div>
-                <div class="field">
-                    <label>Temperatura Ideal 🌡️</label>
-                    <select id="prodTemperatura">
-                        <option value="ambas">Qualquer Clima</option>
-                        <option value="fria">Dias Quentes (Ex: Sorvete, Pudim)</option>
-                        <option value="quente">Dias Frios (Ex: Fondue, Café)</option>
-                    </select>
-                </div>
                 <div class="field"><label>URL da Imagem</label><input type="text" id="prodImagem" placeholder="https://..."></div>
+                <div class="field" style="min-width: 160px;">
+                    <label>🌡️ Sugestão por Clima</label>
+                    <div class="temp-toggle-group" id="novoTemperaturaGroup">
+                        <button type="button" class="temp-option" data-temp="quente">🔥 Quente</button>
+                        <button type="button" class="temp-option" data-temp="ameno">🌤️ Ameno</button>
+                        <button type="button" class="temp-option" data-temp="frio">❄️ Frio</button>
+                    </div>
+                    <input type="hidden" id="prodTemperatura" value="ameno">
+                </div>
                 <button id="btnAddProduto" class="btn-add">➕ Adicionar</button>
             </div>
             <h4>📋 Catálogo de Produtos</h4>
@@ -200,7 +229,6 @@
                 <div style="flex:1"><label style="font-size:0.7rem;font-weight:bold;color:var(--accent-color)">Estoque Inicial</label><input type="number" id="materialEstoque" step="0.001" placeholder="Estoque" style="width:100%; padding:8px; border-radius:20px; border:1px solid var(--border-color);"></div>
                 <button class="btn-add" onclick="adicionarMaterialAdmin()" style="margin-bottom:2px;">➕ Cadastrar Insumo</button>
             </div>
-            
             <p style="font-size:0.8rem; opacity:0.7; margin-top:20px;">💡 Use os botões ➕ e ➖ na tabela para dar entrada (compras) ou baixa (consumo) rápida no estoque.</p>
             <table class="tabela-estoque" id="tabelaMateriais">
                 <thead><tr><th>Material / Insumo</th><th>Unidade</th><th>Preço Médio</th><th>Estoque Atual / Movimentação</th><th>Ações</th></tr></thead>
@@ -241,7 +269,6 @@
 
         <div id="tabPersonalizacao" class="admin-tab-content">
             <h3>🎨 Personalização da Loja</h3>
-            
             <div style="background:var(--bg-color); padding:20px; border-radius:var(--border-radius); margin-bottom:20px;">
                 <h4>🚚 Configurações de Delivery</h4>
                 <div class="flex-row" style="margin-top:10px; align-items:center;">
@@ -403,27 +430,32 @@
             }
         }
 
-        // ========== PARALELIZAÇÃO DE DADOS BASE ==========
-        async function carregarDadosBasicos() {
-            const [prodRes, catRes, matRes, clientRes] = await Promise.all([
-                supabaseClient.from('produtos').select('*').order('id'),
-                supabaseClient.from('categorias').select('*').order('ordem'),
-                supabaseClient.from('materiais').select('*').order('nome'),
-                supabaseClient.from('clientes').select('*')
-            ]);
-            produtos = prodRes.data || [];
-            categorias = catRes.data || [];
-            materiais = matRes.data || [];
-            clientes = clientRes.data || [];
-            
-            renderizarProdutosInline();
-            renderizarCategorias();
-            renderizarInsumos();
-            renderizarClientes();
-            popularSelectCategorias();
+        // ========== TOGGLE DE 3 ESTADOS PARA TEMPERATURA ==========
+        function initTemperaturaToggle(containerId, hiddenInputId) {
+            const group = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!group) return;
+            const btns = group.querySelectorAll('.temp-option');
+            btns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.temp;
+                });
+            });
+            // Inicializar ativo baseado no valor atual
+            const currentVal = hidden.value;
+            const activeBtn = group.querySelector(`.temp-option[data-temp="${currentVal}"]`);
+            if (activeBtn) {
+                btns.forEach(b => b.classList.remove('active'));
+                activeBtn.classList.add('active');
+            } else {
+                btns[0].classList.add('active');
+                hidden.value = btns[0].dataset.temp;
+            }
         }
 
-        // ========== CONFIGURAÇÕES ROBUSTAS ==========
+        // ========== CONFIGURAÇÕES ==========
         async function carregarConfiguracoes() {
             try {
                 const { data, error } = await supabaseClient.from('configuracoes').select('*');
@@ -442,22 +474,18 @@
             if(configDelivery.enabled === undefined) configDelivery = { enabled: false, taxa_entrega: 0 };
         }
         
-        // Delivery Toggle
         function carregarConfigDeliveryUI() {
             document.getElementById('deliveryToggle').checked = configDelivery.enabled === true;
             document.getElementById('deliveryTax').value = configDelivery.taxa_entrega || 0;
         }
         async function salvarConfiguracoesDelivery() {
-            // Conversão forçada pra bool
             const isEnabled = document.getElementById('deliveryToggle').checked === true; 
             const tax = parseFloat(document.getElementById('deliveryTax').value) || 0;
             configDelivery = { enabled: isEnabled, taxa_entrega: tax };
-            
             await supabaseClient.from('configuracoes').upsert({ chave: 'delivery', valor: configDelivery }, { onConflict: 'chave' });
             showToast("Configuração de Delivery Atualizada!");
         }
 
-        // Cabeçalho e Rodapé
         function carregarConfigCabecalhoUI() {
             document.getElementById('headerLogoUrl').value = configCabecalho?.logo_url || '';
             document.getElementById('storeName').value = configCabecalho?.nome_loja || 'Doces Di';
@@ -497,7 +525,6 @@
             showToast("Rodapé atualizado no sistema!");
         }
 
-        // Palavras-chave
         function renderizarPalavrasChaveUI() {
             document.getElementById('palavrasQuentesContainer').innerHTML = (palavrasChaveClima.quentes || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('quentes',${i})">&times;</span></span>`).join('');
             document.getElementById('palavrasAmenasContainer').innerHTML = (palavrasChaveClima.amenas || []).map((p,i) => `<span class="keyword-tag">${p}<span class="remove" onclick="removerPalavra('amenas',${i})">&times;</span></span>`).join('');
@@ -522,23 +549,42 @@
             const container = document.getElementById('listaAdminProdutos');
             if(!container) return;
             if(produtos.length === 0) { container.innerHTML = "<p>Nenhum produto cadastrado.</p>"; return; }
-            container.innerHTML = produtos.map(p => `
+            container.innerHTML = produtos.map(p => {
+                const tempVal = p.temperatura_ideal || 'ameno';
+                const activeQuente = tempVal === 'quente' ? 'active' : '';
+                const activeAmena = tempVal === 'ameno' ? 'active' : '';
+                const activeFrio = tempVal === 'frio' ? 'active' : '';
+                return `
                 <div class="produto-admin-item" data-id="${p.id}" style="border: 1px solid var(--border-color);">
                     <div style="flex:2;"><label style="font-size:0.6rem;color:#888;">Nome</label><br><input type="text" value="${p.nome.replace(/"/g, '&quot;')}" data-field="nome"></div>
                     <div style="flex:2;"><label style="font-size:0.6rem;color:#888;">Ingredientes</label><br><textarea rows="1" data-field="descricao">${(p.descricao || '').replace(/"/g, '&quot;')}</textarea></div>
                     <div style="flex:1;"><label style="font-size:0.6rem;color:#888;">Preço</label><br><input type="number" step="0.01" value="${p.preco}" data-field="preco"></div>
                     <div style="flex:1;"><label style="font-size:0.6rem;color:#888;">Estoque</label><br><input type="number" value="${p.estoque || 0}" data-field="estoque"></div>
                     <div style="flex:2;"><label style="font-size:0.6rem;color:#888;">Categoria</label><br><select data-field="categoria_id">${categorias.map(cat => `<option value="${cat.id}" ${cat.id==p.categoria_id?'selected':''}>${cat.icone} ${cat.nome}</option>`).join('')}</select></div>
-                    <div style="flex:2;"><label style="font-size:0.6rem;color:#888;">🌡️ Temp Ideal</label><br>
-                        <select data-field="temperatura_ideal">
-                            <option value="ambas" ${p.temperatura_ideal==='ambas'?'selected':''}>Qualquer</option>
-                            <option value="fria" ${p.temperatura_ideal==='fria'?'selected':''}>Dias Quentes</option>
-                            <option value="quente" ${p.temperatura_ideal==='quente'?'selected':''}>Dias Frios</option>
-                        </select>
+                    <div style="flex:2;">
+                        <label style="font-size:0.6rem;color:#888;">🌡️ Sugestão por Clima</label><br>
+                        <div class="temp-toggle-group" data-produto="${p.id}">
+                            <button type="button" class="temp-option ${activeQuente}" data-temp="quente">🔥 Quente</button>
+                            <button type="button" class="temp-option ${activeAmena}" data-temp="ameno">🌤️ Ameno</button>
+                            <button type="button" class="temp-option ${activeFrio}" data-temp="frio">❄️ Frio</button>
+                        </div>
+                        <input type="hidden" class="prod-temp-hidden" value="${tempVal}">
                     </div>
                     <div><button class="btn-icon btn-salvar" onclick="salvarProdutoAdmin(${p.id})"><i class="fa-solid fa-save"></i></button><button class="btn-icon btn-excluir" onclick="excluirProdutoAdmin(${p.id})"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
-            `).join('');
+            `}).join('');
+            // Reaplicar eventos de toggle para cada produto editável
+            document.querySelectorAll('.produto-admin-item .temp-toggle-group').forEach(group => {
+                const hidden = group.parentElement.querySelector('.prod-temp-hidden');
+                const btns = group.querySelectorAll('.temp-option');
+                btns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        hidden.value = btn.dataset.temp;
+                    });
+                });
+            });
         }
         window.salvarProdutoAdmin = async function(id) {
             const prod = produtos.find(p=>p.id===id); if(!prod) return;
@@ -549,12 +595,20 @@
                 prod.preco = parseFloat(linha.querySelector('[data-field="preco"]').value);
                 prod.estoque = parseInt(linha.querySelector('[data-field="estoque"]').value);
                 prod.categoria_id = parseInt(linha.querySelector('[data-field="categoria_id"]').value);
-                prod.temperatura_ideal = linha.querySelector('[data-field="temperatura_ideal"]').value; // NOVO CAMPO
+                const tempHidden = linha.querySelector('.prod-temp-hidden');
+                prod.temperatura_ideal = tempHidden ? tempHidden.value : 'ameno';
                 await supabaseClient.from('produtos').upsert(prod).eq('id',id);
                 showToast("Produto atualizado no cardápio!");
             }
         };
+        window.excluirProdutoAdmin = async function(id){
+            if(confirm("Remover do cardápio definitivamente?")){
+                await supabaseClient.from('produtos').delete().eq('id',id);
+                produtos = produtos.filter(p=>p.id!==id); renderizarProdutosInline(); showToast("Removido!");
+            }
+        };
         document.getElementById('btnAddProduto').addEventListener('click', async () => {
+            const temperaturaVal = document.getElementById('prodTemperatura').value;
             const novo = {
                 nome: document.getElementById('prodNome').value.trim(),
                 descricao: document.getElementById('prodDesc').value.trim(),
@@ -562,18 +616,12 @@
                 estoque: parseInt(document.getElementById('prodEstoque').value)||0,
                 categoria_id: parseInt(document.getElementById('prodCategoria').value),
                 imagem: document.getElementById('prodImagem').value.trim(),
-                temperatura_ideal: document.getElementById('prodTemperatura').value // Puxando inteligência
+                temperatura_ideal: temperaturaVal
             };
             if(!novo.nome || isNaN(novo.preco)) return showToast("Preencha nome e preço!",'error');
             const {data,error} = await supabaseClient.from('produtos').insert([novo]).select();
             if(!error && data){ produtos.push(data[0]); renderizarProdutosInline(); showToast("Novo produto registrado!"); }
         });
-        window.excluirProdutoAdmin = async function(id){
-            if(confirm("Remover do cardápio definitivamente?")){
-                await supabaseClient.from('produtos').delete().eq('id',id);
-                produtos = produtos.filter(p=>p.id!==id); renderizarProdutosInline(); showToast("Removido!");
-            }
-        };
 
         // ========== CATEGORIAS ==========
         function renderizarCategorias() {
@@ -601,7 +649,7 @@
             }
         }
 
-        // ========== INSUMOS (Com sistema de Baixa/Entrada) ==========
+        // ========== INSUMOS ==========
         async function adicionarMaterialAdmin(){
             const nome=document.getElementById('materialNome').value.trim();
             const preco=parseFloat(document.getElementById('materialPreco').value)||0;
@@ -627,38 +675,29 @@
                                 <button class="btn-icon" style="color:var(--error); border-left:1px solid var(--border-color); padding:6px;" onclick="movimentarEstoque(${m.id}, -1)" title="Dar Baixa"><i class="fa-solid fa-minus"></i></button>
                             </div>
                         </div>
-                    </td>
+                     </td>
                     <td><button class="btn-icon btn-excluir" onclick="excluirMaterialAdmin(${m.id})"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>
             `).join('');
         }
-        
-        // A MÁGICA DA BAIXA DE ESTOQUE
         window.movimentarEstoque = async function(id, tipoMultiplicador) {
             const inputField = document.getElementById(`movQtd_${id}`);
             const qtdMovimentada = parseFloat(inputField.value);
-            
             if(isNaN(qtdMovimentada) || qtdMovimentada <= 0) {
                 showToast("Digite uma quantidade válida para movimentar!", "error");
                 return;
             }
-            
             const material = materiais.find(m => m.id === id);
             if(!material) return;
-
             const novoEstoque = parseFloat((material.estoque_atual || 0)) + (qtdMovimentada * tipoMultiplicador);
-
             try {
                 await supabaseClient.from('materiais').update({ estoque_atual: novoEstoque }).eq('id', id);
                 material.estoque_atual = novoEstoque; 
-                inputField.value = ''; // limpa input
+                inputField.value = '';
                 renderizarInsumos();
                 showToast(tipoMultiplicador === 1 ? "Entrada registrada!" : "Baixa realizada no estoque!");
-            } catch(e) {
-                showToast("Erro ao comunicar com servidor", "error");
-            }
+            } catch(e) { showToast("Erro ao comunicar com servidor", "error"); }
         };
-
         async function excluirMaterialAdmin(id){
             if(confirm("Remover insumo da base?")){
                 await supabaseClient.from('materiais').delete().eq('id',id);
@@ -706,7 +745,6 @@
                 <div class="stat-card"><h4>📦 Pedidos</h4><div class="value">${pedidos.length}</div></div>
                 <div class="stat-card"><h4>🎫 Ticket Médio</h4><div class="value">R$ ${pedidos.length? (total/pedidos.length).toFixed(2):'0,00'}</div></div>`;
             
-            // Graficos Vendas
             const vendasPorData = {};
             pedidos.forEach(p => { const data = new Date(p.created_at).toLocaleDateString('pt-BR'); vendasPorData[data] = (vendasPorData[data]||0) + (p.valor_total||0); });
             const labels = Object.keys(vendasPorData).slice(-14);
@@ -718,11 +756,10 @@
         function aplicarFiltroDashboard(){ carregarDashboard(document.getElementById('dataInicio').value, document.getElementById('dataFim').value); }
         function limparFiltroDashboard(){ document.getElementById('dataInicio').value=''; document.getElementById('dataFim').value=''; carregarDashboard(); }
 
-        // Pedidos
         async function carregarPedidosAdmin() {
             const container = document.getElementById('listaAdminPedidos');
             if (!container) {
-                const pedidosPanel = document.getElementById('panelPedidos') || document.getElementById('tabDashboard');
+                const pedidosPanel = document.getElementById('tabDashboard');
                 const listDiv = document.createElement('div'); listDiv.id = 'listaAdminPedidos'; listDiv.className = 'admin-list-container';
                 pedidosPanel.appendChild(listDiv);
             }
@@ -743,7 +780,6 @@
                     </select>
                 </div>
             `).join('');
-            
             document.querySelectorAll('#listaAdminPedidos select').forEach(sel => {
                 sel.addEventListener('change', async (e) => {
                     const pedidoId = parseInt(sel.dataset.pedido);
@@ -753,7 +789,6 @@
             });
         }
 
-        // Avaliacoes e Grafico
         async function carregarGraficoAvaliacoes() {
             const { data } = await supabaseClient.from('avaliacoes').select('nota');
             const dist = [0,0,0,0,0];
@@ -776,7 +811,6 @@
         }
         async function excluirAvaliacaoAdmin(id) { await supabaseClient.from('avaliacoes').delete().eq('id', id); carregarAvaliacoesAdmin(); carregarGraficoAvaliacoes(); }
 
-        // Admins
         async function carregarUsuariosAdmin() {
             const { data } = await supabaseClient.from('admin_users').select('*').order('id');
             document.getElementById('listaUsuariosAdmin').innerHTML = (data||[]).map(u => `
@@ -797,27 +831,42 @@
         }
         async function excluirUsuarioAdmin(id) { await supabaseClient.from('admin_users').delete().eq('id', id); carregarUsuariosAdmin(); }
 
-        // Inicialização Core (Paralelizada para velocidade extrema)
+        async function carregarDadosBasicos() {
+            const [prodRes, catRes, matRes, clientRes] = await Promise.all([
+                supabaseClient.from('produtos').select('*').order('id'),
+                supabaseClient.from('categorias').select('*').order('ordem'),
+                supabaseClient.from('materiais').select('*').order('nome'),
+                supabaseClient.from('clientes').select('*')
+            ]);
+            produtos = prodRes.data || [];
+            categorias = catRes.data || [];
+            materiais = matRes.data || [];
+            clientes = clientRes.data || [];
+            renderizarProdutosInline();
+            renderizarCategorias();
+            renderizarInsumos();
+            renderizarClientes();
+            popularSelectCategorias();
+        }
+
         async function inicializarAdminAsync() {
-            // Bloco 1 - Setup Rápido (Configs, dados base e slides carregam ao mesmo tempo)
             await Promise.all([
                 carregarConfiguracoes(),
                 carregarDadosBasicos(),
                 carregarSlides(),
                 carregarUsuariosAdmin()
             ]);
-            
-            // Bloco 2 - Analytics (Dependem da carga de produtos/clientes)
             await Promise.all([
                 carregarPedidosAdmin(),
                 carregarAvaliacoesAdmin(),
                 carregarDashboard()
             ]);
-            
             await carregarGraficoAvaliacoes();
             initSortableTabs();
             
-            // Sistema de Abas (Tabs)
+            // Inicializa o toggle de temperatura do formulário de novo produto
+            initTemperaturaToggle('novoTemperaturaGroup', 'prodTemperatura');
+            
             document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('ativo'));
@@ -828,7 +877,6 @@
             });
         }
 
-        // Toggles da UI
         function toggleChart(chartId) {
             const body = document.getElementById(chartId);
             const icon = body.previousElementSibling.querySelector('.btn-minimize i');
@@ -836,11 +884,13 @@
             icon.classList.toggle('fa-chevron-down', body.classList.contains('collapsed'));
             icon.classList.toggle('fa-chevron-up', !body.classList.contains('collapsed'));
         }
-        
         function initSortableTabs() {
             const container = document.getElementById('adminTabsContainer');
             if (container) new Sortable(container, { animation: 200, handle: '.admin-tab' });
         }
+        function limparUploadLocal() { document.getElementById('slideUpload').value = ''; showToast("Upload limpo!"); }
+        function filtrarAvaliacoesAdmin() { carregarAvaliacoesAdmin(); }
+        function limparFiltroAvaliacoes() { carregarAvaliacoesAdmin(); }
 
         verificarSessaoAdmin();
     </script>
