@@ -52,7 +52,21 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); transition: var(--transition); padding-top: var(--safe-top); padding-bottom: calc(70px + var(--safe-bottom)); min-height: 100vh; }
         
-        header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: var(--safe-top); z-index: 100; transition: var(--transition); flex-wrap: wrap; gap: 10px; }
+        /* HEADER OTIMIZADO - termômetro e sugestão na mesma barra */
+        header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: var(--safe-top);
+            z-index: 100;
+            transition: var(--transition);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
         .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.4rem; color: var(--accent-color); cursor: pointer; }
         .logo-area img { height: 45px; width: 45px; border-radius: 50%; object-fit: cover; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
@@ -60,29 +74,26 @@
         .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
         .btn-perfil { background: var(--accent-color); color: white; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); }
         
-        .thermometer-bar {
-            background: var(--card-bg);
-            padding: 8px 20px;
-            border-radius: 30px;
-            margin: 10px 15px;
+        /* Barra de clima + sugestão (agora dentro do header) */
+        .climate-bar {
+            background: rgba(0,0,0,0.03);
+            border-radius: 40px;
+            padding: 6px 16px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(0,0,0,0.03);
+            align-items: center;
+            gap: 16px;
+            flex: 2;
+            min-width: 200px;
+            justify-content: space-between;
         }
-        .thermometer-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .thermometer-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .temp-display { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.03); padding: 4px 12px; border-radius: 40px; }
         .temp-display i { font-size: 1.2rem; }
-        .temp-value { font-size: 1.4rem; font-weight: bold; }
-        .temp-unit { font-size: 0.9rem; opacity: 0.8; }
-        .weather-status { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
-        .suggestion-card { background: rgba(0,0,0,0.03); padding: 4px 12px; border-radius: 40px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); }
+        .temp-value { font-size: 1.2rem; font-weight: bold; }
+        .suggestion-card { background: rgba(0,0,0,0.03); padding: 4px 12px; border-radius: 40px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); white-space: nowrap; }
         .suggestion-card:hover { background: rgba(0,0,0,0.06); transform: scale(1.01); }
-        .suggestion-card i { font-size: 1.1rem; }
-        .suggestion-text { font-weight: 500; font-size: 0.85rem; }
+        .suggestion-text { font-weight: 500; font-size: 0.85rem; white-space: normal; }
         
         .hero-slider { margin: 15px auto; max-width: 1200px; padding: 0 15px; }
         .hero-swiper { width: 100%; height: 220px; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); }
@@ -112,38 +123,16 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             position: relative;
         }
-        .card-produto-swiper:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            z-index: 2;
-        }
-        .card-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #eee;
-            display: block;
-            flex-shrink: 0;
-        }
-        .card-info {
-            padding: 15px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 10px;
-        }
+        .card-produto-swiper:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.12); z-index: 2; }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; flex-shrink: 0; }
+        .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
         .card-nome { font-weight: bold; font-size: 1.1rem; color: var(--text-color); }
         .card-descricao { font-size: 0.85rem; color: #777; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .rating-stars { color: #ffb703; font-size: 0.85rem; display: flex; gap: 2px; align-items: center; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
         .card-preco { font-weight: 800; font-size: 1.15rem; color: var(--accent-color); }
         .estoque-badge { font-size: 0.75rem; background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 10px; font-weight: 600; }
-        .btn-comprar {
-            width: 100%; padding: 10px; border: none; background: var(--accent-color); color: white;
-            font-weight: bold; border-radius: 12px; cursor: pointer; transition: var(--transition);
-            display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; margin-top: 12px;
-        }
+        .btn-comprar { width: 100%; padding: 10px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; margin-top: 12px; }
         .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
         
         /* Botão de Favoritar */
@@ -166,15 +155,14 @@
         }
         .btn-favorito:hover { transform: scale(1.1); }
         .btn-favorito i { font-size: 1.15rem; transition: color 0.3s; color: #ccc; }
-        .btn-favorito .fas { color: #e63946; }
         
         .product-swiper .swiper-button-next, .product-swiper .swiper-button-prev {
             background-color: rgba(0,0,0,0.5); color: white; width: 34px; height: 34px; border-radius: 50%; backdrop-filter: blur(4px);
         }
-        .product-swiper .swiper-button-next:after, .product-swiper .swiper-button-prev:after { font-size: 18px; font-weight: bold; }
         @media (max-width: 640px) {
             .product-swiper .swiper-button-next, .product-swiper .swiper-button-prev { width: 28px; height: 28px; }
-            .product-swiper .swiper-button-next:after, .product-swiper .swiper-button-prev:after { font-size: 14px; }
+            .climate-bar { width: 100%; order: 3; margin-top: 8px; }
+            .header-actions { order: 2; }
         }
         
         .site-footer {
@@ -227,7 +215,6 @@
         .highlight-product { box-shadow: 0 0 0 3px var(--accent-color) !important; transition: box-shadow 0.3s ease; }
         .login-step { display: block; }
         .login-step.hidden-step { display: none; }
-        
         .admin-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
     </style>
@@ -239,6 +226,25 @@
         <img id="headerLogo" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&q=80" alt="Logo">
         <span id="storeNameSpan">Doces Di</span>
     </div>
+    
+    <div class="climate-bar" id="weatherBar">
+        <div class="thermometer-info">
+            <div class="temp-display">
+                <i class="fa-solid fa-temperature-high" id="tempIcon"></i>
+                <span class="temp-value" id="tempValue">--</span>
+                <span class="temp-unit">°C</span>
+            </div>
+            <div class="weather-status" id="weatherStatus">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span id="weatherDesc">Carregando clima...</span>
+            </div>
+        </div>
+        <div class="suggestion-card" id="suggestionCard" onclick="scrollToSugestao()">
+            <i class="fa-solid fa-ice-cream" id="suggestionIcon"></i>
+            <span class="suggestion-text" id="suggestionText">Analisando cardápio...</span>
+        </div>
+    </div>
+
     <div class="header-actions">
         <button class="btn-header" id="btnFavoritosHeader"><i class="fa-solid fa-heart"></i></button>
         <button class="btn-header" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
@@ -260,24 +266,6 @@
         </div>
     </div>
 </header>
-
-<div class="thermometer-bar" id="weatherBar">
-    <div class="thermometer-info">
-        <div class="temp-display">
-            <i class="fa-solid fa-temperature-high" id="tempIcon"></i>
-            <span class="temp-value" id="tempValue">--</span>
-            <span class="temp-unit">°C</span>
-        </div>
-        <div class="weather-status" id="weatherStatus">
-            <i class="fa-solid fa-cloud-sun"></i>
-            <span id="weatherDesc">Carregando clima...</span>
-        </div>
-    </div>
-    <div class="suggestion-card" id="suggestionCard" onclick="scrollToSugestao()">
-        <i class="fa-solid fa-ice-cream" id="suggestionIcon"></i>
-        <span class="suggestion-text" id="suggestionText">Analisando cardápio...</span>
-    </div>
-</div>
 
 <main id="viewCliente">
     <div class="hero-slider">
@@ -405,7 +393,7 @@
 </div>
 
 <script>
-    // ========== SUPABASE (CORRIGIDO) ==========
+    // ========== SUPABASE ==========
     const SUPABASE_URL = "https://opixfppyhbiyqrilebfb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9waXhmcHB5aGJpeXFyaWxlYmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Mjk4NTAsImV4cCI6MjA5NjEwNTg1MH0.j4hqWiZeFFkgprakbqeeIv1J28W9Qz8XXpWKk8lMR_I";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -496,7 +484,7 @@
         abrirModal('modalFavoritos');
     };
 
-    // ========== CONFIGURAÇÕES ==========
+    // ========== CONFIGURAÇÕES (RODAPÉ DINÂMICO) ==========
     async function carregarConfiguracoes() {
         try {
             const {data,error} = await supabaseClient.from('configuracoes').select('*');
@@ -512,7 +500,28 @@
         if(!palavrasChaveClima.quentes) palavrasChaveClima={ quentes:['sorvete','milkshake','açaí','picolé'], amenas:['limonada','suco','fruta'], frias:['café','chocolate quente','bolo'] };
     }
     function aplicarConfigCabecalho() { const logo=document.getElementById('headerLogo'); const span=document.getElementById('storeNameSpan'); if(logo && configCabecalho.logo_url) logo.src=configCabecalho.logo_url; if(span && configCabecalho.nome_loja) span.innerText=configCabecalho.nome_loja; }
-    function renderizarRodape() { const container=document.getElementById('footerContent'); if(!container) return; let html=''; if(configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) { let num=configRodape.whatsapp.value.replace(/\D/g,''); html+=`<div class="footer-item"><i class="fab fa-whatsapp"></i><a href="https://wa.me/${num}" target="_blank">${configRodape.whatsapp.value}</a></div>`; } if(configRodape.email?.enabled && configRodape.email?.value) html+=`<div class="footer-item"><i class="far fa-envelope"></i><a href="mailto:${configRodape.email.value}">${configRodape.email.value}</a></div>`; if(configRodape.instagram?.enabled && configRodape.instagram?.value) { let user=configRodape.instagram.value.replace('@',''); html+=`<div class="footer-item"><i class="fab fa-instagram"></i><a href="https://instagram.com/${user}" target="_blank">@${user}</a></div>`; } if(configRodape.facebook?.enabled && configRodape.facebook?.value) html+=`<div class="footer-item"><i class="fab fa-facebook"></i><a href="${configRodape.facebook.value}" target="_blank">Facebook</a></div>`; if(configRodape.endereco?.enabled && configRodape.endereco?.value) html+=`<div class="footer-item"><i class="fas fa-map-marker-alt"></i><span>${configRodape.endereco.value}</span></div>`; if(configRodape.horario?.enabled && configRodape.horario?.value) html+=`<div class="footer-item"><i class="far fa-clock"></i><span>${configRodape.horario.value}</span></div>`; container.innerHTML=html||'<div class="footer-item">Doces Di - Doces especiais para você!</div>'; }
+    function renderizarRodape() { 
+        const container = document.getElementById('footerContent'); 
+        if(!container) return; 
+        let html = ''; 
+        if(configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) { 
+            let num = configRodape.whatsapp.value.replace(/\D/g,''); 
+            html += `<div class="footer-item"><i class="fab fa-whatsapp"></i><a href="https://wa.me/${num}" target="_blank">${configRodape.whatsapp.value}</a></div>`; 
+        } 
+        if(configRodape.email?.enabled && configRodape.email?.value) 
+            html += `<div class="footer-item"><i class="far fa-envelope"></i><a href="mailto:${configRodape.email.value}">${configRodape.email.value}</a></div>`; 
+        if(configRodape.instagram?.enabled && configRodape.instagram?.value) { 
+            let user = configRodape.instagram.value.replace('@',''); 
+            html += `<div class="footer-item"><i class="fab fa-instagram"></i><a href="https://instagram.com/${user}" target="_blank">@${user}</a></div>`; 
+        } 
+        if(configRodape.facebook?.enabled && configRodape.facebook?.value) 
+            html += `<div class="footer-item"><i class="fab fa-facebook"></i><a href="${configRodape.facebook.value}" target="_blank">Facebook</a></div>`; 
+        if(configRodape.endereco?.enabled && configRodape.endereco?.value) 
+            html += `<div class="footer-item"><i class="fas fa-map-marker-alt"></i><span>${configRodape.endereco.value}</span></div>`; 
+        if(configRodape.horario?.enabled && configRodape.horario?.value) 
+            html += `<div class="footer-item"><i class="far fa-clock"></i><span>${configRodape.horario.value}</span></div>`; 
+        container.innerHTML = html || '<div class="footer-item">Doces Di - Doces especiais para você!</div>'; 
+    }
     function abrirWhatsApp() { let num = (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) ? configRodape.whatsapp.value.replace(/\D/g,'') : '5551996147492'; window.open(`https://wa.me/${num}`, '_blank'); }
     function atualizarOpcoesEntrega() { const select = document.getElementById('carrinhoTipoEntrega'); if(!select) return; const optRetirada = `<option value="retirada">Retirar no Local (Grátis)</option>`; const optEntrega = configDelivery.enabled ? `<option value="entrega">Receber por Delivery (Taxa: R$ ${parseFloat(configDelivery.taxa_entrega||0).toFixed(2)})</option>` : ''; select.innerHTML = optRetirada + optEntrega; toggleCamposEntrega(); }
 
