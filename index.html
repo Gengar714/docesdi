@@ -39,15 +39,17 @@
             --card-bg: #1d1d1d;
             --shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
+        /* Tema Entardecer com imagem de fundo */
         body.entardecer {
-            --bg-color: #fff2e6;
+            background: url('crepusculo.png') no-repeat center center fixed;
+            background-size: cover;
+            --bg-color: rgba(255, 242, 230, 0.92);
             --text-color: #4a2e1e;
             --primary-color: #ffdab9;
             --secondary-color: #ffb7b2;
             --accent-color: #e67e22;
             --card-bg: rgba(255, 245, 235, 0.96);
             --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); transition: var(--transition); padding-top: var(--safe-top); padding-bottom: calc(70px + var(--safe-bottom)); min-height: 100vh; }
@@ -124,6 +126,13 @@
             position: relative;
         }
         .card-produto-swiper:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.12); z-index: 2; }
+        /* Destaque para produtos com temperatura ideal */
+        .highlight-product {
+            border: 2px solid #ff7f50;
+            padding: 2px;
+            border-radius: calc(var(--border-radius) + 4px);
+            box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.3);
+        }
         .card-img { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; flex-shrink: 0; }
         .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
         .card-nome { font-weight: bold; font-size: 1.1rem; color: var(--text-color); }
@@ -212,9 +221,6 @@
         .user-dropdown.show { display: block; }
         .user-dropdown button { width: 100%; padding: 10px 15px; text-align: left; background: none; border: none; color: var(--text-color); font-size: 0.9rem; cursor: pointer; font-weight: 500; }
         .user-dropdown button:hover { background: rgba(0,0,0,0.03); }
-        .highlight-product { box-shadow: 0 0 0 3px var(--accent-color) !important; transition: box-shadow 0.3s ease; }
-        .login-step { display: block; }
-        .login-step.hidden-step { display: none; }
         .admin-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
     </style>
@@ -541,6 +547,14 @@
     }
     function atualizarTermometroUI() { const tempV=document.getElementById('tempValue'); const icon=document.getElementById('tempIcon'); const desc=document.getElementById('weatherDesc'); if(temperaturaAtual!==null) { tempV.innerText=Math.round(temperaturaAtual); if(temperaturaAtual>=28) { icon.className='fa-solid fa-temperature-high'; icon.style.color='var(--hot-color)'; desc.innerText='🌞 Muito calor!'; } else if(temperaturaAtual>=22) { icon.className='fa-solid fa-temperature-high'; icon.style.color='#ffb703'; desc.innerText='☀️ Clima agradável'; } else if(temperaturaAtual>=15) { icon.className='fa-solid fa-temperature-low'; icon.style.color='#4ecdc4'; desc.innerText='🌤️ Temperatura amena'; } else { icon.className='fa-solid fa-temperature-low'; icon.style.color='var(--cold-color)'; desc.innerText='❄️ Está friozinho!'; } } }
     
+    // Retorna o tipo de clima com base na temperatura: 'quente', 'ameno', 'frio'
+    function getClimaType() {
+        if (temperaturaAtual === null) return 'ameno';
+        if (temperaturaAtual >= 26) return 'quente';
+        if (temperaturaAtual >= 20) return 'ameno';
+        return 'frio';
+    }
+
     function gerarSugestaoPorClima() {
         const sugText=document.getElementById('suggestionText'); const sugIcon=document.getElementById('suggestionIcon');
         if(temperaturaAtual===null) { sugText.innerText='Carregando...'; return; }
@@ -549,14 +563,16 @@
         if(disponiveis.length===0) { sugText.innerText='Em breve!'; return; }
         let tipo = '';
         let lista = [];
-        const produtosComTemp = disponiveis.filter(p => p.categoria_temperatura);
-        if(produtosComTemp.length > 0) {
-            if(temperaturaAtual >= 26) tipo = 'gelada';
-            else if(temperaturaAtual >= 20) tipo = 'refrescante';
-            else tipo = 'quente';
-            lista = produtosComTemp.filter(p => p.categoria_temperatura === tipo);
-        }
+        const climaType = getClimaType();
+        // Tenta produtos com temperatura_ideal correspondente ao clima atual
+        if(climaType === 'quente') tipo = 'quente';
+        else if(climaType === 'ameno') tipo = 'ameno';
+        else tipo = 'frio';
+        
+        lista = disponiveis.filter(p => p.temperatura_ideal === tipo);
+        
         if(lista.length === 0) {
+            // Fallback: usa palavras chave
             const geladas=palavrasChaveClima.quentes||[], frescas=palavrasChaveClima.amenas||[], quentes=palavrasChaveClima.frias||[];
             if(temperaturaAtual>=26) { tipo='gelada'; lista=disponiveis.filter(p=>{ const n=p.nome.toLowerCase(), d=(p.descricao||'').toLowerCase(), cat=categorias.find(c=>c.id===p.categoria_id); const cn=cat?cat.nome.toLowerCase():''; return geladas.some(pal=>n.includes(pal)||d.includes(pal)||cn.includes(pal)); }); }
             else if(temperaturaAtual>=20) { tipo='refrescante'; lista=disponiveis.filter(p=>{ const n=p.nome.toLowerCase(), d=(p.descricao||'').toLowerCase(), cat=categorias.find(c=>c.id===p.categoria_id); const cn=cat?cat.nome.toLowerCase():''; return frescas.some(pal=>n.includes(pal)||d.includes(pal)||cn.includes(pal)); }); }
@@ -570,6 +586,8 @@
         sugestaoAtual={id:prod.id,nome:prod.nome,tipo:tipo,categoria_id:prod.categoria_id};
         sugIcon.className=tipo==='gelada'?'fa-solid fa-ice-cream':(tipo==='refrescante'?'fa-solid fa-lemon':'fa-solid fa-mug-hot');
         sugText.innerText=msg;
+        // Re-renderiza produtos para aplicar destaque baseado no clima
+        renderizarPaginaPrincipalPorCategorias();
     }
     function scrollToSugestao() { if(sugestaoAtual.id) { const card=document.querySelector(`.card-produto-swiper[data-produto-id="${sugestaoAtual.id}"]`); if(card) { card.scrollIntoView({behavior:'smooth',block:'center'}); card.classList.add('highlight-product'); setTimeout(()=>card.classList.remove('highlight-product'),2000); showToast(`🍰 ${sugestaoAtual.nome} - encontrado!`); } else { const secao=document.getElementById(`secao-front-cat-${sugestaoAtual.categoria_id}`); if(secao) secao.scrollIntoView({behavior:'smooth',block:'start'}); else showToast(`🍰 Encontre nosso ${sugestaoAtual.nome} em nosso cardápio!`); } } else { if(temperaturaAtual>=26) showToast('🍦 Explore opções geladas!'); else if(temperaturaAtual<=18) showToast('☕ Temos opções quentinhas!'); else showToast('🍰 Confira nossas delícias!'); } }
 
@@ -584,6 +602,7 @@
     function renderizarCategoriasFront() { const container=document.getElementById('tabsCategoriasFront'); if(!container) return; container.innerHTML=`<button class="tab-btn active" data-category="all" onclick="filtrarPorCategoria('all')">✨ Tudo</button>${categorias.map(c=>`<button class="tab-btn" data-category="${c.id}" onclick="filtrarPorCategoria(${c.id})"><span>${c.icone||'📁'}</span> ${c.nome}</button>`).join('')}`; }
     window.filtrarPorCategoria=function(catId) { document.querySelectorAll('#tabsCategoriasFront .tab-btn').forEach(btn=>btn.classList.remove('active')); const target=document.querySelector(`#tabsCategoriasFront .tab-btn[data-category="${catId}"]`); if(target) target.classList.add('active'); const sections=document.querySelectorAll('.categoria-vitrine-secao'); if(catId==='all') sections.forEach(s=>s.classList.remove('hidden-category')); else sections.forEach(s=>{ const idNum=parseInt(s.id.split('-').pop()); if(idNum===catId) s.classList.remove('hidden-category'); else s.classList.add('hidden-category'); }); };
     function renderizarEstrelas(prodId) { const notas=avaliacoes.filter(a=>a.produto_id===prodId).map(a=>a.nota); const media=notas.length?notas.reduce((a,b)=>a+b,0)/notas.length:5; let est=''; for(let i=1;i<=5;i++) est+= i<=Math.round(media)?'<i class="fa-solid fa-star"></i>':'<i class="fa-regular fa-star"></i>'; return `${est} <span style="font-size:0.75rem; color:#888;">(${notas.length||1})</span>`; }
+    
     function renderizarPaginaPrincipalPorCategorias() { 
         const wrapper = document.getElementById('produtosWrapper');
         if(!wrapper) return;
@@ -591,6 +610,7 @@
         for(let k in carrosseisInstanciados) if(carrosseisInstanciados[k]) carrosseisInstanciados[k].destroy(true,true);
         carrosseisInstanciados = {};
         if(categorias.length===0) { wrapper.innerHTML='<p style="text-align:center; padding:30px;">Nenhuma categoria configurada.</p>'; return; }
+        const climaType = getClimaType();
         categorias.forEach(cat => {
             const prods = produtos.filter(p => p.categoria_id === cat.id);
             const idSwiper = `swiper-categoria-id-${cat.id}`;
@@ -604,9 +624,11 @@
                     const isFav = favoritos.includes(p.id);
                     const favIconClass = isFav ? 'fa-solid' : 'fa-regular';
                     const favColor = isFav ? 'color: #e63946;' : 'color: #ccc;';
+                    // Destaque se a temperatura ideal do produto corresponde ao clima atual
+                    const highlightClass = (p.temperatura_ideal === climaType) ? 'highlight-product' : '';
                     return `
                     <div class="swiper-slide" style="height:auto;">
-                        <div class="card-produto-swiper" data-produto-id="${p.id}">
+                        <div class="card-produto-swiper ${highlightClass}" data-produto-id="${p.id}">
                             <button class="btn-favorito" data-id="${p.id}" onclick="toggleFavorito(event, ${p.id})">
                                 <i class="${favIconClass} fa-heart" style="${favColor}"></i>
                             </button>
@@ -651,8 +673,14 @@
     }
     function toggleCamposEntrega() { const val=document.getElementById('carrinhoTipoEntrega').value; document.getElementById('carrinhoCamposEndereco').style.display = val==='entrega'?'block':'none'; renderizarCarrinhoItens(); }
 
-    // ========== PAGAMENTO ==========
+    // ========== PAGAMENTO COM BLOQUEIO DE LOGIN ==========
     async function avancarParaPagamento() { 
+        // 🔒 Bloqueio: obriga estar logado para finalizar compra
+        if(!usuarioLogado) {
+            showToast("Você precisa estar logado para finalizar o pedido!", "error");
+            abrirModalLogin();
+            return;
+        }
         if(carrinho.length===0) { showToast("Carrinho vazio",'error'); return; } 
         const tipoEntrega=document.getElementById('carrinhoTipoEntrega').value; 
         let enderecoFinal="Retirada em balcão"; 
@@ -692,7 +720,30 @@
     async function efetuarCadastroCompleto() { const nome=document.getElementById('cadNome').value.trim(); const email=document.getElementById('cadEmail').value.trim(); const senha=document.getElementById('cadSenha').value; const confirmar=document.getElementById('cadConfirmarSenha').value; const cep=document.getElementById('cadCep').value.replace(/\D/g,''); const logradouro=document.getElementById('cadLogradouro').value.trim(); const numero=document.getElementById('cadNumero').value.trim(); const complemento=document.getElementById('cadComplemento').value.trim(); const bairro=document.getElementById('cadBairro').value.trim(); const cidade=document.getElementById('cadCidade').value.trim(); const uf=document.getElementById('cadUf').value.trim().toUpperCase(); const referencia=document.getElementById('cadReferencia').value.trim(); if(!nome||!email||!senha||!logradouro||!numero||!bairro||!cidade||!uf) { showToast("Preencha todos os campos!",'error'); return; } if(senha!==confirmar) { showToast("Senhas não conferem!",'error'); return; } const senhaHash=hashSenha(senha); if(clientes.find(c=>c.telefone===telefoneTemp || c.email===email)) { showToast("Telefone ou e-mail já cadastrado.",'error'); return; } const enderecoCompleto=`${logradouro}, ${numero} - ${bairro}, ${cidade}/${uf}`; const novoCliente={ nome, email, telefone:telefoneTemp, senha:senhaHash, cep, endereco:enderecoCompleto, numero, complemento, referencia, data_nasc:null, nome_social:null, force_password_change:false, temp_password:null, created_at:new Date().toISOString() }; try { const {data,error}=await supabaseClient.from('clientes').insert([novoCliente]).select(); if(error) { showToast("Erro ao cadastrar: "+error.message,'error'); return; } if(data && data.length) { clientes.push(data[0]); usuarioLogado=data[0]; loginSucesso(); } } catch(e){ showToast("Erro de conexão.",'error'); } }
     function loginSucesso() { showToast(`Olá, ${usuarioLogado.nome}!`); fecharModal('modalCliente'); atualizarInterfaceUsuario(); localStorage.setItem('docesdi_usuario_logado',JSON.stringify(usuarioLogado)); carregarFavoritos(); document.getElementById('loginTelefone').value=''; document.getElementById('loginSenha').value=''; telefoneTemp=''; }
     function efetuarLogout() { usuarioLogado=null; localStorage.removeItem('docesdi_usuario_logado'); localStorage.removeItem('docesdi_favoritos_anon'); atualizarInterfaceUsuario(); carregarFavoritos(); showToast("Logout efetuado."); }
-    function atualizarInterfaceUsuario() { const perfilArea=document.getElementById('perfilButtonArea'); if(usuarioLogado) { perfilArea.style.display='block'; document.getElementById('menuBtnLogin').style.display='none'; document.getElementById('menuBtnPedidos').style.display='block'; document.getElementById('menuBtnLogout').style.display='block'; if(usuarioLogado.telefone==='51996147492'||usuarioLogado.is_admin) { document.getElementById('menuBtnAdmin').style.display='block'; document.getElementById('navAdminBtn').style.display='flex'; } else { document.getElementById('menuBtnAdmin').style.display='none'; } } else { perfilArea.style.display='none'; document.getElementById('menuBtnLogin').style.display='block'; document.getElementById('menuBtnPedidos').style.display='none'; document.getElementById('menuBtnAdmin').style.display='none'; document.getElementById('menuBtnLogout').style.display='none'; document.getElementById('navAdminBtn').style.display='none'; } }
+    function atualizarInterfaceUsuario() { 
+        const perfilArea=document.getElementById('perfilButtonArea'); 
+        if(usuarioLogado) { 
+            perfilArea.style.display='block'; 
+            document.getElementById('menuBtnLogin').style.display='none'; 
+            document.getElementById('menuBtnPedidos').style.display='block'; 
+            document.getElementById('menuBtnLogout').style.display='block'; 
+            document.getElementById('navPedidos').style.display='flex';  // Exibe botão de pedidos na nav inferior
+            if(usuarioLogado.telefone==='51996147492'||usuarioLogado.is_admin) { 
+                document.getElementById('menuBtnAdmin').style.display='block'; 
+                document.getElementById('navAdminBtn').style.display='flex'; 
+            } else { 
+                document.getElementById('menuBtnAdmin').style.display='none'; 
+            } 
+        } else { 
+            perfilArea.style.display='none'; 
+            document.getElementById('menuBtnLogin').style.display='block'; 
+            document.getElementById('menuBtnPedidos').style.display='none'; 
+            document.getElementById('menuBtnAdmin').style.display='none'; 
+            document.getElementById('menuBtnLogout').style.display='none'; 
+            document.getElementById('navAdminBtn').style.display='none';
+            document.getElementById('navPedidos').style.display='flex';  // Mantém visível, mas ao clicar pede login
+        } 
+    }
     document.getElementById('btnEsqueciSenha').addEventListener('click',async()=>{ if(!telefoneTemp) { showToast("Digite seu telefone primeiro.",'error'); voltarParaTelefone(); return; } const cliente=clientes.find(c=>c.telefone===telefoneTemp); if(!cliente) { showToast("Telefone não cadastrado.",'error'); voltarParaTelefone(); return; } const novaSenha=Math.random().toString(36).slice(-8); const novaHash=hashSenha(novaSenha); await supabaseClient.from('clientes').update({senha:novaHash}).eq('id',cliente.id); cliente.senha=novaHash; showToast(`Sua nova senha é: ${novaSenha}. Anote e use no próximo login.`,'success'); voltarParaTelefone(); });
     function abrirPerfil() { if(!usuarioLogado) return; document.getElementById('perfilNome').value=usuarioLogado.nome||''; document.getElementById('perfilTelefone').value=usuarioLogado.telefone||''; document.getElementById('perfilEmail').value=usuarioLogado.email||''; document.getElementById('perfilCep').value=usuarioLogado.cep||''; document.getElementById('perfilEnderecoCompleto').value=usuarioLogado.endereco||''; document.getElementById('perfilNumero').value=usuarioLogado.numero||''; document.getElementById('perfilComplemento').value=usuarioLogado.complemento||''; document.getElementById('perfilSenhaAtual').value=''; document.getElementById('perfilNovaSenha').value=''; document.getElementById('perfilConfirmarSenha').value=''; abrirModal('modalPerfil'); }
     async function salvarPerfil() { if(!usuarioLogado) return; const nome=document.getElementById('perfilNome').value.trim(); const telefone=document.getElementById('perfilTelefone').value.replace(/\D/g,''); const email=document.getElementById('perfilEmail').value.trim(); const cep=document.getElementById('perfilCep').value.replace(/\D/g,''); const endereco=document.getElementById('perfilEnderecoCompleto').value.trim(); const numero=document.getElementById('perfilNumero').value.trim(); const complemento=document.getElementById('perfilComplemento').value.trim(); if(!nome||!telefone||!email) { showToast("Nome, telefone e e-mail são obrigatórios.",'error'); return; } const updates={nome,telefone,email,cep,endereco,numero,complemento}; const senhaAtual=document.getElementById('perfilSenhaAtual').value; const novaSenha=document.getElementById('perfilNovaSenha').value; const confirma=document.getElementById('perfilConfirmarSenha').value; if(novaSenha||confirma) { if(!senhaAtual) { showToast("Digite sua senha atual.",'error'); return; } if(hashSenha(senhaAtual)!==usuarioLogado.senha) { showToast("Senha atual incorreta.",'error'); return; } if(novaSenha!==confirma) { showToast("Nova senha e confirmação não coincidem.",'error'); return; } if(novaSenha.length<6) { showToast("Mínimo 6 caracteres.",'error'); return; } updates.senha=hashSenha(novaSenha); } try { await supabaseClient.from('clientes').update(updates).eq('id',usuarioLogado.id); Object.assign(usuarioLogado,updates); showToast("Perfil atualizado!","success"); fecharModal('modalPerfil'); atualizarInterfaceUsuario(); } catch(e){ showToast("Erro ao atualizar.",'error'); } }
