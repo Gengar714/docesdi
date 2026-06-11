@@ -53,6 +53,267 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); transition: var(--transition); padding-top: var(--safe-top); padding-bottom: calc(70px + var(--safe-bottom)); min-height: 100vh; }
         
+        /* ANIMAÇÕES DE ENTRADA */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .categoria-vitrine-secao {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .categoria-vitrine-secao:nth-child(odd) {
+            animation: slideInLeft 0.5s ease forwards;
+        }
+        .categoria-vitrine-secao:nth-child(even) {
+            animation: slideInRight 0.5s ease forwards;
+        }
+        .hero-slider {
+            animation: fadeInScale 0.5s ease forwards;
+        }
+        .tab-btn {
+            animation: fadeInUp 0.4s ease forwards;
+            animation-delay: calc(var(--index, 0) * 0.05s);
+        }
+        
+        /* EFEITO 3D NOS CARDS */
+        .card-produto-swiper {
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .card-produto-swiper:hover {
+            transform: translateY(-10px) rotateX(3deg);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+        }
+        .card-produto-swiper:hover .card-img {
+            transform: scale(1.05);
+        }
+        .card-img {
+            transition: transform 0.4s ease;
+        }
+        
+        /* BADGE ÚLTIMAS UNIDADES */
+        .badge-ultimas-unidades {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 25px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 11;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge-ultimas-unidades i {
+            font-size: 0.8rem;
+        }
+        
+        /* BADGE ESGOTADO */
+        .badge-esgotado {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 25px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 11;
+        }
+        
+        /* WHATSAPP FLUTUANTE */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            animation: pulse 2s infinite;
+            text-decoration: none;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+        .whatsapp-tooltip {
+            position: absolute;
+            right: 70px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .whatsapp-float:hover .whatsapp-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-5px);
+        }
+        
+        /* CROSS-SELLING SECTION */
+        .cross-selling-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }
+        .cross-selling-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-color);
+        }
+        .cross-selling-title i {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+        }
+        .cross-selling-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .cross-selling-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInScale 0.5s ease;
+        }
+        .cross-selling-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .cross-selling-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .cross-selling-info {
+            padding: 12px;
+        }
+        .cross-selling-nome {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .cross-selling-preco {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn-cross-selling {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-cross-selling:hover {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+        
+        /* ESTOQUE BAR */
+        .estoque-container {
+            margin-top: 8px;
+        }
+        .estoque-bar-bg {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .estoque-bar-progress {
+            background: linear-gradient(90deg, var(--accent-color), #ffb703);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .estoque-texto {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
         header {
             background: var(--card-bg);
             padding: 15px 20px;
@@ -119,10 +380,8 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             position: relative;
         }
-        .card-produto-swiper:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.12); z-index: 2; }
         .highlight-product {
             border: 3px solid #ff7f50;
             border-radius: calc(var(--border-radius) + 4px);
@@ -195,6 +454,7 @@
             .product-swiper .swiper-button-next, .product-swiper .swiper-button-prev { width: 28px; height: 28px; }
             .climate-bar { width: 100%; order: 3; margin-top: 8px; }
             .header-actions { order: 2; }
+            .whatsapp-float { bottom: 70px; right: 15px; width: 50px; height: 50px; font-size: 1.5rem; }
         }
         
         .site-footer {
@@ -400,6 +660,15 @@
     </div>
     <div class="tabs-container" id="tabsCategoriasFront"></div>
     <div class="produtos-carrossel-wrapper" id="produtosWrapper"></div>
+    
+    <!-- SEÇÃO CROSS-SELLING -->
+    <div class="cross-selling-section" id="crossSellingSection" style="display: none;">
+        <div class="cross-selling-title">
+            <i class="fa-solid fa-gift"></i>
+            <span>Quem viu, também viu 🍰</span>
+        </div>
+        <div class="cross-selling-grid" id="crossSellingGrid"></div>
+    </div>
 </main>
 
 <footer class="site-footer" id="siteFooter">
@@ -413,6 +682,12 @@
     <button class="nav-item" id="navSuporte" onclick="abrirWhatsApp()"><i class="fa-brands fa-whatsapp"></i>Suporte</button>
     <button class="nav-item" id="navAdminBtn" style="display:none;" onclick="window.location.href='admin.html'"><i class="fa-solid fa-gear"></i>Admin</button>
 </nav>
+
+<!-- WHATSAPP FLUTUANTE -->
+<a href="https://wa.me/5551996147492" class="whatsapp-float" target="_blank" id="whatsappFloat">
+    <i class="fab fa-whatsapp"></i>
+    <span class="whatsapp-tooltip">Fale conosco! 💬</span>
+</a>
 
 <div class="toast" id="toastNotification"></div>
 
@@ -532,6 +807,7 @@
     let configDelivery = { enabled: false, taxa_entrega: 0 };
     let currentTheme = 'light';
     let favoritos = [];
+    let ultimoProdutoVisto = null;
 
     // ========== FUNÇÕES AUXILIARES ==========
     function showToast(msg, tipo='success') { const t = document.getElementById('toastNotification'); if(!t) return; t.innerText = msg; t.className = `toast ${tipo}`; t.style.display='block'; setTimeout(()=>t.style.display='none', 3500); }
@@ -543,26 +819,28 @@
         return usuarioLogado && (usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin === true);
     }
 
-    // ========== CLASSIFICAÇÃO DE TEMPERATURA (PRIORIZA BANCO) ==========
+    // ========== WHATSAPP FLUTUANTE DINÂMICO ==========
+    function atualizarWhatsAppFloat() {
+        const numero = configRodape.whatsapp?.enabled && configRodape.whatsapp?.value 
+            ? configRodape.whatsapp.value.replace(/\D/g,'') 
+            : '5551996147492';
+        const whatsappLink = document.getElementById('whatsappFloat');
+        if (whatsappLink) {
+            whatsappLink.href = `https://wa.me/${numero}`;
+        }
+    }
+
+    // ========== CLASSIFICAÇÃO DE TEMPERATURA ==========
     function getTipoProduto(produto) {
-        // Usa o campo temperatura_ideal do banco
         if (produto.temperatura_ideal) {
             const tipo = produto.temperatura_ideal.toLowerCase();
-            if (tipo === 'frio' || tipo === 'quente' || tipo === 'ameno') {
-                return tipo;
-            }
-            // Correção para valores como 'fria' (singular)
-            if (tipo === 'fria') return 'frio';
+            if (tipo === 'frio' || tipo === 'fria') return 'frio';
             if (tipo === 'quente') return 'quente';
+            if (tipo === 'ameno') return 'ameno';
         }
-        // Fallback baseado no nome
         const nome = (produto.nome || '').toLowerCase();
-        if (nome.includes('sorvete') || nome.includes('gelado') || nome.includes('milkshake') || nome.includes('açaí') || nome.includes('picolé') || nome.includes('mousse')) {
-            return 'frio';
-        }
-        if (nome.includes('canjica') || nome.includes('café') || nome.includes('chocolate quente') || nome.includes('quentão')) {
-            return 'quente';
-        }
+        if (nome.includes('sorvete') || nome.includes('gelado') || nome.includes('milkshake') || nome.includes('açaí') || nome.includes('picolé') || nome.includes('mousse')) return 'frio';
+        if (nome.includes('canjica') || nome.includes('café') || nome.includes('chocolate quente') || nome.includes('quentão')) return 'quente';
         return 'ameno';
     }
 
@@ -637,7 +915,7 @@
             if(!error && data) {
                 for(let config of data) {
                     if(config.chave==='cabecalho') { configCabecalho=config.valor; aplicarConfigCabecalho(); }
-                    if(config.chave==='rodape') { configRodape=config.valor; renderizarRodape(); }
+                    if(config.chave==='rodape') { configRodape=config.valor; renderizarRodape(); atualizarWhatsAppFloat(); }
                     if(config.chave==='delivery') { configDelivery = config.valor; atualizarOpcoesEntrega(); }
                 }
             }
@@ -666,10 +944,13 @@
             html += `<div class="footer-item"><i class="far fa-clock"></i><span>${configRodape.horario.value}</span></div>`; 
         container.innerHTML = html || '<div class="footer-item">Doces Di - Doces especiais para você!</div>'; 
     }
-    function abrirWhatsApp() { let num = (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) ? configRodape.whatsapp.value.replace(/\D/g,'') : '5551996147492'; window.open(`https://wa.me/${num}`, '_blank'); }
+    function abrirWhatsApp() { 
+        let num = (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) ? configRodape.whatsapp.value.replace(/\D/g,'') : '5551996147492'; 
+        window.open(`https://wa.me/${num}`, '_blank'); 
+    }
     function atualizarOpcoesEntrega() { const select = document.getElementById('carrinhoTipoEntrega'); if(!select) return; const optRetirada = `<option value="retirada">Retirar no Local (Grátis)</option>`; const optEntrega = configDelivery.enabled ? `<option value="entrega">Receber por Delivery (Taxa: R$ ${parseFloat(configDelivery.taxa_entrega||0).toFixed(2)})</option>` : ''; select.innerHTML = optRetirada + optEntrega; toggleCamposEntrega(); }
 
-    // ========== CLIMA E SUGESTÃO INTELIGENTE ==========
+    // ========== CLIMA E SUGESTÃO ==========
     async function buscarClima() {
         try {
             const pos = await new Promise((res,rej)=>{ if(navigator.geolocation) navigator.geolocation.getCurrentPosition(res,rej,{timeout:10000}); else rej(new Error()); });
@@ -719,24 +1000,16 @@
         }
         
         const climaAtual = getClimaAtual();
-        
-        // Mapeamento: clima quente → produtos frios, clima frio → produtos quentes
         let tipoDesejado = '';
         if (climaAtual === 'quente') tipoDesejado = 'frio';
         else if (climaAtual === 'frio') tipoDesejado = 'quente';
         else tipoDesejado = 'ameno';
         
         let produtosSugeridos = disponiveis.filter(p => getTipoProduto(p) === tipoDesejado);
-        
-        if (produtosSugeridos.length === 0) {
-            produtosSugeridos = [...disponiveis];
-        }
+        if (produtosSugeridos.length === 0) produtosSugeridos = [...disponiveis];
         
         const prod = produtosSugeridos[Math.floor(Math.random() * produtosSugeridos.length)];
-        const tipoProduto = getTipoProduto(prod);
-        
-        let msg = '';
-        let icone = '';
+        let msg = '', icone = '';
         
         if (climaAtual === 'quente') {
             msg = `🍦 ${Math.round(temperaturaAtual)}°C! Que tal um ${prod.nome} bem geladinho?`;
@@ -749,13 +1022,7 @@
             icone = 'fa-solid fa-lemon';
         }
         
-        sugestaoAtual = {
-            id: prod.id,
-            nome: prod.nome,
-            tipo: tipoProduto,
-            categoria_id: prod.categoria_id
-        };
-        
+        sugestaoAtual = { id: prod.id, nome: prod.nome, tipo: getTipoProduto(prod), categoria_id: prod.categoria_id };
         sugIcon.className = icone;
         sugText.innerText = msg;
         renderizarPaginaPrincipalPorCategorias();
@@ -773,32 +1040,66 @@
         } 
     };
 
-    // ========== ADMIN: CORREÇÃO DE TEMPERATURA ==========
-    async function atualizarTemperaturaIdealNoBanco(produtoId, novoTipo) {
-        if (!isAdmin()) {
-            showToast('Apenas admin pode fazer isso', 'error');
-            return false;
+    // ========== CROSS-SELLING (Quem viu, também viu) ==========
+    function mostrarCrossSelling(produtoId) {
+        const produtoAtual = produtos.find(p => p.id === produtoId);
+        if (!produtoAtual) return;
+        
+        // Busca produtos da mesma categoria (excluindo o atual)
+        let relacionados = produtos.filter(p => 
+            p.categoria_id === produtoAtual.categoria_id && 
+            p.id !== produtoId && 
+            p.estoque > 0
+        ).slice(0, 4);
+        
+        // Se não tem suficientes da mesma categoria, busca aleatórios
+        if (relacionados.length < 3) {
+            const outros = produtos.filter(p => 
+                p.id !== produtoId && 
+                p.estoque > 0 && 
+                !relacionados.includes(p)
+            ).slice(0, 4 - relacionados.length);
+            relacionados = [...relacionados, ...outros];
         }
         
+        const crossSection = document.getElementById('crossSellingSection');
+        const crossGrid = document.getElementById('crossSellingGrid');
+        
+        if (relacionados.length === 0) {
+            crossSection.style.display = 'none';
+            return;
+        }
+        
+        crossGrid.innerHTML = relacionados.map(p => `
+            <div class="cross-selling-card" onclick="adicionarAoCarrinho(${p.id}); showToast('${p.nome} adicionado ao carrinho!');">
+                <img src="${p.imagem || 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80'}" loading="lazy">
+                <div class="cross-selling-info">
+                    <div class="cross-selling-nome">${p.nome}</div>
+                    <div class="cross-selling-preco">R$ ${p.preco.toFixed(2)}</div>
+                    <button class="btn-cross-selling" onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})">
+                        <i class="fa-solid fa-cart-plus"></i> Adicionar
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        crossSection.style.display = 'block';
+        crossSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ========== ADMIN: CORREÇÃO DE TEMPERATURA ==========
+    async function atualizarTemperaturaIdealNoBanco(produtoId, novoTipo) {
+        if (!isAdmin()) { showToast('Apenas admin pode fazer isso', 'error'); return false; }
         try {
-            const { error } = await supabaseClient
-                .from('produtos')
-                .update({ temperatura_ideal: novoTipo })
-                .eq('id', produtoId);
-            
+            const { error } = await supabaseClient.from('produtos').update({ temperatura_ideal: novoTipo }).eq('id', produtoId);
             if (error) throw error;
-            
             const produto = produtos.find(p => p.id === produtoId);
             if (produto) produto.temperatura_ideal = novoTipo;
-            
             showToast(`✅ ${produto.nome} classificado como ${novoTipo}`, 'success');
             gerarSugestaoPorClima();
             renderizarPaginaPrincipalPorCategorias();
             return true;
-        } catch (e) {
-            showToast('Erro ao atualizar', 'error');
-            return false;
-        }
+        } catch (e) { showToast('Erro ao atualizar', 'error'); return false; }
     }
 
     // ========== DADOS SUPABASE ==========
@@ -811,10 +1112,7 @@
             renderizarCategoriasFront(); 
         } catch(e) { 
             const local=localStorage.getItem('docesdi_categorias'); 
-            if(local) { 
-                categorias=JSON.parse(local); 
-                renderizarCategoriasFront(); 
-            } 
+            if(local) { categorias=JSON.parse(local); renderizarCategoriasFront(); } 
         } 
     }
     
@@ -828,35 +1126,23 @@
             if(temperaturaAtual!==null) gerarSugestaoPorClima(); 
         } catch(e) { 
             const local=localStorage.getItem('docesdi_produtos'); 
-            if(local) { 
-                produtos=JSON.parse(local); 
-                renderizarPaginaPrincipalPorCategorias(); 
-            } 
+            if(local) { produtos=JSON.parse(local); renderizarPaginaPrincipalPorCategorias(); } 
         } 
     }
     
     async function carregarSlides() { 
         try { 
             const {data,error}=await supabaseClient.from('slides').select('*').order('id'); 
-            if(!error && data) { 
-                slides=data; 
-                renderizarSlidesFront(); 
-            } 
+            if(!error && data) { slides=data; renderizarSlidesFront(); } 
         } catch(e){} 
     }
     
     async function carregarClientes() { 
-        try { 
-            const {data}=await supabaseClient.from('clientes').select('*'); 
-            if(data) clientes=data; 
-        } catch(e){} 
+        try { const {data}=await supabaseClient.from('clientes').select('*'); if(data) clientes=data; } catch(e){} 
     }
     
     async function carregarAvaliacoes() { 
-        try { 
-            const {data}=await supabaseClient.from('avaliacoes').select('*'); 
-            if(data) avaliacoes=data; 
-        } catch(e){} 
+        try { const {data}=await supabaseClient.from('avaliacoes').select('*'); if(data) avaliacoes=data; } catch(e){} 
     }
 
     function renderizarSlidesFront() { 
@@ -865,7 +1151,7 @@
         if(slides.length===0) { 
             wrapper.innerHTML=`<div class="swiper-slide"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&q=80"></div><div class="swiper-slide"><img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200&q=80"></div>`; 
         } else { 
-            wrapper.innerHTML=slides.map(s=>`<div class="swiper-slide"><img src="${s.url}" onerror="this.src='https://placehold.co/1200x400?text=Banner'"></div>`).join(''); 
+            wrapper.innerHTML=slides.map(s=>`<div class="swiper-slide"><img src="${s.url}" loading="lazy" onerror="this.src='https://placehold.co/1200x400?text=Banner'"></div>`).join(''); 
         } 
         if(heroSwiperInstance) heroSwiperInstance.destroy(); 
         heroSwiperInstance=new Swiper('#heroSwiper',{loop:true,autoplay:{delay:4000},pagination:{el:'.swiper-pagination',clickable:true}}); 
@@ -874,7 +1160,7 @@
     function renderizarCategoriasFront() { 
         const container=document.getElementById('tabsCategoriasFront'); 
         if(!container) return; 
-        container.innerHTML=`<button class="tab-btn active" data-category="all" onclick="filtrarPorCategoria('all')">✨ Tudo</button>${categorias.map(c=>`<button class="tab-btn" data-category="${c.id}" onclick="filtrarPorCategoria(${c.id})"><span>${c.icone||'📁'}</span> ${c.nome}</button>`).join('')}`; 
+        container.innerHTML=`<button class="tab-btn active" data-category="all" onclick="filtrarPorCategoria('all')">✨ Tudo</button>${categorias.map((c, idx) => `<button class="tab-btn" data-category="${c.id}" onclick="filtrarPorCategoria(${c.id})" style="--index: ${idx}"><span>${c.icone||'📁'}</span> ${c.nome}</button>`).join('')}`; 
     }
     
     window.filtrarPorCategoria=function(catId) { 
@@ -883,11 +1169,7 @@
         if(target) target.classList.add('active'); 
         const sections=document.querySelectorAll('.categoria-vitrine-secao'); 
         if(catId==='all') sections.forEach(s=>s.classList.remove('hidden-category')); 
-        else sections.forEach(s=>{ 
-            const idNum=parseInt(s.id.split('-').pop()); 
-            if(idNum===catId) s.classList.remove('hidden-category'); 
-            else s.classList.add('hidden-category'); 
-        }); 
+        else sections.forEach(s=>{ const idNum=parseInt(s.id.split('-').pop()); if(idNum===catId) s.classList.remove('hidden-category'); else s.classList.add('hidden-category'); }); 
     };
     
     function renderizarEstrelas(prodId) { 
@@ -898,19 +1180,40 @@
         return `${est} <span style="font-size:0.75rem; color:#888;">(${notas.length||1})</span>`; 
     }
     
+    function getBadgeEstoque(estoque) {
+        if (estoque <= 0) return '<div class="badge-esgotado"><i class="fa-solid fa-ban"></i> ESGOTADO</div>';
+        if (estoque <= 5) return '<div class="badge-ultimas-unidades"><i class="fa-solid fa-fire"></i> ÚLTIMAS UNIDADES!</div>';
+        return '';
+    }
+    
+    function getBarraEstoque(estoque, maxEstoque = 50) {
+        const percent = Math.min((estoque / maxEstoque) * 100, 100);
+        let cor = '';
+        if (percent <= 20) cor = '#ff6b6b';
+        else if (percent <= 50) cor = '#ffb703';
+        else cor = '#4ecdc4';
+        return `
+            <div class="estoque-container">
+                <div class="estoque-bar-bg">
+                    <div class="estoque-bar-progress" style="width: ${percent}%; background: ${cor};"></div>
+                </div>
+                <div class="estoque-texto">
+                    <span><i class="fa-solid fa-box"></i> ${estoque} unidades</span>
+                    <span>${percent <= 20 ? '⚠️ Estoque baixo!' : percent <= 50 ? '📦 Compre logo!' : '✅ Disponível'}</span>
+                </div>
+            </div>
+        `;
+    }
+    
     function adicionarBotoesCorrecaoProdutos() {
         if (!isAdmin()) return;
-        
         document.querySelectorAll('.card-produto-swiper').forEach(card => {
             if (card.querySelector('.correcao-temp-buttons')) return;
-            
             const produtoId = parseInt(card.getAttribute('data-produto-id'));
             const produto = produtos.find(p => p.id === produtoId);
             if (!produto) return;
-            
             const cardInfo = card.querySelector('.card-info');
             if (!cardInfo) return;
-            
             const botoesCorrecao = document.createElement('div');
             botoesCorrecao.className = 'correcao-temp-buttons';
             botoesCorrecao.innerHTML = `
@@ -918,14 +1221,11 @@
                 <button class="btn-corrigir-temp" data-tipo="ameno" style="background:#ffb703;">🌡️ Marcar Ameno</button>
                 <button class="btn-corrigir-temp" data-tipo="quente" style="background:#ff6b6b;">🔥 Marcar Quente</button>
             `;
-            
             cardInfo.appendChild(botoesCorrecao);
-            
             botoesCorrecao.querySelectorAll('.btn-corrigir-temp').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    const novoTipo = btn.getAttribute('data-tipo');
-                    atualizarTemperaturaIdealNoBanco(produtoId, novoTipo);
+                    atualizarTemperaturaIdealNoBanco(produtoId, btn.getAttribute('data-tipo'));
                 };
             });
         });
@@ -961,7 +1261,6 @@
                     const isFav = favoritos.includes(p.id);
                     const favIconClass = isFav ? 'fa-solid' : 'fa-regular';
                     const favColor = isFav ? 'color: #e63946;' : 'color: #ccc;';
-                    
                     const tipoProduto = getTipoProduto(p);
                     let highlightClass = '';
                     if (climaAtual === 'quente' && tipoProduto === 'frio') highlightClass = 'highlight-product';
@@ -970,16 +1269,18 @@
                     
                     return `
                     <div class="swiper-slide" style="height:auto;">
-                        <div class="card-produto-swiper ${highlightClass}" data-produto-id="${p.id}">
-                            <button class="btn-favorito" data-id="${p.id}" onclick="toggleFavorito(event, ${p.id})">
+                        <div class="card-produto-swiper ${highlightClass}" data-produto-id="${p.id}" onclick="ultimoProdutoVisto = ${p.id}; setTimeout(() => mostrarCrossSelling(${p.id}), 500);">
+                            ${getBadgeEstoque(p.estoque)}
+                            <button class="btn-favorito" data-id="${p.id}" onclick="event.stopPropagation(); toggleFavorito(event, ${p.id})">
                                 <i class="${favIconClass} fa-heart" style="${favColor}"></i>
                             </button>
-                            <img src="${p.imagem || 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80'}" class="card-img" onerror="this.src='https://placehold.co/400x300?text=Doce'">
+                            <img src="${p.imagem || 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80'}" class="card-img" loading="lazy" onerror="this.src='https://placehold.co/400x300?text=Doce'">
                             <div class="card-info">
                                 <div>
                                     <div class="card-nome">${p.nome}</div>
                                     <div class="card-descricao">${p.descricao || 'Sem descrição.'}</div>
                                     <div style="margin: 6px 0;">${getSeloTemperatura(p)}</div>
+                                    ${getBarraEstoque(p.estoque, 50)}
                                 </div>
                                 <div>
                                     <div class="rating-stars" style="margin-bottom:6px;">${renderizarEstrelas(p.id)}</div>
@@ -987,7 +1288,7 @@
                                         <span class="card-preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
                                         <span class="estoque-badge">📦 ${p.estoque||0} un</span>
                                     </div>
-                                    <button class="btn-comprar" onclick="adicionarAoCarrinho(${p.id})" ${(p.estoque||0)<=0?'disabled':''}>
+                                    <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})" ${(p.estoque||0)<=0?'disabled':''}>
                                         ${(p.estoque||0)>0?'<i class="fa-solid fa-cart-plus"></i> Adicionar':'Esgotado'}
                                     </button>
                                 </div>
@@ -1014,7 +1315,17 @@
     function carregarCarrinho() { const local=localStorage.getItem('docesdi_carrinho'); if(local) { carrinho=JSON.parse(local); atualizarBadgeCarrinho(); } }
     function atualizarBadgeCarrinho() { const qtd=carrinho.reduce((a,c)=>a+c.quantidade,0); const badge=document.getElementById('carrinhoBadge'); if(badge) badge.innerText=qtd; }
     function salvarCarrinho() { localStorage.setItem('docesdi_carrinho',JSON.stringify(carrinho)); atualizarBadgeCarrinho(); }
-    window.adicionarAoCarrinho = function(idProd) { const prod=produtos.find(p=>p.id===idProd); if(!prod || prod.estoque<=0) return showToast("Produto sem estoque",'error'); const item=carrinho.find(c=>c.produto_id===idProd); if(item) { if(item.quantidade+1>prod.estoque) return showToast("Estoque máximo",'error'); item.quantidade++; } else carrinho.push({produto_id:idProd,quantidade:1,preco_unitario:prod.preco,nome:prod.nome,imagem:prod.imagem}); salvarCarrinho(); showToast(`${prod.nome} adicionado!`); };
+    window.adicionarAoCarrinho = function(idProd) { 
+        const prod=produtos.find(p=>p.id===idProd); 
+        if(!prod || prod.estoque<=0) return showToast("Produto sem estoque",'error'); 
+        const item=carrinho.find(c=>c.produto_id===idProd); 
+        if(item) { if(item.quantidade+1>prod.estoque) return showToast("Estoque máximo",'error'); item.quantidade++; } 
+        else carrinho.push({produto_id:idProd,quantidade:1,preco_unitario:prod.preco,nome:prod.nome,imagem:prod.imagem}); 
+        salvarCarrinho(); 
+        showToast(`${prod.nome} adicionado!`);
+        // Vibração (se suportado)
+        if (window.navigator.vibrate) window.navigator.vibrate(50);
+    };
     window.alterarQtdCarrinho = function(idProd,delta) { const item=carrinho.find(c=>c.produto_id===idProd); if(!item) return; const prod=produtos.find(p=>p.id===idProd); item.quantidade+=delta; if(item.quantidade<=0) carrinho=carrinho.filter(c=>c.produto_id!==idProd); else if(prod && item.quantidade>prod.estoque) item.quantidade=prod.estoque; salvarCarrinho(); renderizarCarrinhoItens(); };
     window.removerDoCarrinho = function(idProd) { carrinho=carrinho.filter(c=>c.produto_id!==idProd); salvarCarrinho(); renderizarCarrinhoItens(); };
     function renderizarCarrinhoItens() { 
@@ -1031,11 +1342,7 @@
 
     // ========== PAGAMENTO ==========
     async function avancarParaPagamento() { 
-        if(!usuarioLogado) {
-            showToast("Você precisa estar logado para finalizar o pedido!", "error");
-            abrirModalLogin();
-            return;
-        }
+        if(!usuarioLogado) { showToast("Você precisa estar logado para finalizar o pedido!", "error"); abrirModalLogin(); return; }
         if(carrinho.length===0) { showToast("Carrinho vazio",'error'); return; } 
         const tipoEntrega=document.getElementById('carrinhoTipoEntrega').value; 
         let enderecoFinal="Retirada em balcão"; 
@@ -1067,10 +1374,7 @@
     // ========== LOGIN ==========
     async function checarTelefone() {
         const telefone = document.getElementById('loginTelefone').value.replace(/\D/g, '');
-        if (telefone.length < 10) {
-            showToast("Telefone inválido!", 'error');
-            return;
-        }
+        if (telefone.length < 10) { showToast("Telefone inválido!", 'error'); return; }
         const { data, error } = await supabaseClient.from('clientes').select('*').eq('telefone', telefone).maybeSingle();
         if (error) { showToast("Erro ao verificar telefone", 'error'); return; }
         if (data) {
@@ -1111,10 +1415,7 @@
         const uf = document.getElementById('cadUf').value.trim().toUpperCase();
         const referencia = document.getElementById('cadReferencia').value.trim();
 
-        if (!nome || !email || !senha || !logradouro || !numero || !bairro || !cidade || !uf) {
-            showToast("Preencha todos os campos obrigatórios!", 'error');
-            return;
-        }
+        if (!nome || !email || !senha || !logradouro || !numero || !bairro || !cidade || !uf) { showToast("Preencha todos os campos obrigatórios!", 'error'); return; }
         if (senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
         const senhaHash = hashSenha(senha);
         const { data: existing, error: checkError } = await supabaseClient.from('clientes').select('id').or(`telefone.eq.${telefoneTemp},email.eq.${email}`).maybeSingle();
