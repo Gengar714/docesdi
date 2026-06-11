@@ -39,7 +39,6 @@
             --card-bg: #1d1d1d;
             --shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        /* Tema Entardecer com imagem de fundo */
         body.entardecer {
             background: url('crepusculo.png') no-repeat center center fixed;
             background-size: cover;
@@ -54,7 +53,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); transition: var(--transition); padding-top: var(--safe-top); padding-bottom: calc(70px + var(--safe-bottom)); min-height: 100vh; }
         
-        /* HEADER OTIMIZADO - termômetro e sugestão na mesma barra */
         header {
             background: var(--card-bg);
             padding: 15px 20px;
@@ -71,12 +69,11 @@
         }
         .logo-area { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.4rem; color: var(--accent-color); cursor: pointer; }
         .logo-area img { height: 45px; width: 45px; border-radius: 50%; object-fit: cover; }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .header-actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
         .btn-header { background: none; border: none; font-size: 1.4rem; color: var(--text-color); cursor: pointer; position: relative; transition: var(--transition); }
         .badge { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-weight: bold; }
         .btn-perfil { background: var(--accent-color); color: white; padding: 6px 12px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); }
         
-        /* Barra de clima + sugestão (agora dentro do header) */
         .climate-bar {
             background: rgba(0,0,0,0.03);
             border-radius: 40px;
@@ -126,10 +123,8 @@
             position: relative;
         }
         .card-produto-swiper:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.12); z-index: 2; }
-        /* Destaque para produtos com temperatura ideal */
         .highlight-product {
-            border: 2px solid #ff7f50;
-            padding: 2px;
+            border: 3px solid #ff7f50;
             border-radius: calc(var(--border-radius) + 4px);
             box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.3);
         }
@@ -144,7 +139,6 @@
         .btn-comprar { width: 100%; padding: 10px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; margin-top: 12px; }
         .btn-comprar:disabled { background: #ccc; cursor: not-allowed; }
         
-        /* Botão de Favoritar */
         .btn-favorito {
             position: absolute;
             top: 10px;
@@ -164,6 +158,35 @@
         }
         .btn-favorito:hover { transform: scale(1.1); }
         .btn-favorito i { font-size: 1.15rem; transition: color 0.3s; color: #ccc; }
+        
+        .selo-temperatura {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .selo-frio { background: #4ecdc4; color: white; }
+        .selo-quente { background: #ff6b6b; color: white; }
+        .selo-ameno { background: #ffb703; color: white; }
+        
+        .correcao-temp-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+        .btn-corrigir-temp {
+            border: none;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-corrigir-temp:hover { opacity: 0.8; }
         
         .product-swiper .swiper-button-next, .product-swiper .swiper-button-prev {
             background-color: rgba(0,0,0,0.5); color: white; width: 34px; height: 34px; border-radius: 50%; backdrop-filter: blur(4px);
@@ -186,14 +209,70 @@
         .footer-item i { font-size: 1rem; color: var(--accent-color); width: 20px; }
         .footer-copyright { text-align: center; padding-top: 12px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); font-size: 0.7rem; opacity: 0.6; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(55px + var(--safe-bottom)); background: var(--card-bg); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; padding-bottom: var(--safe-bottom); z-index: 99; transition: var(--transition); border-top: 1px solid rgba(0,0,0,0.02); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; background: none; border: none; color: var(--text-color); opacity: 0.6; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: var(--transition); gap: 3px; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(55px + var(--safe-bottom));
+            background: var(--card-bg);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: var(--safe-bottom);
+            z-index: 99;
+            transition: var(--transition);
+            border-top: 1px solid rgba(0,0,0,0.02);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            gap: 3px;
+        }
         .nav-item i { font-size: 1.2rem; }
         .nav-item.active { opacity: 1; color: var(--accent-color); }
         
-        .modal { position: fixed; top: 0; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; padding: 10px; }
+        .modal {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            padding: 10px;
+        }
         .modal.ativo { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--bg-color); width: 100%; max-width: 500px; border-radius: 24px 24px 12px 12px; padding: 20px; box-shadow: var(--shadow); max-height: 85vh; overflow-y: auto; transform: translateY(100px); transition: transform 0.3s ease; position: relative; color: var(--text-color); }
+        .modal-content {
+            background: var(--bg-color);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px 24px 12px 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
+            position: relative;
+            color: var(--text-color);
+        }
         .modal.ativo .modal-content { transform: translateY(0); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
         .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
@@ -204,7 +283,22 @@
         .form-control:focus { outline: none; border-color: var(--accent-color); }
         .btn-block { width: 100%; padding: 12px; border: none; background: var(--accent-color); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1rem; }
         .btn-secondary { background: #999; }
-        .toast { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; display: none; font-weight: 600; animation: slideIn 0.3s ease; text-align: center; }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: none;
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+            text-align: center;
+        }
         .toast.error { background: #e63946; }
         .toast.success { background: #2a9d8f; }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -217,9 +311,32 @@
         .btn-remover { background: none; border: none; color: #e63946; cursor: pointer; }
         
         .user-menu-container { position: relative; display: inline-block; }
-        .user-dropdown { position: absolute; top: 100%; right: 0; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); display: none; min-width: 160px; z-index: 150; border: 1px solid rgba(0,0,0,0.05); overflow: hidden; padding: 5px 0; }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: none;
+            min-width: 160px;
+            z-index: 150;
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            padding: 5px 0;
+        }
         .user-dropdown.show { display: block; }
-        .user-dropdown button { width: 100%; padding: 10px 15px; text-align: left; background: none; border: none; color: var(--text-color); font-size: 0.9rem; cursor: pointer; font-weight: 500; }
+        .user-dropdown button {
+            width: 100%;
+            padding: 10px 15px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
         .user-dropdown button:hover { background: rgba(0,0,0,0.03); }
         .admin-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
@@ -246,7 +363,7 @@
                 <span id="weatherDesc">Carregando clima...</span>
             </div>
         </div>
-        <div class="suggestion-card" id="suggestionCard" onclick="scrollToSugestao()">
+        <div class="suggestion-card" id="suggestionCard">
             <i class="fa-solid fa-ice-cream" id="suggestionIcon"></i>
             <span class="suggestion-text" id="suggestionText">Analisando cardápio...</span>
         </div>
@@ -413,8 +530,6 @@
     let configCabecalho = { logo_url: '', nome_loja: 'Doces Di' };
     let configRodape = { whatsapp: { enabled: false, value: '' }, email: { enabled: false, value: '' }, instagram: { enabled: false, value: '' }, facebook: { enabled: false, value: '' }, endereco: { enabled: false, value: '' }, horario: { enabled: false, value: '' } };
     let configDelivery = { enabled: false, taxa_entrega: 0 };
-    let palavrasChaveClima = { quentes: [], amenas: [], frias: [] };
-    let telefoneTemp = '';
     let currentTheme = 'light';
     let favoritos = [];
 
@@ -423,8 +538,35 @@
     function abrirModal(id) { document.getElementById(id)?.classList.add('ativo'); }
     function fecharModal(id) { document.getElementById(id)?.classList.remove('ativo'); }
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
+    
+    function isAdmin() {
+        return usuarioLogado && (usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin === true);
+    }
 
-    // ========== FAVORITOS (Supabase + localStorage) ==========
+    // ========== CLASSIFICAÇÃO DE TEMPERATURA (PRIORIZA BANCO) ==========
+    function getTipoProduto(produto) {
+        // Usa o campo temperatura_ideal do banco
+        if (produto.temperatura_ideal) {
+            const tipo = produto.temperatura_ideal.toLowerCase();
+            if (tipo === 'frio' || tipo === 'quente' || tipo === 'ameno') {
+                return tipo;
+            }
+            // Correção para valores como 'fria' (singular)
+            if (tipo === 'fria') return 'frio';
+            if (tipo === 'quente') return 'quente';
+        }
+        // Fallback baseado no nome
+        const nome = (produto.nome || '').toLowerCase();
+        if (nome.includes('sorvete') || nome.includes('gelado') || nome.includes('milkshake') || nome.includes('açaí') || nome.includes('picolé') || nome.includes('mousse')) {
+            return 'frio';
+        }
+        if (nome.includes('canjica') || nome.includes('café') || nome.includes('chocolate quente') || nome.includes('quentão')) {
+            return 'quente';
+        }
+        return 'ameno';
+    }
+
+    // ========== FAVORITOS ==========
     async function carregarFavoritos() {
         if(!usuarioLogado) {
             const localFav = localStorage.getItem('docesdi_favoritos_anon');
@@ -460,9 +602,6 @@
         }
         localStorage.setItem('docesdi_favoritos_anon', JSON.stringify(favoritos));
         renderizarPaginaPrincipalPorCategorias();
-        if(document.getElementById('modalFavoritos').classList.contains('ativo')) {
-            abrirModalFavoritos();
-        }
     };
 
     window.abrirModalFavoritos = function() {
@@ -491,7 +630,7 @@
         abrirModal('modalFavoritos');
     };
 
-    // ========== CONFIGURAÇÕES (RODAPÉ DINÂMICO) ==========
+    // ========== CONFIGURAÇÕES ==========
     async function carregarConfiguracoes() {
         try {
             const {data,error} = await supabaseClient.from('configuracoes').select('*');
@@ -499,12 +638,10 @@
                 for(let config of data) {
                     if(config.chave==='cabecalho') { configCabecalho=config.valor; aplicarConfigCabecalho(); }
                     if(config.chave==='rodape') { configRodape=config.valor; renderizarRodape(); }
-                    if(config.chave==='palavras_chave') palavrasChaveClima=config.valor;
                     if(config.chave==='delivery') { configDelivery = config.valor; atualizarOpcoesEntrega(); }
                 }
             }
         } catch(e){}
-        if(!palavrasChaveClima.quentes) palavrasChaveClima={ quentes:['sorvete','milkshake','açaí','picolé'], amenas:['limonada','suco','fruta'], frias:['café','chocolate quente','bolo'] };
     }
     function aplicarConfigCabecalho() { const logo=document.getElementById('headerLogo'); const span=document.getElementById('storeNameSpan'); if(logo && configCabecalho.logo_url) logo.src=configCabecalho.logo_url; if(span && configCabecalho.nome_loja) span.innerText=configCabecalho.nome_loja; }
     function renderizarRodape() { 
@@ -546,10 +683,20 @@
             atualizarTermometroUI(); gerarSugestaoPorClima();
         }
     }
-    function atualizarTermometroUI() { const tempV=document.getElementById('tempValue'); const icon=document.getElementById('tempIcon'); const desc=document.getElementById('weatherDesc'); if(temperaturaAtual!==null) { tempV.innerText=Math.round(temperaturaAtual); if(temperaturaAtual>=28) { icon.className='fa-solid fa-temperature-high'; icon.style.color='var(--hot-color)'; desc.innerText='🌞 Muito calor!'; } else if(temperaturaAtual>=22) { icon.className='fa-solid fa-temperature-high'; icon.style.color='#ffb703'; desc.innerText='☀️ Clima agradável'; } else if(temperaturaAtual>=15) { icon.className='fa-solid fa-temperature-low'; icon.style.color='#4ecdc4'; desc.innerText='🌤️ Temperatura amena'; } else { icon.className='fa-solid fa-temperature-low'; icon.style.color='var(--cold-color)'; desc.innerText='❄️ Está friozinho!'; } } }
-    
-    // Retorna o tipo de clima com base na temperatura: 'quente', 'ameno', 'frio'
-    function getClimaType() {
+    function atualizarTermometroUI() { 
+        const tempV=document.getElementById('tempValue'); 
+        const icon=document.getElementById('tempIcon'); 
+        const desc=document.getElementById('weatherDesc'); 
+        if(temperaturaAtual!==null) { 
+            tempV.innerText=Math.round(temperaturaAtual); 
+            if(temperaturaAtual>=28) { icon.className='fa-solid fa-temperature-high'; icon.style.color='var(--hot-color)'; desc.innerText='🌞 Muito calor!'; } 
+            else if(temperaturaAtual>=22) { icon.className='fa-solid fa-temperature-high'; icon.style.color='#ffb703'; desc.innerText='☀️ Clima agradável'; } 
+            else if(temperaturaAtual>=15) { icon.className='fa-solid fa-temperature-low'; icon.style.color='#4ecdc4'; desc.innerText='🌤️ Temperatura amena'; } 
+            else { icon.className='fa-solid fa-temperature-low'; icon.style.color='var(--cold-color)'; desc.innerText='❄️ Está friozinho!'; } 
+        } 
+    }
+
+    function getClimaAtual() {
         if (temperaturaAtual === null) return 'ameno';
         if (temperaturaAtual >= 26) return 'quente';
         if (temperaturaAtual >= 20) return 'ameno';
@@ -557,52 +704,239 @@
     }
 
     function gerarSugestaoPorClima() {
-        const sugText=document.getElementById('suggestionText'); const sugIcon=document.getElementById('suggestionIcon');
-        if(temperaturaAtual===null) { sugText.innerText='Carregando...'; return; }
-        if(produtos.length===0) { sugText.innerText='Adicione produtos'; return; }
-        const disponiveis=produtos.filter(p=>p.estoque>0);
-        if(disponiveis.length===0) { sugText.innerText='Em breve!'; return; }
-        let tipo = '';
-        let lista = [];
-        const climaType = getClimaType();
-        // Tenta produtos com temperatura_ideal correspondente ao clima atual
-        if(climaType === 'quente') tipo = 'quente';
-        else if(climaType === 'ameno') tipo = 'ameno';
-        else tipo = 'frio';
+        const sugText = document.getElementById('suggestionText');
+        const sugIcon = document.getElementById('suggestionIcon');
         
-        lista = disponiveis.filter(p => p.temperatura_ideal === tipo);
-        
-        if(lista.length === 0) {
-            // Fallback: usa palavras chave
-            const geladas=palavrasChaveClima.quentes||[], frescas=palavrasChaveClima.amenas||[], quentes=palavrasChaveClima.frias||[];
-            if(temperaturaAtual>=26) { tipo='gelada'; lista=disponiveis.filter(p=>{ const n=p.nome.toLowerCase(), d=(p.descricao||'').toLowerCase(), cat=categorias.find(c=>c.id===p.categoria_id); const cn=cat?cat.nome.toLowerCase():''; return geladas.some(pal=>n.includes(pal)||d.includes(pal)||cn.includes(pal)); }); }
-            else if(temperaturaAtual>=20) { tipo='refrescante'; lista=disponiveis.filter(p=>{ const n=p.nome.toLowerCase(), d=(p.descricao||'').toLowerCase(), cat=categorias.find(c=>c.id===p.categoria_id); const cn=cat?cat.nome.toLowerCase():''; return frescas.some(pal=>n.includes(pal)||d.includes(pal)||cn.includes(pal)); }); }
-            else { tipo='quente'; lista=disponiveis.filter(p=>{ const n=p.nome.toLowerCase(), d=(p.descricao||'').toLowerCase(), cat=categorias.find(c=>c.id===p.categoria_id); const cn=cat?cat.nome.toLowerCase():''; return quentes.some(pal=>n.includes(pal)||d.includes(pal)||cn.includes(pal)); }); }
+        if (temperaturaAtual === null || produtos.length === 0) {
+            sugText.innerText = 'Carregando...';
+            return;
         }
-        if(lista.length===0) lista=[...disponiveis];
-        const prod=lista[Math.floor(Math.random()*lista.length)];
-        const genero = (()=>{ const fem=['canjica','pamonha','tapioca','cuca']; if(fem.includes(prod.nome.toLowerCase())) return 'feminino'; if(prod.nome.toLowerCase().endsWith('a')) return 'feminino'; return 'masculino'; })();
-        let artigo=genero==='feminino'?'uma':'um';
-        let msg = (tipo==='gelada') ? `🍦 ${artigo.charAt(0).toUpperCase()+artigo.slice(1)} ${prod.nome} geladinho cai bem!` : (tipo==='refrescante') ? `🍋 ${artigo.charAt(0).toUpperCase()+artigo.slice(1)} ${prod.nome} refrescante é perfeito!` : `☕ ${artigo.charAt(0).toUpperCase()+artigo.slice(1)} ${prod.nome} quentinho te aquece!`;
-        sugestaoAtual={id:prod.id,nome:prod.nome,tipo:tipo,categoria_id:prod.categoria_id};
-        sugIcon.className=tipo==='gelada'?'fa-solid fa-ice-cream':(tipo==='refrescante'?'fa-solid fa-lemon':'fa-solid fa-mug-hot');
-        sugText.innerText=msg;
-        // Re-renderiza produtos para aplicar destaque baseado no clima
+        
+        const disponiveis = produtos.filter(p => p.estoque > 0);
+        if (disponiveis.length === 0) {
+            sugText.innerText = 'Em breve!';
+            return;
+        }
+        
+        const climaAtual = getClimaAtual();
+        
+        // Mapeamento: clima quente → produtos frios, clima frio → produtos quentes
+        let tipoDesejado = '';
+        if (climaAtual === 'quente') tipoDesejado = 'frio';
+        else if (climaAtual === 'frio') tipoDesejado = 'quente';
+        else tipoDesejado = 'ameno';
+        
+        let produtosSugeridos = disponiveis.filter(p => getTipoProduto(p) === tipoDesejado);
+        
+        if (produtosSugeridos.length === 0) {
+            produtosSugeridos = [...disponiveis];
+        }
+        
+        const prod = produtosSugeridos[Math.floor(Math.random() * produtosSugeridos.length)];
+        const tipoProduto = getTipoProduto(prod);
+        
+        let msg = '';
+        let icone = '';
+        
+        if (climaAtual === 'quente') {
+            msg = `🍦 ${Math.round(temperaturaAtual)}°C! Que tal um ${prod.nome} bem geladinho?`;
+            icone = 'fa-solid fa-ice-cream';
+        } else if (climaAtual === 'frio') {
+            msg = `☕ ${Math.round(temperaturaAtual)}°C! Um ${prod.nome} quentinho vai te aquecer!`;
+            icone = 'fa-solid fa-mug-hot';
+        } else {
+            msg = `🍰 Temperatura agradável! Experimente nosso ${prod.nome}`;
+            icone = 'fa-solid fa-lemon';
+        }
+        
+        sugestaoAtual = {
+            id: prod.id,
+            nome: prod.nome,
+            tipo: tipoProduto,
+            categoria_id: prod.categoria_id
+        };
+        
+        sugIcon.className = icone;
+        sugText.innerText = msg;
         renderizarPaginaPrincipalPorCategorias();
     }
-    function scrollToSugestao() { if(sugestaoAtual.id) { const card=document.querySelector(`.card-produto-swiper[data-produto-id="${sugestaoAtual.id}"]`); if(card) { card.scrollIntoView({behavior:'smooth',block:'center'}); card.classList.add('highlight-product'); setTimeout(()=>card.classList.remove('highlight-product'),2000); showToast(`🍰 ${sugestaoAtual.nome} - encontrado!`); } else { const secao=document.getElementById(`secao-front-cat-${sugestaoAtual.categoria_id}`); if(secao) secao.scrollIntoView({behavior:'smooth',block:'start'}); else showToast(`🍰 Encontre nosso ${sugestaoAtual.nome} em nosso cardápio!`); } } else { if(temperaturaAtual>=26) showToast('🍦 Explore opções geladas!'); else if(temperaturaAtual<=18) showToast('☕ Temos opções quentinhas!'); else showToast('🍰 Confira nossas delícias!'); } }
+    
+    window.scrollToSugestao = function() { 
+        if(sugestaoAtual.id) { 
+            const card=document.querySelector(`.card-produto-swiper[data-produto-id="${sugestaoAtual.id}"]`); 
+            if(card) { 
+                card.scrollIntoView({behavior:'smooth',block:'center'}); 
+                card.classList.add('highlight-product'); 
+                setTimeout(()=>card.classList.remove('highlight-product'),2000); 
+                showToast(`🍰 ${sugestaoAtual.nome} - encontrado!`); 
+            } 
+        } 
+    };
+
+    // ========== ADMIN: CORREÇÃO DE TEMPERATURA ==========
+    async function atualizarTemperaturaIdealNoBanco(produtoId, novoTipo) {
+        if (!isAdmin()) {
+            showToast('Apenas admin pode fazer isso', 'error');
+            return false;
+        }
+        
+        try {
+            const { error } = await supabaseClient
+                .from('produtos')
+                .update({ temperatura_ideal: novoTipo })
+                .eq('id', produtoId);
+            
+            if (error) throw error;
+            
+            const produto = produtos.find(p => p.id === produtoId);
+            if (produto) produto.temperatura_ideal = novoTipo;
+            
+            showToast(`✅ ${produto.nome} classificado como ${novoTipo}`, 'success');
+            gerarSugestaoPorClima();
+            renderizarPaginaPrincipalPorCategorias();
+            return true;
+        } catch (e) {
+            showToast('Erro ao atualizar', 'error');
+            return false;
+        }
+    }
 
     // ========== DADOS SUPABASE ==========
-    async function carregarCategorias() { try { const {data,error}=await supabaseClient.from('categorias').select('*').order('ordem',{ascending:true}); if(error) throw error; categorias=data||[]; localStorage.setItem('docesdi_categorias',JSON.stringify(categorias)); renderizarCategoriasFront(); } catch(e) { const local=localStorage.getItem('docesdi_categorias'); if(local) { categorias=JSON.parse(local); renderizarCategoriasFront(); } } }
-    async function carregarProdutos() { try { const {data,error}=await supabaseClient.from('produtos').select('*'); if(error) throw error; produtos=data||[]; localStorage.setItem('docesdi_produtos',JSON.stringify(produtos)); renderizarPaginaPrincipalPorCategorias(); if(temperaturaAtual!==null) gerarSugestaoPorClima(); } catch(e) { const local=localStorage.getItem('docesdi_produtos'); if(local) { produtos=JSON.parse(local); renderizarPaginaPrincipalPorCategorias(); } } }
-    async function carregarSlides() { try { const {data,error}=await supabaseClient.from('slides').select('*').order('id'); if(!error && data) { slides=data; renderizarSlidesFront(); } } catch(e){} }
-    async function carregarClientes() { try { const {data}=await supabaseClient.from('clientes').select('*'); if(data) clientes=data; } catch(e){} }
-    async function carregarAvaliacoes() { try { const {data}=await supabaseClient.from('avaliacoes').select('*'); if(data) avaliacoes=data; } catch(e){} }
+    async function carregarCategorias() { 
+        try { 
+            const {data,error}=await supabaseClient.from('categorias').select('*').order('ordem',{ascending:true}); 
+            if(error) throw error; 
+            categorias=data||[]; 
+            localStorage.setItem('docesdi_categorias',JSON.stringify(categorias)); 
+            renderizarCategoriasFront(); 
+        } catch(e) { 
+            const local=localStorage.getItem('docesdi_categorias'); 
+            if(local) { 
+                categorias=JSON.parse(local); 
+                renderizarCategoriasFront(); 
+            } 
+        } 
+    }
+    
+    async function carregarProdutos() { 
+        try { 
+            const {data,error}=await supabaseClient.from('produtos').select('*'); 
+            if(error) throw error; 
+            produtos=data||[]; 
+            localStorage.setItem('docesdi_produtos',JSON.stringify(produtos)); 
+            renderizarPaginaPrincipalPorCategorias(); 
+            if(temperaturaAtual!==null) gerarSugestaoPorClima(); 
+        } catch(e) { 
+            const local=localStorage.getItem('docesdi_produtos'); 
+            if(local) { 
+                produtos=JSON.parse(local); 
+                renderizarPaginaPrincipalPorCategorias(); 
+            } 
+        } 
+    }
+    
+    async function carregarSlides() { 
+        try { 
+            const {data,error}=await supabaseClient.from('slides').select('*').order('id'); 
+            if(!error && data) { 
+                slides=data; 
+                renderizarSlidesFront(); 
+            } 
+        } catch(e){} 
+    }
+    
+    async function carregarClientes() { 
+        try { 
+            const {data}=await supabaseClient.from('clientes').select('*'); 
+            if(data) clientes=data; 
+        } catch(e){} 
+    }
+    
+    async function carregarAvaliacoes() { 
+        try { 
+            const {data}=await supabaseClient.from('avaliacoes').select('*'); 
+            if(data) avaliacoes=data; 
+        } catch(e){} 
+    }
 
-    function renderizarSlidesFront() { const wrapper=document.getElementById('slidesWrapper'); if(!wrapper) return; if(slides.length===0) { wrapper.innerHTML=`<div class="swiper-slide"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&q=80"></div><div class="swiper-slide"><img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200&q=80"></div>`; } else { wrapper.innerHTML=slides.map(s=>`<div class="swiper-slide"><img src="${s.url}" onerror="this.src='https://placehold.co/1200x400?text=Banner'"></div>`).join(''); } if(heroSwiperInstance) heroSwiperInstance.destroy(); heroSwiperInstance=new Swiper('#heroSwiper',{loop:true,autoplay:{delay:4000},pagination:{el:'.swiper-pagination',clickable:true}}); }
-    function renderizarCategoriasFront() { const container=document.getElementById('tabsCategoriasFront'); if(!container) return; container.innerHTML=`<button class="tab-btn active" data-category="all" onclick="filtrarPorCategoria('all')">✨ Tudo</button>${categorias.map(c=>`<button class="tab-btn" data-category="${c.id}" onclick="filtrarPorCategoria(${c.id})"><span>${c.icone||'📁'}</span> ${c.nome}</button>`).join('')}`; }
-    window.filtrarPorCategoria=function(catId) { document.querySelectorAll('#tabsCategoriasFront .tab-btn').forEach(btn=>btn.classList.remove('active')); const target=document.querySelector(`#tabsCategoriasFront .tab-btn[data-category="${catId}"]`); if(target) target.classList.add('active'); const sections=document.querySelectorAll('.categoria-vitrine-secao'); if(catId==='all') sections.forEach(s=>s.classList.remove('hidden-category')); else sections.forEach(s=>{ const idNum=parseInt(s.id.split('-').pop()); if(idNum===catId) s.classList.remove('hidden-category'); else s.classList.add('hidden-category'); }); };
-    function renderizarEstrelas(prodId) { const notas=avaliacoes.filter(a=>a.produto_id===prodId).map(a=>a.nota); const media=notas.length?notas.reduce((a,b)=>a+b,0)/notas.length:5; let est=''; for(let i=1;i<=5;i++) est+= i<=Math.round(media)?'<i class="fa-solid fa-star"></i>':'<i class="fa-regular fa-star"></i>'; return `${est} <span style="font-size:0.75rem; color:#888;">(${notas.length||1})</span>`; }
+    function renderizarSlidesFront() { 
+        const wrapper=document.getElementById('slidesWrapper'); 
+        if(!wrapper) return; 
+        if(slides.length===0) { 
+            wrapper.innerHTML=`<div class="swiper-slide"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&q=80"></div><div class="swiper-slide"><img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1200&q=80"></div>`; 
+        } else { 
+            wrapper.innerHTML=slides.map(s=>`<div class="swiper-slide"><img src="${s.url}" onerror="this.src='https://placehold.co/1200x400?text=Banner'"></div>`).join(''); 
+        } 
+        if(heroSwiperInstance) heroSwiperInstance.destroy(); 
+        heroSwiperInstance=new Swiper('#heroSwiper',{loop:true,autoplay:{delay:4000},pagination:{el:'.swiper-pagination',clickable:true}}); 
+    }
+    
+    function renderizarCategoriasFront() { 
+        const container=document.getElementById('tabsCategoriasFront'); 
+        if(!container) return; 
+        container.innerHTML=`<button class="tab-btn active" data-category="all" onclick="filtrarPorCategoria('all')">✨ Tudo</button>${categorias.map(c=>`<button class="tab-btn" data-category="${c.id}" onclick="filtrarPorCategoria(${c.id})"><span>${c.icone||'📁'}</span> ${c.nome}</button>`).join('')}`; 
+    }
+    
+    window.filtrarPorCategoria=function(catId) { 
+        document.querySelectorAll('#tabsCategoriasFront .tab-btn').forEach(btn=>btn.classList.remove('active')); 
+        const target=document.querySelector(`#tabsCategoriasFront .tab-btn[data-category="${catId}"]`); 
+        if(target) target.classList.add('active'); 
+        const sections=document.querySelectorAll('.categoria-vitrine-secao'); 
+        if(catId==='all') sections.forEach(s=>s.classList.remove('hidden-category')); 
+        else sections.forEach(s=>{ 
+            const idNum=parseInt(s.id.split('-').pop()); 
+            if(idNum===catId) s.classList.remove('hidden-category'); 
+            else s.classList.add('hidden-category'); 
+        }); 
+    };
+    
+    function renderizarEstrelas(prodId) { 
+        const notas=avaliacoes.filter(a=>a.produto_id===prodId).map(a=>a.nota); 
+        const media=notas.length?notas.reduce((a,b)=>a+b,0)/notas.length:5; 
+        let est=''; 
+        for(let i=1;i<=5;i++) est+= i<=Math.round(media)?'<i class="fa-solid fa-star"></i>':'<i class="fa-regular fa-star"></i>'; 
+        return `${est} <span style="font-size:0.75rem; color:#888;">(${notas.length||1})</span>`; 
+    }
+    
+    function adicionarBotoesCorrecaoProdutos() {
+        if (!isAdmin()) return;
+        
+        document.querySelectorAll('.card-produto-swiper').forEach(card => {
+            if (card.querySelector('.correcao-temp-buttons')) return;
+            
+            const produtoId = parseInt(card.getAttribute('data-produto-id'));
+            const produto = produtos.find(p => p.id === produtoId);
+            if (!produto) return;
+            
+            const cardInfo = card.querySelector('.card-info');
+            if (!cardInfo) return;
+            
+            const botoesCorrecao = document.createElement('div');
+            botoesCorrecao.className = 'correcao-temp-buttons';
+            botoesCorrecao.innerHTML = `
+                <button class="btn-corrigir-temp" data-tipo="frio" style="background:#4ecdc4;">❄️ Marcar Frio</button>
+                <button class="btn-corrigir-temp" data-tipo="ameno" style="background:#ffb703;">🌡️ Marcar Ameno</button>
+                <button class="btn-corrigir-temp" data-tipo="quente" style="background:#ff6b6b;">🔥 Marcar Quente</button>
+            `;
+            
+            cardInfo.appendChild(botoesCorrecao);
+            
+            botoesCorrecao.querySelectorAll('.btn-corrigir-temp').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const novoTipo = btn.getAttribute('data-tipo');
+                    atualizarTemperaturaIdealNoBanco(produtoId, novoTipo);
+                };
+            });
+        });
+    }
+    
+    function getSeloTemperatura(produto) {
+        const tipo = getTipoProduto(produto);
+        if (tipo === 'frio') return '<span class="selo-temperatura selo-frio">❄️ Gelado</span>';
+        if (tipo === 'quente') return '<span class="selo-temperatura selo-quente">🔥 Quentinho</span>';
+        return '<span class="selo-temperatura selo-ameno">🌡️ Ambiente</span>';
+    }
     
     function renderizarPaginaPrincipalPorCategorias() { 
         const wrapper = document.getElementById('produtosWrapper');
@@ -611,7 +945,9 @@
         for(let k in carrosseisInstanciados) if(carrosseisInstanciados[k]) carrosseisInstanciados[k].destroy(true,true);
         carrosseisInstanciados = {};
         if(categorias.length===0) { wrapper.innerHTML='<p style="text-align:center; padding:30px;">Nenhuma categoria configurada.</p>'; return; }
-        const climaType = getClimaType();
+        
+        const climaAtual = getClimaAtual();
+        
         categorias.forEach(cat => {
             const prods = produtos.filter(p => p.categoria_id === cat.id);
             const idSwiper = `swiper-categoria-id-${cat.id}`;
@@ -625,18 +961,36 @@
                     const isFav = favoritos.includes(p.id);
                     const favIconClass = isFav ? 'fa-solid' : 'fa-regular';
                     const favColor = isFav ? 'color: #e63946;' : 'color: #ccc;';
-                    // Destaque se a temperatura ideal do produto corresponde ao clima atual
-                    const highlightClass = (p.temperatura_ideal === climaType) ? 'highlight-product' : '';
+                    
+                    const tipoProduto = getTipoProduto(p);
+                    let highlightClass = '';
+                    if (climaAtual === 'quente' && tipoProduto === 'frio') highlightClass = 'highlight-product';
+                    else if (climaAtual === 'frio' && tipoProduto === 'quente') highlightClass = 'highlight-product';
+                    else if (climaAtual === 'ameno' && tipoProduto === 'ameno') highlightClass = 'highlight-product';
+                    
                     return `
                     <div class="swiper-slide" style="height:auto;">
                         <div class="card-produto-swiper ${highlightClass}" data-produto-id="${p.id}">
                             <button class="btn-favorito" data-id="${p.id}" onclick="toggleFavorito(event, ${p.id})">
                                 <i class="${favIconClass} fa-heart" style="${favColor}"></i>
                             </button>
-                            <img src="${p.imagem||'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80'}" class="card-img" onerror="this.src='https://placehold.co/400x300?text=Doce'">
+                            <img src="${p.imagem || 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80'}" class="card-img" onerror="this.src='https://placehold.co/400x300?text=Doce'">
                             <div class="card-info">
-                                <div><div class="card-nome">${p.nome}</div><div class="card-descricao">${p.descricao||'Sem descrição.'}</div></div>
-                                <div><div class="rating-stars" style="margin-bottom:6px;">${renderizarEstrelas(p.id)}</div><div class="card-footer"><span class="card-preco">R$ ${parseFloat(p.preco).toFixed(2)}</span><span class="estoque-badge">📦 ${p.estoque||0} un</span></div><button class="btn-comprar" onclick="adicionarAoCarrinho(${p.id})" ${(p.estoque||0)<=0?'disabled':''}>${(p.estoque||0)>0?'<i class="fa-solid fa-cart-plus"></i> Adicionar':'Esgotado'}</button></div>
+                                <div>
+                                    <div class="card-nome">${p.nome}</div>
+                                    <div class="card-descricao">${p.descricao || 'Sem descrição.'}</div>
+                                    <div style="margin: 6px 0;">${getSeloTemperatura(p)}</div>
+                                </div>
+                                <div>
+                                    <div class="rating-stars" style="margin-bottom:6px;">${renderizarEstrelas(p.id)}</div>
+                                    <div class="card-footer">
+                                        <span class="card-preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                                        <span class="estoque-badge">📦 ${p.estoque||0} un</span>
+                                    </div>
+                                    <button class="btn-comprar" onclick="adicionarAoCarrinho(${p.id})" ${(p.estoque||0)<=0?'disabled':''}>
+                                        ${(p.estoque||0)>0?'<i class="fa-solid fa-cart-plus"></i> Adicionar':'Esgotado'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -653,6 +1007,7 @@
             }
         });
         filtrarPorCategoria('all');
+        adicionarBotoesCorrecaoProdutos();
     }
 
     // ========== CARRINHO ==========
@@ -674,9 +1029,8 @@
     }
     function toggleCamposEntrega() { const val=document.getElementById('carrinhoTipoEntrega').value; document.getElementById('carrinhoCamposEndereco').style.display = val==='entrega'?'block':'none'; renderizarCarrinhoItens(); }
 
-    // ========== PAGAMENTO COM BLOQUEIO DE LOGIN ==========
+    // ========== PAGAMENTO ==========
     async function avancarParaPagamento() { 
-        // 🔒 Bloqueio: obriga estar logado para finalizar compra
         if(!usuarioLogado) {
             showToast("Você precisa estar logado para finalizar o pedido!", "error");
             abrirModalLogin();
@@ -709,29 +1063,16 @@
             } else showToast("Erro ao criar preferência: "+ (data.error||"tente novamente"),'error'); 
         } catch(e) { showToast("Erro ao conectar com pagamento",'error'); } 
     }
-    async function verificarRetornoDePagamento() { if(window.location.search.includes('payment=success')) { window.history.replaceState({}, document.title, window.location.pathname); setTimeout(abrirStatusUltimoPedido, 1500); } }
-    async function abrirStatusUltimoPedido() { const prefId = localStorage.getItem('docesdi_last_pref'); if(!prefId) return; const {data, error} = await supabaseClient.from('pedidos').select('*').eq('mp_preference_id', prefId).single(); if(data) renderizarModalStatus(data); }
-    function renderizarModalStatus(pedido) { const isDelivery = pedido.tipo_entrega === 'entrega'; const statusMap = { 'pendente': { text: 'Aguardando Aprovação', icon: 'fa-clock', color: '#ffb703' }, 'preparando': { text: 'Preparando seu pedido', icon: 'fa-blender', color: '#f1c0e8' }, 'entregando': { text: isDelivery ? 'Saiu para entrega!' : 'Pronto para retirada!', icon: isDelivery ? 'fa-motorcycle' : 'fa-store', color: '#4ecdc4' }, 'finalizado': { text: 'Pedido Finalizado', icon: 'fa-check-circle', color: '#2a9d8f' } }; const info = statusMap[pedido.status] || statusMap['pendente']; document.getElementById('statusPedidoContent').innerHTML = `<i class="fa-solid ${info.icon}" style="font-size: 3.5rem; color: ${info.color}; margin-bottom: 15px;"></i><h3 style="color: var(--text-color); margin-bottom: 10px;">${info.text}</h3><p style="font-size: 0.95rem;">Pedido #${pedido.id}</p><p style="font-size: 1.1rem; font-weight: bold; color: var(--accent-color);">Total: R$ ${pedido.valor_total.toFixed(2)}</p><div style="margin-top: 20px; background: rgba(0,0,0,0.03); padding: 15px; border-radius: 12px;">${isDelivery ? `<strong>🏠 Destino Delivery:</strong><br>${pedido.endereco_entrega}` : `<strong>🛍️ Modalidade:</strong><br>Retirada no Balcão`}</div><button class="btn-block" onclick="abrirStatusUltimoPedido()" style="margin-top:15px; background: var(--accent-color);"><i class="fa-solid fa-rotate-right"></i> Atualizar Status</button>`; abrirModal('modalStatusPedido'); }
 
-    // ========== LOGIN / CADASTRO / PERFIL (CORRIGIDO) ==========
+    // ========== LOGIN ==========
     async function checarTelefone() {
         const telefone = document.getElementById('loginTelefone').value.replace(/\D/g, '');
         if (telefone.length < 10) {
             showToast("Telefone inválido!", 'error');
             return;
         }
-        // Busca cliente no Supabase pelo telefone
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('*')
-            .eq('telefone', telefone)
-            .maybeSingle();
-        
-        if (error) {
-            showToast("Erro ao verificar telefone", 'error');
-            return;
-        }
-        
+        const { data, error } = await supabaseClient.from('clientes').select('*').eq('telefone', telefone).maybeSingle();
+        if (error) { showToast("Erro ao verificar telefone", 'error'); return; }
         if (data) {
             telefoneTemp = telefone;
             document.getElementById('stepTelefone').classList.add('hidden-step');
@@ -743,50 +1084,17 @@
             document.getElementById('stepTelefone').classList.add('hidden-step');
             document.getElementById('stepCadastro').classList.remove('hidden-step');
             document.getElementById('modalClienteTitulo').innerText = 'Cadastre-se';
-            // Limpa campos do cadastro
-            document.getElementById('cadNome').value = '';
-            document.getElementById('cadEmail').value = '';
-            document.getElementById('cadSenha').value = '';
-            document.getElementById('cadConfirmarSenha').value = '';
-            document.getElementById('cadCep').value = '';
-            document.getElementById('cadLogradouro').value = '';
-            document.getElementById('cadNumero').value = '';
-            document.getElementById('cadComplemento').value = '';
-            document.getElementById('cadBairro').value = '';
-            document.getElementById('cadCidade').value = '';
-            document.getElementById('cadUf').value = '';
-            document.getElementById('cadReferencia').value = '';
         }
     }
 
     async function efetuarLoginSenha() {
         const senha = document.getElementById('loginSenha').value;
-        if (!senha) {
-            showToast("Digite sua senha!", 'error');
-            return;
-        }
+        if (!senha) { showToast("Digite sua senha!", 'error'); return; }
         const senhaHash = hashSenha(senha);
-        // Busca cliente no Supabase por telefone e senha
-        const { data, error } = await supabaseClient
-            .from('clientes')
-            .select('*')
-            .eq('telefone', telefoneTemp)
-            .eq('senha', senhaHash)
-            .maybeSingle();
-        
-        if (error) {
-            showToast("Erro ao efetuar login", 'error');
-            return;
-        }
-        
-        if (data) {
-            usuarioLogado = data;
-            loginSucesso();
-            // Atualiza a lista local de clientes (opcional)
-            await carregarClientes();
-        } else {
-            showToast("Senha incorreta!", 'error');
-        }
+        const { data, error } = await supabaseClient.from('clientes').select('*').eq('telefone', telefoneTemp).eq('senha', senhaHash).maybeSingle();
+        if (error) { showToast("Erro ao efetuar login", 'error'); return; }
+        if (data) { usuarioLogado = data; loginSucesso(); await carregarClientes(); }
+        else { showToast("Senha incorreta!", 'error'); }
     }
 
     async function efetuarCadastroCompleto() {
@@ -807,47 +1115,17 @@
             showToast("Preencha todos os campos obrigatórios!", 'error');
             return;
         }
-        if (senha !== confirmar) {
-            showToast("Senhas não conferem!", 'error');
-            return;
-        }
+        if (senha !== confirmar) { showToast("Senhas não conferem!", 'error'); return; }
         const senhaHash = hashSenha(senha);
-
-        // Verifica se telefone ou email já existem
-        const { data: existing, error: checkError } = await supabaseClient
-            .from('clientes')
-            .select('id')
-            .or(`telefone.eq.${telefoneTemp},email.eq.${email}`)
-            .maybeSingle();
-
-        if (existing) {
-            showToast("Telefone ou e-mail já cadastrado.", 'error');
-            return;
-        }
-
+        const { data: existing, error: checkError } = await supabaseClient.from('clientes').select('id').or(`telefone.eq.${telefoneTemp},email.eq.${email}`).maybeSingle();
+        if (existing) { showToast("Telefone ou e-mail já cadastrado.", 'error'); return; }
         const enderecoCompleto = `${logradouro}, ${numero} - ${bairro}, ${cidade}/${uf}`;
-        const novoCliente = {
-            nome, email, telefone: telefoneTemp, senha: senhaHash,
-            cep, endereco: enderecoCompleto, numero, complemento, referencia,
-            data_nasc: null, nome_social: null, force_password_change: false,
-            temp_password: null, created_at: new Date().toISOString()
-        };
-
+        const novoCliente = { nome, email, telefone: telefoneTemp, senha: senhaHash, cep, endereco: enderecoCompleto, numero, complemento, referencia, data_nasc: null, nome_social: null, force_password_change: false, temp_password: null, created_at: new Date().toISOString() };
         try {
             const { data, error } = await supabaseClient.from('clientes').insert([novoCliente]).select();
-            if (error) {
-                showToast("Erro ao cadastrar: " + error.message, 'error');
-                return;
-            }
-            if (data && data.length) {
-                usuarioLogado = data[0];
-                // Atualiza a lista local de clientes
-                await carregarClientes();
-                loginSucesso();
-            }
-        } catch (e) {
-            showToast("Erro de conexão.", 'error');
-        }
+            if (error) { showToast("Erro ao cadastrar: " + error.message, 'error'); return; }
+            if (data && data.length) { usuarioLogado = data[0]; await carregarClientes(); loginSucesso(); }
+        } catch (e) { showToast("Erro de conexão.", 'error'); }
     }
 
     function loginSucesso() { 
@@ -859,6 +1137,7 @@
         document.getElementById('loginTelefone').value = ''; 
         document.getElementById('loginSenha').value = ''; 
         telefoneTemp = ''; 
+        renderizarPaginaPrincipalPorCategorias();
     }
 
     function efetuarLogout() { 
@@ -868,22 +1147,25 @@
         atualizarInterfaceUsuario(); 
         carregarFavoritos(); 
         showToast("Logout efetuado."); 
+        renderizarPaginaPrincipalPorCategorias();
     }
 
     function atualizarInterfaceUsuario() { 
         const perfilArea = document.getElementById('perfilButtonArea'); 
         const navPedidos = document.getElementById('navPedidos');
+        const navAdminBtn = document.getElementById('navAdminBtn');
         if (usuarioLogado) { 
             perfilArea.style.display = 'block'; 
             document.getElementById('menuBtnLogin').style.display = 'none'; 
             document.getElementById('menuBtnPedidos').style.display = 'block'; 
             document.getElementById('menuBtnLogout').style.display = 'block'; 
             if (navPedidos) navPedidos.style.display = 'flex';
-            if (usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin) { 
+            if (isAdmin()) { 
                 document.getElementById('menuBtnAdmin').style.display = 'block'; 
-                document.getElementById('navAdminBtn').style.display = 'flex'; 
+                if (navAdminBtn) navAdminBtn.style.display = 'flex'; 
             } else { 
                 document.getElementById('menuBtnAdmin').style.display = 'none'; 
+                if (navAdminBtn) navAdminBtn.style.display = 'none'; 
             } 
         } else { 
             perfilArea.style.display = 'none'; 
@@ -891,46 +1173,10 @@
             document.getElementById('menuBtnPedidos').style.display = 'none'; 
             document.getElementById('menuBtnAdmin').style.display = 'none'; 
             document.getElementById('menuBtnLogout').style.display = 'none'; 
-            document.getElementById('navAdminBtn').style.display = 'none';
-            if (navPedidos) navPedidos.style.display = 'flex';  // Mantém visível, mas ao clicar pede login
+            if (navAdminBtn) navAdminBtn.style.display = 'none';
+            if (navPedidos) navPedidos.style.display = 'flex';
         } 
     }
-
-    // Ajuste no botão "Esqueci minha senha"
-    document.getElementById('btnEsqueciSenha').addEventListener('click', async () => {
-        if (!telefoneTemp) {
-            showToast("Digite seu telefone primeiro.", 'error');
-            voltarParaTelefone();
-            return;
-        }
-        // Busca cliente no Supabase pelo telefone
-        const { data: cliente, error } = await supabaseClient
-            .from('clientes')
-            .select('id')
-            .eq('telefone', telefoneTemp)
-            .maybeSingle();
-        
-        if (error || !cliente) {
-            showToast("Telefone não cadastrado.", 'error');
-            voltarParaTelefone();
-            return;
-        }
-        
-        const novaSenha = Math.random().toString(36).slice(-8);
-        const novaHash = hashSenha(novaSenha);
-        const { error: updateError } = await supabaseClient
-            .from('clientes')
-            .update({ senha: novaHash })
-            .eq('id', cliente.id);
-        
-        if (updateError) {
-            showToast("Erro ao redefinir senha. Tente novamente.", 'error');
-            return;
-        }
-        
-        showToast(`Sua nova senha é: ${novaSenha}. Anote e use no próximo login.`, 'success');
-        voltarParaTelefone();
-    });
 
     function voltarParaTelefone() { 
         document.getElementById('stepTelefone').classList.remove('hidden-step'); 
@@ -973,31 +1219,16 @@
         const endereco = document.getElementById('perfilEnderecoCompleto').value.trim(); 
         const numero = document.getElementById('perfilNumero').value.trim(); 
         const complemento = document.getElementById('perfilComplemento').value.trim(); 
-        if(!nome || !telefone || !email) { 
-            showToast("Nome, telefone e e-mail são obrigatórios.",'error'); 
-            return; 
-        } 
+        if(!nome || !telefone || !email) { showToast("Nome, telefone e e-mail são obrigatórios.",'error'); return; } 
         const updates = { nome, telefone, email, cep, endereco, numero, complemento }; 
         const senhaAtual = document.getElementById('perfilSenhaAtual').value; 
         const novaSenha = document.getElementById('perfilNovaSenha').value; 
         const confirma = document.getElementById('perfilConfirmarSenha').value; 
         if(novaSenha || confirma) { 
-            if(!senhaAtual) { 
-                showToast("Digite sua senha atual.",'error'); 
-                return; 
-            } 
-            if(hashSenha(senhaAtual) !== usuarioLogado.senha) { 
-                showToast("Senha atual incorreta.",'error'); 
-                return; 
-            } 
-            if(novaSenha !== confirma) { 
-                showToast("Nova senha e confirmação não coincidem.",'error'); 
-                return; 
-            } 
-            if(novaSenha.length < 6) { 
-                showToast("Mínimo 6 caracteres.",'error'); 
-                return; 
-            } 
+            if(!senhaAtual) { showToast("Digite sua senha atual.",'error'); return; } 
+            if(hashSenha(senhaAtual) !== usuarioLogado.senha) { showToast("Senha atual incorreta.",'error'); return; } 
+            if(novaSenha !== confirma) { showToast("Nova senha e confirmação não coincidem.",'error'); return; } 
+            if(novaSenha.length < 6) { showToast("Mínimo 6 caracteres.",'error'); return; } 
             updates.senha = hashSenha(novaSenha); 
         } 
         try { 
@@ -1006,9 +1237,7 @@
             showToast("Perfil atualizado!","success"); 
             fecharModal('modalPerfil'); 
             atualizarInterfaceUsuario(); 
-        } catch(e){ 
-            showToast("Erro ao atualizar.",'error'); 
-        } 
+        } catch(e){ showToast("Erro ao atualizar.",'error'); } 
     }
 
     async function abrirMeusPedidos() { 
@@ -1062,6 +1291,18 @@
                 showToast("Endereço preenchido!"); 
             } catch(e){ showToast("Erro ao buscar CEP.",'error'); } 
         });
+        document.getElementById('btnEsqueciSenha').addEventListener('click', async () => {
+            if (!telefoneTemp) { showToast("Digite seu telefone primeiro.", 'error'); voltarParaTelefone(); return; }
+            const { data: cliente, error } = await supabaseClient.from('clientes').select('id').eq('telefone', telefoneTemp).maybeSingle();
+            if (error || !cliente) { showToast("Telefone não cadastrado.", 'error'); voltarParaTelefone(); return; }
+            const novaSenha = Math.random().toString(36).slice(-8);
+            const novaHash = hashSenha(novaSenha);
+            const { error: updateError } = await supabaseClient.from('clientes').update({ senha: novaHash }).eq('id', cliente.id);
+            if (updateError) { showToast("Erro ao redefinir senha. Tente novamente.", 'error'); return; }
+            showToast(`Sua nova senha é: ${novaSenha}. Anote e use no próximo login.`, 'success');
+            voltarParaTelefone();
+        });
+        
         await carregarConfiguracoes();
         await carregarCategorias();
         await carregarProdutos();
@@ -1070,17 +1311,13 @@
         await carregarAvaliacoes();
         carregarCarrinho();
         const savedUser = localStorage.getItem('docesdi_usuario_logado');
-        if(savedUser) { 
-            usuarioLogado = JSON.parse(savedUser); 
-            atualizarInterfaceUsuario(); 
-        }
+        if(savedUser) { usuarioLogado = JSON.parse(savedUser); atualizarInterfaceUsuario(); }
         await carregarFavoritos();
         document.getElementById('btnAbrirPerfil').addEventListener('click', abrirPerfil);
         window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.classList.remove('ativo'); };
         document.addEventListener('click', (e) => { const dd = document.getElementById('usuarioDropdown'); if(dd && !dd.contains(e.target)) dd.classList.remove('show'); });
         await buscarClima();
         setInterval(buscarClima, 120000);
-        verificarRetornoDePagamento();
     }
     inicializar();
 </script>
