@@ -55,70 +55,33 @@
         
         /* ANIMAÇÕES DE ENTRADA */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
         @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
         
         .categoria-vitrine-secao {
             animation: fadeInUp 0.6s ease forwards;
         }
-        .categoria-vitrine-secao:nth-child(odd) {
-            animation: slideInLeft 0.5s ease forwards;
-        }
-        .categoria-vitrine-secao:nth-child(even) {
-            animation: slideInRight 0.5s ease forwards;
-        }
-        .hero-slider {
-            animation: fadeInScale 0.5s ease forwards;
-        }
-        .tab-btn {
-            animation: fadeInUp 0.4s ease forwards;
-            animation-delay: calc(var(--index, 0) * 0.05s);
-        }
+        .categoria-vitrine-secao:nth-child(odd) { animation: slideInLeft 0.5s ease forwards; }
+        .categoria-vitrine-secao:nth-child(even) { animation: slideInRight 0.5s ease forwards; }
+        .hero-slider { animation: fadeInScale 0.5s ease forwards; }
+        .tab-btn { animation: fadeInUp 0.4s ease forwards; animation-delay: calc(var(--index, 0) * 0.05s); }
         
         /* EFEITO 3D NOS CARDS */
         .card-produto-swiper {
@@ -130,12 +93,8 @@
             transform: translateY(-10px) rotateX(3deg);
             box-shadow: 0 25px 40px rgba(0,0,0,0.15);
         }
-        .card-produto-swiper:hover .card-img {
-            transform: scale(1.05);
-        }
-        .card-img {
-            transition: transform 0.4s ease;
-        }
+        .card-produto-swiper:hover .card-img { transform: scale(1.05); }
+        .card-img { transition: transform 0.4s ease; }
         
         /* BADGE ÚLTIMAS UNIDADES */
         .badge-ultimas-unidades {
@@ -150,16 +109,11 @@
             font-weight: bold;
             z-index: 11;
             animation: pulse 1.5s infinite;
-            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 2px 10px rgba(255,107,107,0.3);
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        .badge-ultimas-unidades i {
-            font-size: 0.8rem;
-        }
-        
-        /* BADGE ESGOTADO */
         .badge-esgotado {
             position: absolute;
             top: 10px;
@@ -188,17 +142,14 @@
             justify-content: center;
             color: white;
             font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 4px 15px rgba(37,211,102,0.3);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 100;
             animation: pulse 2s infinite;
             text-decoration: none;
         }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-        }
+        .whatsapp-float:hover { transform: scale(1.1); }
         .whatsapp-tooltip {
             position: absolute;
             right: 70px;
@@ -213,11 +164,7 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        .whatsapp-float:hover .whatsapp-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-5px);
-        }
+        .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; visibility: visible; transform: translateX(-5px); }
         
         /* CROSS-SELLING SECTION */
         .cross-selling-section {
@@ -233,10 +180,7 @@
             gap: 10px;
             color: var(--text-color);
         }
-        .cross-selling-title i {
-            color: var(--accent-color);
-            font-size: 1.8rem;
-        }
+        .cross-selling-title i { color: var(--accent-color); font-size: 1.8rem; }
         .cross-selling-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -251,28 +195,11 @@
             cursor: pointer;
             animation: fadeInScale 0.5s ease;
         }
-        .cross-selling-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        .cross-selling-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        .cross-selling-info {
-            padding: 12px;
-        }
-        .cross-selling-nome {
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        .cross-selling-preco {
-            color: var(--accent-color);
-            font-weight: bold;
-            font-size: 1rem;
-        }
+        .cross-selling-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .cross-selling-card img { width: 100%; height: 150px; object-fit: cover; }
+        .cross-selling-info { padding: 12px; }
+        .cross-selling-nome { font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+        .cross-selling-preco { color: var(--accent-color); font-weight: bold; font-size: 1rem; }
         .btn-cross-selling {
             width: 100%;
             padding: 8px;
@@ -285,15 +212,9 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-        .btn-cross-selling:hover {
-            opacity: 0.9;
-            transform: scale(0.98);
-        }
+        .btn-cross-selling:hover { opacity: 0.9; transform: scale(0.98); }
         
-        /* ESTOQUE BAR */
-        .estoque-container {
-            margin-top: 8px;
-        }
+        .estoque-container { margin-top: 8px; }
         .estoque-bar-bg {
             background: rgba(0,0,0,0.1);
             border-radius: 10px;
@@ -385,7 +306,7 @@
         .highlight-product {
             border: 3px solid #ff7f50;
             border-radius: calc(var(--border-radius) + 4px);
-            box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.3);
+            box-shadow: 0 0 0 2px rgba(255,127,80,0.3);
         }
         .card-img { width: 100%; height: 180px; object-fit: cover; background: #eee; display: block; flex-shrink: 0; }
         .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
@@ -601,6 +522,166 @@
         .admin-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
         .hidden-step { display: none; }
+        
+        /* CHATBOT IA */
+        .chatbot-button {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+        .chatbot-button:hover { transform: scale(1.1); }
+        .chatbot-container {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            width: 350px;
+            max-width: calc(100vw - 40px);
+            height: 500px;
+            max-height: 60vh;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 1001;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.3s ease;
+            transform-origin: bottom right;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .chatbot-container.open { transform: scale(1); opacity: 1; }
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
+            color: white;
+            padding: 15px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chatbot-header h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .chatbot-close { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; }
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chatbot-message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            animation: fadeInUp 0.3s ease;
+        }
+        .chatbot-message.user {
+            background: var(--accent-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chatbot-message.bot {
+            background: var(--bg-color);
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .chatbot-message.bot strong { color: var(--accent-color); }
+        .chatbot-typing {
+            background: var(--bg-color);
+            color: var(--text-color);
+            align-self: flex-start;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 4px;
+        }
+        .chatbot-typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .chatbot-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .chatbot-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        .chatbot-input-area {
+            display: flex;
+            padding: 10px;
+            gap: 8px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .chatbot-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 25px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .chatbot-input:focus { border-color: var(--accent-color); }
+        .chatbot-send {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .chatbot-send:hover { transform: scale(1.05); }
+        .chatbot-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .suggestion-chip {
+            background: var(--bg-color);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .suggestion-chip:hover { background: var(--accent-color); color: white; }
+        @media (max-width: 640px) {
+            .chatbot-container { width: calc(100vw - 40px); right: 20px; bottom: 140px; }
+            .chatbot-button { bottom: 75px; }
+        }
     </style>
 </head>
 <body>
@@ -688,6 +769,39 @@
     <i class="fab fa-whatsapp"></i>
     <span class="whatsapp-tooltip">Fale conosco! 💬</span>
 </a>
+
+<!-- CHATBOT IA -->
+<div class="chatbot-button" id="chatbotButton">
+    <i class="fa-solid fa-robot"></i>
+</div>
+<div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-header">
+        <h3><i class="fa-solid fa-brain"></i> Doce IA - Assistente</h3>
+        <button class="chatbot-close" id="chatbotClose">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages">
+        <div class="chatbot-message bot">
+            🍰 Olá! Sou a <strong>Doce IA</strong>, sua assistente virtual!<br>
+            Posso ajudar você a escolher o doce perfeito, fazer recomendações baseadas no clima ou responder dúvidas.<br><br>
+            👉 <strong>Experimente:</strong><br>
+            • "Qual doce combina com o clima de hoje?"<br>
+            • "Quero algo gelado"<br>
+            • "Me recomende um doce"<br>
+            • "Qual o mais pedido?"
+        </div>
+    </div>
+    <div class="chatbot-suggestions" id="chatbotSuggestions">
+        <span class="suggestion-chip" data-question="Qual doce combina com o clima hoje?">🌡️ Clima hoje</span>
+        <span class="suggestion-chip" data-question="Quero algo gelado">❄️ Algo gelado</span>
+        <span class="suggestion-chip" data-question="Quero algo quentinho">🔥 Algo quentinho</span>
+        <span class="suggestion-chip" data-question="Qual o mais pedido?">🏆 Mais pedido</span>
+        <span class="suggestion-chip" data-question="Tem algum doce com desconto?">💰 Descontos</span>
+    </div>
+    <div class="chatbot-input-area">
+        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Digite sua pergunta...">
+        <button class="chatbot-send" id="chatbotSend"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
 
 <div class="toast" id="toastNotification"></div>
 
@@ -808,6 +922,7 @@
     let currentTheme = 'light';
     let favoritos = [];
     let ultimoProdutoVisto = null;
+    let telefoneTemp = '';
 
     // ========== FUNÇÕES AUXILIARES ==========
     function showToast(msg, tipo='success') { const t = document.getElementById('toastNotification'); if(!t) return; t.innerText = msg; t.className = `toast ${tipo}`; t.style.display='block'; setTimeout(()=>t.style.display='none', 3500); }
@@ -825,9 +940,7 @@
             ? configRodape.whatsapp.value.replace(/\D/g,'') 
             : '5551996147492';
         const whatsappLink = document.getElementById('whatsappFloat');
-        if (whatsappLink) {
-            whatsappLink.href = `https://wa.me/${numero}`;
-        }
+        if (whatsappLink) whatsappLink.href = `https://wa.me/${numero}`;
     }
 
     // ========== CLASSIFICAÇÃO DE TEMPERATURA ==========
@@ -1040,49 +1153,28 @@
         } 
     };
 
-    // ========== CROSS-SELLING (Quem viu, também viu) ==========
+    // ========== CROSS-SELLING ==========
     function mostrarCrossSelling(produtoId) {
         const produtoAtual = produtos.find(p => p.id === produtoId);
         if (!produtoAtual) return;
-        
-        // Busca produtos da mesma categoria (excluindo o atual)
-        let relacionados = produtos.filter(p => 
-            p.categoria_id === produtoAtual.categoria_id && 
-            p.id !== produtoId && 
-            p.estoque > 0
-        ).slice(0, 4);
-        
-        // Se não tem suficientes da mesma categoria, busca aleatórios
+        let relacionados = produtos.filter(p => p.categoria_id === produtoAtual.categoria_id && p.id !== produtoId && p.estoque > 0).slice(0, 4);
         if (relacionados.length < 3) {
-            const outros = produtos.filter(p => 
-                p.id !== produtoId && 
-                p.estoque > 0 && 
-                !relacionados.includes(p)
-            ).slice(0, 4 - relacionados.length);
+            const outros = produtos.filter(p => p.id !== produtoId && p.estoque > 0 && !relacionados.includes(p)).slice(0, 4 - relacionados.length);
             relacionados = [...relacionados, ...outros];
         }
-        
         const crossSection = document.getElementById('crossSellingSection');
         const crossGrid = document.getElementById('crossSellingGrid');
-        
-        if (relacionados.length === 0) {
-            crossSection.style.display = 'none';
-            return;
-        }
-        
+        if (relacionados.length === 0) { crossSection.style.display = 'none'; return; }
         crossGrid.innerHTML = relacionados.map(p => `
             <div class="cross-selling-card" onclick="adicionarAoCarrinho(${p.id}); showToast('${p.nome} adicionado ao carrinho!');">
                 <img src="${p.imagem || 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=200&q=80'}" loading="lazy">
                 <div class="cross-selling-info">
                     <div class="cross-selling-nome">${p.nome}</div>
                     <div class="cross-selling-preco">R$ ${p.preco.toFixed(2)}</div>
-                    <button class="btn-cross-selling" onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})">
-                        <i class="fa-solid fa-cart-plus"></i> Adicionar
-                    </button>
+                    <button class="btn-cross-selling" onclick="event.stopPropagation(); adicionarAoCarrinho(${p.id})"><i class="fa-solid fa-cart-plus"></i> Adicionar</button>
                 </div>
             </div>
         `).join('');
-        
         crossSection.style.display = 'block';
         crossSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -1323,7 +1415,6 @@
         else carrinho.push({produto_id:idProd,quantidade:1,preco_unitario:prod.preco,nome:prod.nome,imagem:prod.imagem}); 
         salvarCarrinho(); 
         showToast(`${prod.nome} adicionado!`);
-        // Vibração (se suportado)
         if (window.navigator.vibrate) window.navigator.vibrate(50);
     };
     window.alterarQtdCarrinho = function(idProd,delta) { const item=carrinho.find(c=>c.produto_id===idProd); if(!item) return; const prod=produtos.find(p=>p.id===idProd); item.quantidade+=delta; if(item.quantidade<=0) carrinho=carrinho.filter(c=>c.produto_id!==idProd); else if(prod && item.quantidade>prod.estoque) item.quantidade=prod.estoque; salvarCarrinho(); renderizarCarrinhoItens(); };
@@ -1340,9 +1431,47 @@
     }
     function toggleCamposEntrega() { const val=document.getElementById('carrinhoTipoEntrega').value; document.getElementById('carrinhoCamposEndereco').style.display = val==='entrega'?'block':'none'; renderizarCarrinhoItens(); }
 
-    // ========== PAGAMENTO ==========
+    // ========== ENVIO DO PEDIDO POR WHATSAPP ==========
+    async function enviarPedidoWhatsApp(pedidoData, tipoEntrega, enderecoEntrega, itens, total) {
+        let numeroAdmin = configRodape.whatsapp?.enabled && configRodape.whatsapp?.value 
+            ? configRodape.whatsapp.value.replace(/\D/g,'') 
+            : '5551996147492';
+        
+        let mensagem = `🍰 *NOVO PEDIDO - DOCES DI* 🍰\n\n`;
+        mensagem += `👤 *Cliente:* ${usuarioLogado?.nome || 'Visitante'}\n`;
+        mensagem += `📞 *WhatsApp:* ${usuarioLogado?.telefone || 'Não informado'}\n`;
+        mensagem += `📧 *E-mail:* ${usuarioLogado?.email || 'Não informado'}\n`;
+        mensagem += `🕐 *Data:* ${new Date().toLocaleString('pt-BR')}\n`;
+        mensagem += `\n📦 *ITENS DO PEDIDO:*\n`;
+        
+        itens.forEach((item, idx) => {
+            mensagem += `${idx+1}. ${item.nome} - ${item.quantidade}x R$ ${item.preco_unitario.toFixed(2)} = R$ ${(item.quantidade * item.preco_unitario).toFixed(2)}\n`;
+        });
+        
+        mensagem += `\n💰 *Subtotal:* R$ ${(total - (tipoEntrega === 'entrega' ? parseFloat(configDelivery.taxa_entrega||0) : 0)).toFixed(2)}`;
+        if (tipoEntrega === 'entrega' && configDelivery.enabled && configDelivery.taxa_entrega > 0) {
+            mensagem += `\n🚚 *Taxa de entrega:* R$ ${parseFloat(configDelivery.taxa_entrega).toFixed(2)}`;
+        }
+        mensagem += `\n💵 *TOTAL:* R$ ${total.toFixed(2)}\n`;
+        
+        mensagem += `\n🚚 *Tipo de entrega:* ${tipoEntrega === 'entrega' ? 'Delivery 🛵' : 'Retirada no local 🏪'}`;
+        if (tipoEntrega === 'entrega') {
+            mensagem += `\n📍 *Endereço:* ${enderecoEntrega}`;
+        }
+        
+        mensagem += `\n\n✅ *Pedido registrado com sucesso!*\n🔗 Acompanhe o status pelo site.`;
+        
+        const encodedMsg = encodeURIComponent(mensagem);
+        window.open(`https://wa.me/${numeroAdmin}?text=${encodedMsg}`, '_blank');
+    }
+
+    // ========== PAGAMENTO COM ENVIO DE WHATSAPP ==========
     async function avancarParaPagamento() { 
-        if(!usuarioLogado) { showToast("Você precisa estar logado para finalizar o pedido!", "error"); abrirModalLogin(); return; }
+        if(!usuarioLogado) {
+            showToast("Você precisa estar logado para finalizar o pedido!", "error");
+            abrirModalLogin();
+            return;
+        }
         if(carrinho.length===0) { showToast("Carrinho vazio",'error'); return; } 
         const tipoEntrega=document.getElementById('carrinhoTipoEntrega').value; 
         let enderecoFinal="Retirada em balcão"; 
@@ -1365,6 +1494,10 @@
                 const pedidoPayload={ cliente_id:usuarioLogado?usuarioLogado.id:null, itens:carrinho.map(i=>({produto_id:i.produto_id,quantidade:i.quantidade,preco_unitario:i.preco_unitario})), valor_total:totalReal, status:'pendente', tipo_entrega:tipoEntrega, endereco_entrega:enderecoFinal, mp_preference_id:data.id }; 
                 await supabaseClient.from('pedidos').insert([pedidoPayload]); 
                 localStorage.setItem('docesdi_last_pref', data.id); 
+                
+                // Envia o pedido por WhatsApp para o admin
+                await enviarPedidoWhatsApp(pedidoPayload, tipoEntrega, enderecoFinal, carrinho, totalReal);
+                
                 carrinho=[]; salvarCarrinho(); fecharModal('modalCarrinho'); 
                 window.location.href=data.init_point; 
             } else showToast("Erro ao criar preferência: "+ (data.error||"tente novamente"),'error'); 
@@ -1567,6 +1700,177 @@
         else { body.classList.remove('entardecer'); currentTheme='light'; localStorage.setItem('docesdi_theme','light'); document.getElementById('themeToggle').innerHTML='<i class="fa-solid fa-moon"></i>'; }
     }
 
+    // ========== IA: ASSISTENTE VIRTUAL ==========
+    const conhecimentoIA = {
+        saudacoes: ['olá', 'oi', 'opa', 'e aí', 'hey', 'bom dia', 'boa tarde', 'boa noite', 'oie'],
+        despedidas: ['tchau', 'obrigado', 'valeu', 'até logo', 'flw', 'adeus', 'obrigada'],
+        respostas: {
+            clima: (clima, produtosRecomendados) => {
+                if (clima === 'quente') {
+                    return `🌞 Hoje está calor (${Math.round(temperaturaAtual)}°C)! Recomendo doces geladinhos como: ${produtosRecomendados.slice(0, 3).map(p => p.nome).join(', ')}. Que tal experimentar? 🍦`;
+                } else if (clima === 'frio') {
+                    return `❄️ Hoje está friozinho (${Math.round(temperaturaAtual)}°C)! Que tal um doce quentinho? Recomendo: ${produtosRecomendados.slice(0, 3).map(p => p.nome).join(', ')}. Vai te aquecer! ☕`;
+                } else {
+                    return `🍃 Clima agradável hoje! Aproveite para experimentar: ${produtosRecomendados.slice(0, 3).map(p => p.nome).join(', ')}. Temperatura perfeita! 🌸`;
+                }
+            },
+            gelado: (produtosFrios) => {
+                if (produtosFrios.length === 0) return "Estou sem opções geladas no momento, mas em breve teremos novidades! 🍦";
+                return `❄️ Opções geladinhas que combinam com o calor:\n${produtosFrios.slice(0, 5).map((p, i) => `${i+1}. ${p.nome} - R$ ${p.preco.toFixed(2)}`).join('\n')}\n\nQual deles mais te agrada?`;
+            },
+            quente: (produtosQuentes) => {
+                if (produtosQuentes.length === 0) return "Estou sem opções quentinhas no momento, mas em breve teremos! ☕";
+                return `🔥 Opções quentinhas para esquentar o dia:\n${produtosQuentes.slice(0, 5).map((p, i) => `${i+1}. ${p.nome} - R$ ${p.preco.toFixed(2)}`).join('\n')}\n\nQual vai te aquecer hoje?`;
+            },
+            recomendacao: (produtosAleatorios) => {
+                const recomendado = produtosAleatorios[Math.floor(Math.random() * produtosAleatorios.length)];
+                return `🍰 Minha recomendação especial para você hoje é: <strong>${recomendado.nome}</strong>!\n\n${recomendado.descricao || 'Uma delícia que você vai amar!'}\n\nPreço: R$ ${recomendado.preco.toFixed(2)}\n\nQuer experimentar? 🎂`;
+            },
+            maisPedido: (produto) => {
+                if (!produto) return "Ainda não tenho dados suficientes para saber qual é o mais pedido! 🍰";
+                return `🏆 O produto mais pedido da nossa doceria é: <strong>${produto.nome}</strong>!\n\n${produto.descricao || 'Um verdadeiro sucesso entre nossos clientes!'}\n\nPreço: R$ ${produto.preco.toFixed(2)}\n\nQuer provar essa delícia? 🎉`;
+            },
+            ofertas: (produtosComEstoqueBaixo) => {
+                if (produtosComEstoqueBaixo.length === 0) return "No momento não temos ofertas especiais, mas sempre temos preços incríveis! 💝";
+                return `🎉 Atenção! Últimas unidades de:\n${produtosComEstoqueBaixo.slice(0, 3).map(p => `• ${p.nome} (R$ ${p.preco.toFixed(2)})`).join('\n')}\n\nCorre que está acabando! 🔥`;
+            },
+            desconhecido: "Hmm, não entendi direito. Pode me perguntar sobre:\n• Recomendações de doces\n• Preços\n• Produtos gelados/quentinhos\n• Clima e sugestões\n• Ofertas especiais\n\nComo posso te ajudar hoje? 🤖"
+        }
+    };
+
+    async function responderIA(pergunta) {
+        const perguntaLower = pergunta.toLowerCase().trim();
+        
+        if (conhecimentoIA.saudacoes.some(s => perguntaLower.includes(s))) {
+            const saudacoesPersonalizadas = [
+                `Olá! 🍰 Que bom te ver por aqui! Como posso ajudar você hoje?`,
+                `Oi! 😊 Estou aqui para te ajudar a encontrar o doce perfeito!`,
+                `Hey! 🎂 Pronto para escolher uma delícia?`,
+                `Bem-vindo(a) à Doce IA! 🍪 Vamos encontrar o doce ideal para você?`
+            ];
+            return saudacoesPersonalizadas[Math.floor(Math.random() * saudacoesPersonalizadas.length)];
+        }
+        
+        if (conhecimentoIA.despedidas.some(s => perguntaLower.includes(s))) {
+            return `Foi um prazer ajudar! 🍰 Volte sempre para mais delícias! 😊`;
+        }
+        
+        if (perguntaLower.includes('clima') || perguntaLower.includes('temperatura') || perguntaLower.includes('hoje')) {
+            const disponiveis = produtos.filter(p => p.estoque > 0);
+            const climaAtual = getClimaAtual();
+            let produtosRecomendados = [];
+            if (climaAtual === 'quente') produtosRecomendados = disponiveis.filter(p => getTipoProduto(p) === 'frio');
+            else if (climaAtual === 'frio') produtosRecomendados = disponiveis.filter(p => getTipoProduto(p) === 'quente');
+            else produtosRecomendados = disponiveis.filter(p => getTipoProduto(p) === 'ameno');
+            if (produtosRecomendados.length === 0) produtosRecomendados = disponiveis.slice(0, 5);
+            return conhecimentoIA.respostas.clima(climaAtual, produtosRecomendados);
+        }
+        
+        if (perguntaLower.includes('gelado') || perguntaLower.includes('frio') || perguntaLower.includes('sorvete') || perguntaLower.includes('refrescante')) {
+            const produtosFrios = produtos.filter(p => p.estoque > 0 && getTipoProduto(p) === 'frio');
+            return conhecimentoIA.respostas.gelado(produtosFrios);
+        }
+        
+        if (perguntaLower.includes('quente') || perguntaLower.includes('quentinho') || perguntaLower.includes('café') || perguntaLower.includes('esquentar')) {
+            const produtosQuentes = produtos.filter(p => p.estoque > 0 && getTipoProduto(p) === 'quente');
+            return conhecimentoIA.respostas.quente(produtosQuentes);
+        }
+        
+        if (perguntaLower.includes('recomend') || perguntaLower.includes('sugest') || perguntaLower.includes('indica') || perguntaLower.includes('qual doce') || perguntaLower.includes('me recomend')) {
+            const disponiveis = produtos.filter(p => p.estoque > 0);
+            if (disponiveis.length === 0) return "Desculpe, estamos sem produtos no momento! 🙁";
+            return conhecimentoIA.respostas.recomendacao(disponiveis);
+        }
+        
+        if (perguntaLower.includes('mais pedido') || perguntaLower.includes('mais vendido') || perguntaLower.includes('sucesso') || perguntaLower.includes('popular')) {
+            const produtosComMenosEstoque = [...produtos].filter(p => p.estoque > 0).sort((a, b) => a.estoque - b.estoque);
+            const maisVendido = produtosComMenosEstoque[0];
+            return conhecimentoIA.respostas.maisPedido(maisVendido);
+        }
+        
+        if (perguntaLower.includes('oferta') || perguntaLower.includes('desconto') || perguntaLower.includes('promoção') || perguntaLower.includes('última') || perguntaLower.includes('acabando')) {
+            const produtosBaixoEstoque = produtos.filter(p => p.estoque > 0 && p.estoque <= 5);
+            return conhecimentoIA.respostas.ofertas(produtosBaixoEstoque);
+        }
+        
+        const produtoMencionado = produtos.find(p => perguntaLower.includes(p.nome.toLowerCase()));
+        if (produtoMencionado && (perguntaLower.includes('preço') || perguntaLower.includes('custa') || perguntaLower.includes('quanto'))) {
+            return `💰 ${produtoMencionado.nome} custa R$ ${produtoMencionado.preco.toFixed(2)}. É uma delícia super acessível! Quer adicionar ao carrinho? 🛒`;
+        }
+        
+        if (produtoMencionado) {
+            return `🍰 Sobre o ${produtoMencionado.nome}: ${produtoMencionado.descricao || 'Uma delícia especial!'}\n\n💰 Preço: R$ ${produtoMencionado.preco.toFixed(2)}\n📦 Estoque: ${produtoMencionado.estoque} unidades\n\nQuer adicionar ao carrinho? 🛒`;
+        }
+        
+        return conhecimentoIA.respostas.desconhecido;
+    }
+
+    function addMessage(text, isUser = false) {
+        const messagesDiv = document.getElementById('chatbotMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chatbot-message ${isUser ? 'user' : 'bot'}`;
+        messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function showTypingIndicator() {
+        const messagesDiv = document.getElementById('chatbotMessages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chatbot-typing';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = '<span></span><span></span><span></span>';
+        messagesDiv.appendChild(typingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+    }
+    
+    async function enviarMensagem() {
+        const input = document.getElementById('chatbotInput');
+        const pergunta = input.value.trim();
+        if (!pergunta) return;
+        addMessage(pergunta, true);
+        input.value = '';
+        showTypingIndicator();
+        try {
+            const resposta = await responderIA(pergunta);
+            removeTypingIndicator();
+            addMessage(resposta, false);
+        } catch (error) {
+            removeTypingIndicator();
+            addMessage("Ops! Tive um probleminha. Pode repetir sua pergunta? 🤖", false);
+        }
+    }
+    
+    function initChatbot() {
+        const button = document.getElementById('chatbotButton');
+        const container = document.getElementById('chatbotContainer');
+        const closeBtn = document.getElementById('chatbotClose');
+        const sendBtn = document.getElementById('chatbotSend');
+        const input = document.getElementById('chatbotInput');
+        const suggestions = document.querySelectorAll('.suggestion-chip');
+        
+        button.addEventListener('click', () => container.classList.toggle('open'));
+        closeBtn.addEventListener('click', () => container.classList.remove('open'));
+        sendBtn.addEventListener('click', enviarMensagem);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarMensagem(); });
+        suggestions.forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('chatbotInput').value = chip.getAttribute('data-question');
+                enviarMensagem();
+            });
+        });
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target) && !button.contains(e.target) && container.classList.contains('open')) {
+                container.classList.remove('open');
+            }
+        });
+    }
+
     // ========== INICIALIZAÇÃO ==========
     async function inicializar() {
         const savedTheme = localStorage.getItem('docesdi_theme');
@@ -1619,6 +1923,7 @@
         document.addEventListener('click', (e) => { const dd = document.getElementById('usuarioDropdown'); if(dd && !dd.contains(e.target)) dd.classList.remove('show'); });
         await buscarClima();
         setInterval(buscarClima, 120000);
+        initChatbot();
     }
     inicializar();
 </script>
