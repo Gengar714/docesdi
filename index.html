@@ -889,7 +889,7 @@
     function hashSenha(s) { return CryptoJS.SHA256(s).toString(); }
     
     function isAdmin() {
-        return usuarioLogado && (usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin === true);
+        return usuarioLogado && (usuarioLogado.telefone === '21965783597' || usuarioLogado.is_admin === true);
     }
 
     // ========== CLASSIFICAÇÃO DE TEMPERATURA ==========
@@ -1390,7 +1390,7 @@
     async function enviarPedidoWhatsApp(pedidoData, tipoEntrega, enderecoEntrega, itens, total) {
         let numeroAdmin = configRodape.whatsapp?.enabled && configRodape.whatsapp?.value 
             ? configRodape.whatsapp.value.replace(/\D/g,'') 
-            : '5551996147492';
+            : '5521965783597';
         
         let mensagem = `🍰 *NOVO PEDIDO - DOCES DI* 🍰\n\n`;
         mensagem += `👤 *Cliente:* ${usuarioLogado?.nome || 'Visitante'}\n`;
