@@ -1021,7 +1021,7 @@
         container.innerHTML = html || '<div class="footer-item">Doces Di - Doces especiais para você!</div>'; 
     }
     function abrirWhatsApp() { 
-        let num = (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) ? configRodape.whatsapp.value.replace(/\D/g,'') : '5551996147492'; 
+        let num = (configRodape.whatsapp?.enabled && configRodape.whatsapp?.value) ? configRodape.whatsapp.value.replace(/\D/g,'') : '5521965783597'; 
         window.open(`https://wa.me/${num}`, '_blank'); 
     }
     function atualizarOpcoesEntrega() { const select = document.getElementById('carrinhoTipoEntrega'); if(!select) return; const optRetirada = `<option value="retirada">Retirar no Local (Grátis)</option>`; const optEntrega = configDelivery.enabled ? `<option value="entrega">Receber por Delivery (Taxa: R$ ${parseFloat(configDelivery.taxa_entrega||0).toFixed(2)})</option>` : ''; select.innerHTML = optRetirada + optEntrega; toggleCamposEntrega(); }
