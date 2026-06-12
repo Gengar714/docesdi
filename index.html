@@ -128,44 +128,6 @@
             z-index: 11;
         }
         
-        /* WHATSAPP FLUTUANTE */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: linear-gradient(135deg, #25d366, #128c7e);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(37,211,102,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 100;
-            animation: pulse 2s infinite;
-            text-decoration: none;
-        }
-        .whatsapp-float:hover { transform: scale(1.1); }
-        .whatsapp-tooltip {
-            position: absolute;
-            right: 70px;
-            background: var(--card-bg);
-            color: var(--text-color);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            box-shadow: var(--shadow);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; visibility: visible; transform: translateX(-5px); }
-        
         /* CROSS-SELLING SECTION */
         .cross-selling-section {
             max-width: 1200px;
@@ -375,7 +337,6 @@
             .product-swiper .swiper-button-next, .product-swiper .swiper-button-prev { width: 28px; height: 28px; }
             .climate-bar { width: 100%; order: 3; margin-top: 8px; }
             .header-actions { order: 2; }
-            .whatsapp-float { bottom: 70px; right: 15px; width: 50px; height: 50px; font-size: 1.5rem; }
         }
         
         .site-footer {
@@ -523,13 +484,13 @@
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 8px; }
         .hidden-step { display: none; }
         
-        /* CHATBOT IA */
+        /* CHATBOT IA - RESPONSIVO */
         .chatbot-button {
             position: fixed;
-            bottom: 90px;
+            bottom: 20px;
             right: 20px;
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
             color: white;
@@ -540,18 +501,18 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             z-index: 1000;
             transition: all 0.3s ease;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             animation: pulse 2s infinite;
         }
         .chatbot-button:hover { transform: scale(1.1); }
         .chatbot-container {
             position: fixed;
-            bottom: 160px;
+            bottom: 85px;
             right: 20px;
-            width: 350px;
+            width: 360px;
             max-width: calc(100vw - 40px);
-            height: 500px;
-            max-height: 60vh;
+            height: 520px;
+            max-height: 65vh;
             background: var(--card-bg);
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -568,7 +529,7 @@
         .chatbot-header {
             background: linear-gradient(135deg, var(--accent-color), #ff6b6b);
             color: white;
-            padding: 15px;
+            padding: 12px 15px;
             border-radius: 20px 20px 0 0;
             display: flex;
             justify-content: space-between;
@@ -579,14 +540,14 @@
         .chatbot-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .chatbot-message {
             max-width: 85%;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 18px;
             font-size: 0.85rem;
             line-height: 1.4;
@@ -610,7 +571,7 @@
             background: var(--bg-color);
             color: var(--text-color);
             align-self: flex-start;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 18px;
             font-size: 0.85rem;
             display: flex;
@@ -627,7 +588,7 @@
         .chatbot-typing span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing {
             0%,60%,100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-10px); opacity: 1; }
+            30% { transform: translateY(-8px); opacity: 1; }
         }
         .chatbot-input-area {
             display: flex;
@@ -637,7 +598,7 @@
         }
         .chatbot-input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 8px 12px;
             border: 1px solid rgba(0,0,0,0.1);
             border-radius: 25px;
             background: var(--bg-color);
@@ -647,8 +608,8 @@
         }
         .chatbot-input:focus { border-color: var(--accent-color); }
         .chatbot-send {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--accent-color);
             color: white;
@@ -671,16 +632,19 @@
             background: var(--bg-color);
             border: 1px solid var(--accent-color);
             color: var(--accent-color);
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
         }
         .suggestion-chip:hover { background: var(--accent-color); color: white; }
         @media (max-width: 640px) {
-            .chatbot-container { width: calc(100vw - 40px); right: 20px; bottom: 140px; }
-            .chatbot-button { bottom: 75px; }
+            .chatbot-container { width: calc(100vw - 30px); right: 15px; bottom: 75px; height: 480px; }
+            .chatbot-button { bottom: 15px; right: 15px; width: 50px; height: 50px; font-size: 1.4rem; }
+            .chatbot-suggestions { overflow-x: auto; flex-wrap: nowrap; padding: 8px; }
+            .suggestion-chip { white-space: nowrap; }
         }
     </style>
 </head>
@@ -763,12 +727,6 @@
     <button class="nav-item" id="navSuporte" onclick="abrirWhatsApp()"><i class="fa-brands fa-whatsapp"></i>Suporte</button>
     <button class="nav-item" id="navAdminBtn" style="display:none;" onclick="window.location.href='admin.html'"><i class="fa-solid fa-gear"></i>Admin</button>
 </nav>
-
-<!-- WHATSAPP FLUTUANTE -->
-<a href="https://wa.me/5551996147492" class="whatsapp-float" target="_blank" id="whatsappFloat">
-    <i class="fab fa-whatsapp"></i>
-    <span class="whatsapp-tooltip">Fale conosco! 💬</span>
-</a>
 
 <!-- CHATBOT IA -->
 <div class="chatbot-button" id="chatbotButton">
@@ -934,15 +892,6 @@
         return usuarioLogado && (usuarioLogado.telefone === '51996147492' || usuarioLogado.is_admin === true);
     }
 
-    // ========== WHATSAPP FLUTUANTE DINÂMICO ==========
-    function atualizarWhatsAppFloat() {
-        const numero = configRodape.whatsapp?.enabled && configRodape.whatsapp?.value 
-            ? configRodape.whatsapp.value.replace(/\D/g,'') 
-            : '5551996147492';
-        const whatsappLink = document.getElementById('whatsappFloat');
-        if (whatsappLink) whatsappLink.href = `https://wa.me/${numero}`;
-    }
-
     // ========== CLASSIFICAÇÃO DE TEMPERATURA ==========
     function getTipoProduto(produto) {
         if (produto.temperatura_ideal) {
@@ -955,6 +904,20 @@
         if (nome.includes('sorvete') || nome.includes('gelado') || nome.includes('milkshake') || nome.includes('açaí') || nome.includes('picolé') || nome.includes('mousse')) return 'frio';
         if (nome.includes('canjica') || nome.includes('café') || nome.includes('chocolate quente') || nome.includes('quentão')) return 'quente';
         return 'ameno';
+    }
+
+    // ========== IA PARA CONJUGAR SUGESTÃO DO DIA ==========
+    function conjugarSugestao(produto, clima) {
+        const nome = produto.nome;
+        // Determinar gênero aproximado (terminação)
+        const feminino = nome.match(/[aã]$/i) && !nome.match(/[^a]e$/i); // regra simples
+        const artigo = feminino ? 'uma' : 'um';
+        const adjetivo = (clima === 'quente') ? (feminino ? 'geladinha' : 'geladinho') :
+                         (clima === 'frio') ? (feminino ? 'quentinha' : 'quentinho') :
+                         (feminino ? 'especial' : 'especial');
+        const emoji = (clima === 'quente') ? '🍦' : (clima === 'frio') ? '☕' : '🍰';
+        const msg = `${emoji} ${artigo.charAt(0).toUpperCase() + artigo.slice(1)} ${nome} ${adjetivo} cai bem!`;
+        return msg;
     }
 
     // ========== FAVORITOS ==========
@@ -1028,7 +991,7 @@
             if(!error && data) {
                 for(let config of data) {
                     if(config.chave==='cabecalho') { configCabecalho=config.valor; aplicarConfigCabecalho(); }
-                    if(config.chave==='rodape') { configRodape=config.valor; renderizarRodape(); atualizarWhatsAppFloat(); }
+                    if(config.chave==='rodape') { configRodape=config.valor; renderizarRodape(); }
                     if(config.chave==='delivery') { configDelivery = config.valor; atualizarOpcoesEntrega(); }
                 }
             }
@@ -1122,18 +1085,10 @@
         if (produtosSugeridos.length === 0) produtosSugeridos = [...disponiveis];
         
         const prod = produtosSugeridos[Math.floor(Math.random() * produtosSugeridos.length)];
-        let msg = '', icone = '';
         
-        if (climaAtual === 'quente') {
-            msg = `🍦 ${Math.round(temperaturaAtual)}°C! Que tal um ${prod.nome} bem geladinho?`;
-            icone = 'fa-solid fa-ice-cream';
-        } else if (climaAtual === 'frio') {
-            msg = `☕ ${Math.round(temperaturaAtual)}°C! Um ${prod.nome} quentinho vai te aquecer!`;
-            icone = 'fa-solid fa-mug-hot';
-        } else {
-            msg = `🍰 Temperatura agradável! Experimente nosso ${prod.nome}`;
-            icone = 'fa-solid fa-lemon';
-        }
+        // USO DA IA PARA CONJUGAR A FRASE
+        let msg = conjugarSugestao(prod, climaAtual);
+        let icone = (climaAtual === 'quente') ? 'fa-solid fa-ice-cream' : (climaAtual === 'frio') ? 'fa-solid fa-mug-hot' : 'fa-solid fa-lemon';
         
         sugestaoAtual = { id: prod.id, nome: prod.nome, tipo: getTipoProduto(prod), categoria_id: prod.categoria_id };
         sugIcon.className = icone;
