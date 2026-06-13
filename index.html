@@ -1441,6 +1441,48 @@
         if(tipoEntrega === 'entrega' && configDelivery.enabled && configDelivery.taxa_entrega > 0) items.push({ title:"Taxa de Delivery", quantity:1, unit_price:parseFloat(configDelivery.taxa_entrega), currency_id:"BRL" });
         const payer=usuarioLogado?{ name:usuarioLogado.nome, phone:{number:usuarioLogado.telefone}, address:{zip_code:usuarioLogado.cep||"", street_name:usuarioLogado.endereco||""} }:{ name:"Visitante", phone:{number:""}, address:{zip_code:"", street_name:""} }; 
         const back_urls={ success:window.location.href+"?payment=success", failure:window.location.href+"?payment=failure", pending:window.location.href+"?payment=pending" }; 
+        
+        // 👇 AQUI É ONDE VOCÊ VAI ADICIONAR O external_reference
+    try { 
+        const FUNCTION_URL="https://opixfppyhbiyqrilebfb.supabase.co/functions/v1/rapid-processor"; 
+        const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items,payer,back_urls})}); 
+        const data=await response.json(); 
+        if(data.init_point) { 
+            const totalReal = items.reduce((acc, i) => acc + (i.quantity * i.unit_price), 0);
+            
+            // PRIMEIRO: salva o pedido no banco para gerar um ID
+            const pedidoPayload={ cliente_id:usuarioLogado?usuarioLogado.id:null, itens:carrinho.map(i=>({produto_id:i.produto_id,quantidade:i.quantidade,preco_unitario:i.preco_unitario})), valor_total:totalReal, status:'pendente', tipo_entrega:tipoEntrega, endereco_entrega:enderecoFinal, mp_preference_id:data.id }; 
+            
+            const { data: pedidoSalvo, error } = await supabaseClient.from('pedidos').insert([pedidoPayload]).select();
+            
+            if(pedidoSalvo && pedidoSalvo[0]) {
+                const pedidoId = pedidoSalvo[0].id;
+                
+                // SEGUNDO: envia para o Mercado Pago com o external_reference
+                const response2 = await fetch(FUNCTION_URL, {
+                    method: "POST",
+                    headers: {"Content-Type":"application/json"},
+                    body: JSON.stringify({
+                        items, 
+                        payer, 
+                        back_urls,
+                        external_reference: pedidoId.toString()  // 👈 AQUI!
+                    })
+                });
+                const data2 = await response2.json();
+                
+                if(data2.init_point) {
+                    localStorage.setItem('docesdi_last_pref', data2.id);
+                    await enviarPedidoWhatsApp(pedidoPayload, tipoEntrega, enderecoFinal, carrinho, totalReal);
+                    carrinho=[]; 
+                    salvarCarrinho(); 
+                    fecharModal('modalCarrinho'); 
+                    window.location.href=data2.init_point;
+                }
+            }
+        } else showToast("Erro ao criar preferência: "+ (data.error||"tente novamente"),'error'); 
+    } catch(e) { showToast("Erro ao conectar com pagamento",'error'); } 
+}
         try { 
             const FUNCTION_URL="https://opixfppyhbiyqrilebfb.supabase.co/functions/v1/rapid-processor"; 
             const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items,payer,back_urls})}); 
